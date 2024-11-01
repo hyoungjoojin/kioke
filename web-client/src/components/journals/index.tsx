@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Journal, { JournalProps } from "@/components/journal";
 import { MdArrowBackIos, MdArrowForwardIos } from "react-icons/md";
 

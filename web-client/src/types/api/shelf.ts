@@ -4,6 +4,6 @@ export interface GetDefaultShelfResponse {
 
 export interface GetShelfResponse {
   id: string;
-  title: string;
-  jids: string[];
+  name: string;
+  journals: string[];
 }

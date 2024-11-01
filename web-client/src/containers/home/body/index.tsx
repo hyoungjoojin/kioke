@@ -9,11 +9,11 @@ interface BodyProps {
 
 export default async function Body(props: BodyProps) {
   const { shelfId } = props;
-  const { title, jids } = await getShelf(shelfId);
+  const { name, journals: journalIds } = await getShelf(shelfId);
 
   const journals: JournalProps[] = (
     await Promise.all(
-      jids.map((id) => {
+      journalIds.map((id) => {
         return getJournal(id);
       }),
     )
@@ -27,7 +27,7 @@ export default async function Body(props: BodyProps) {
   return (
     <main>
       <div className="flex justify-center">
-        <h1 className="text-4xl">{title}</h1>
+        <h1 className="text-4xl">{name}</h1>
       </div>
 
       <Journals journals={journals} />
@@ -36,7 +36,7 @@ export default async function Body(props: BodyProps) {
 }
 
 const getShelf = async (shelfId: string): Promise<GetShelfResponse> => {
-  const response = await fetch(`http://localhost:3000/api/shelf/${shelfId}`, {
+  const response = await fetch(`${process.env.URL}/api/shelf/${shelfId}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -51,15 +51,12 @@ const getShelf = async (shelfId: string): Promise<GetShelfResponse> => {
 };
 
 const getJournal = async (journalId: string): Promise<GetJournalResponse> => {
-  const response = await fetch(
-    `http://localhost:3000/api/journal/${journalId}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+  const response = await fetch(`${process.env.URL}/api/journal/${journalId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
     },
-  );
+  });
 
   if (!response.ok) {
     throw new Error("Failed to get shelf");

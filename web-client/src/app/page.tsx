@@ -32,7 +32,11 @@ const getServerSideProps = (async (context: GetServerSidePropsContext) => {
       headers: {
         "Content-Type": "application/json",
       },
-    }).then((response) => response.json());
+    })
+      .then((response) => response.json())
+      .catch((error) => {
+        throw new Error(error);
+      });
 
     return {
       props: {

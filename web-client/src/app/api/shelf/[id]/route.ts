@@ -2,7 +2,7 @@ import { GetShelfResponse } from "@/types/api/shelf";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
-  request: NextRequest,
+  _: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<GetShelfResponse>> {
   const id = (await params).id;
@@ -10,8 +10,8 @@ export async function GET(
   return NextResponse.json(
     {
       id: id,
-      title: "2024's Bookshelf",
-      jids: [
+      name: "2024's Bookshelf",
+      journals: [
         "1",
         "2",
         "3",
