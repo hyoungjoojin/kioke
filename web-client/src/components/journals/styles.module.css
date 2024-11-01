@@ -1,0 +1,33 @@
+.journal-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+
+    width: 80vw;
+    height: 65vh;
+}
+
+.journal-container>div {
+    width: 100%;
+    height: 100%;
+}
+
+@media (width >=576px) {
+    .journal-container {
+        width: 576px;
+    }
+}
+
+@media (width >=768px) {
+    .journal-container {
+        width: 75vw;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(2, auto);
+    }
+}
+
+@media (width >=1200px) {
+    .journal-container {
+        width: 1100px;
+    }
+}
