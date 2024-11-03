@@ -1,0 +1,39 @@
+services:
+  journal-service:
+    container_name: journal-service
+    restart: unless-stopped
+    build:
+      context: ./journal-service
+      dockerfile: Dockerfile
+    env_file:
+      - ./.env
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://journal-service-database:27017/journal-service-database
+      - SERVER_PORT=$JOURNAL_SERVICE_PORT
+    ports:
+      - $JOURNAL_SERVICE_PORT:$JOURNAL_SERVICE_PORT
+    depends_on:
+      - journal-service-database
+    networks:
+      - journal-service-network
+
+  journal-service-database:
+    container_name: journal-service-database
+    restart: unless-stopped
+    image: mongo:5.0.2
+    env_file:
+      - ./.env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=$JOURNAL_SERVICE_DATABASE_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD=$JOURNAL_SERVICE_DATABASE_PASSWORD
+    volumes:
+      - journal-service-data:/data/db
+    networks:
+      - journal-service-network
+
+volumes:
+  journal-service-data:
+
+networks:
+  journal-service-network:
+    driver: bridge
