@@ -1,6 +1,3 @@
 spring:
   application:
     name: Kioke Journal Service
-
-server:
-  port: ${JOURNAL_SERVICE_PORT}
