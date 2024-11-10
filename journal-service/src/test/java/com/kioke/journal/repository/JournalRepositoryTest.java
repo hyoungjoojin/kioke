@@ -41,4 +41,22 @@ public class JournalRepositoryTest {
     assertNotNull(savedJournal);
     assertNotNull(savedJournal.getId());
   }
+
+  @Test
+  public void test_saveJournal_savesSuccessfullyWithNonNullCreatedAt() {
+    Journal journalToSave = buildSampleJournal();
+    Journal savedJournal = journalRepository.save(journalToSave);
+
+    assertNotNull(savedJournal);
+    assertNotNull(savedJournal.getCreatedAt());
+  }
+
+  @Test
+  public void test_saveJournal_savesSuccessfullyWithNonNullLastUpdated() {
+    Journal journalToSave = buildSampleJournal();
+    Journal savedJournal = journalRepository.save(journalToSave);
+
+    assertNotNull(savedJournal);
+    assertNotNull(savedJournal.getLastUpdated());
+  }
 }
