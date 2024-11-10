@@ -1,7 +1,8 @@
 package com.kioke.journal.model;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,12 +18,13 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Journal {
   @Id private String id;
 
-  private String title;
+  @NotNull private String title;
 
-  private String template;
+  @NotNull private String template;
 
   private List<Page> pages;
 
   @CreatedDate private LocalDateTime createdAt;
+
   @LastModifiedDate private LocalDateTime lastUpdated;
 }
