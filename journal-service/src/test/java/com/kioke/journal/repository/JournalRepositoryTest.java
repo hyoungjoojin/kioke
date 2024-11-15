@@ -4,9 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.kioke.journal.model.Journal;
-import com.kioke.journal.model.Page;
-import java.util.ArrayList;
-import java.util.UUID;
+import com.kioke.journal.model.JournalTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,48 +13,27 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class JournalRepositoryTest {
   @Autowired JournalRepository journalRepository;
 
-  private static Journal buildSampleJournal() {
-    return Journal.builder()
-        .title(UUID.randomUUID().toString())
-        .template(UUID.randomUUID().toString())
-        .pages(new ArrayList<Page>())
-        .build();
-  }
-
   @Test
   public void test_saveJournal_savesSuccessfullyWithCorrectFields() {
-    Journal journalToSave = buildSampleJournal();
-    Journal savedJournal = journalRepository.save(journalToSave);
+    String jid = "anyJournalId";
+    Journal expected = JournalTest.buildTestData(jid);
 
-    assertNotNull(savedJournal);
-    assertEquals(journalToSave.getTitle(), savedJournal.getTitle());
-    assertEquals(journalToSave.getTemplate(), savedJournal.getTemplate());
+    Journal actual = journalRepository.save(expected);
+
+    assertNotNull(actual);
+    assertEquals(expected, actual);
   }
 
   @Test
-  public void test_saveJournal_savesSuccessfullyWithNonNullId() {
-    Journal journalToSave = buildSampleJournal();
-    Journal savedJournal = journalRepository.save(journalToSave);
+  public void test_saveJournal_savesSuccessfullyWithNonNullFields() {
+    String jid = "anyJournalId";
+    Journal expected = JournalTest.buildTestData(jid);
 
-    assertNotNull(savedJournal);
-    assertNotNull(savedJournal.getId());
-  }
+    Journal actual = journalRepository.save(expected);
 
-  @Test
-  public void test_saveJournal_savesSuccessfullyWithNonNullCreatedAt() {
-    Journal journalToSave = buildSampleJournal();
-    Journal savedJournal = journalRepository.save(journalToSave);
-
-    assertNotNull(savedJournal);
-    assertNotNull(savedJournal.getCreatedAt());
-  }
-
-  @Test
-  public void test_saveJournal_savesSuccessfullyWithNonNullLastUpdated() {
-    Journal journalToSave = buildSampleJournal();
-    Journal savedJournal = journalRepository.save(journalToSave);
-
-    assertNotNull(savedJournal);
-    assertNotNull(savedJournal.getLastUpdated());
+    assertNotNull(actual);
+    assertNotNull(actual.getId());
+    assertNotNull(actual.getCreatedAt());
+    assertNotNull(actual.getLastUpdated());
   }
 }
