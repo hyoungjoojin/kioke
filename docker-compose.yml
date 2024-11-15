@@ -8,7 +8,11 @@ services:
     env_file:
       - ./.env
     environment:
-      - SPRING_DATA_MONGODB_URI=mongodb://journal-service-database:27017/journal-service-database
+      - SPRING_DATA_MONGODB_HOST=journal-service-database
+      - SPRING_DATA_MONGODB_PORT=27017
+      - SPRING_DATA_MONGODB_DATABASE=$JOURNAL_SERVICE_DATABASE_NAME
+      - SPRING_DATA_MONGODB_USERNAME=$JOURNAL_SERVICE_DATABASE_USER_USERNAME
+      - SPRING_DATA_MONGODB_PASSWORD=$JOURNAL_SERVICE_DATABASE_USER_PASSWORD
       - SERVER_PORT=$JOURNAL_SERVICE_PORT
     ports:
       - $JOURNAL_SERVICE_PORT:$JOURNAL_SERVICE_PORT
@@ -24,10 +28,12 @@ services:
     env_file:
       - ./.env
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=$JOURNAL_SERVICE_DATABASE_USERNAME
-      - MONGO_INITDB_ROOT_PASSWORD=$JOURNAL_SERVICE_DATABASE_PASSWORD
+      - MONGO_INITDB_ROOT_USERNAME=$JOURNAL_SERVICE_DATABASE_ADMIN_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD=$JOURNAL_SERVICE_DATABASE_ADMIN_PASSWORD
+      - MONGO_INITDB_DATABASE=$JOURNAL_SERVICE_DATABASE_NAME
     volumes:
       - journal-service-data:/data/db
+      - ./journal-service/.db.init.sh:/docker-entrypoint-initdb.d/db.init.sh:ro
     networks:
       - journal-service-network
 
