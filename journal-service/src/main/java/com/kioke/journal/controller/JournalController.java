@@ -8,7 +8,6 @@ import com.kioke.journal.exception.journal.JournalNotFoundException;
 import com.kioke.journal.model.Journal;
 import com.kioke.journal.service.JournalService;
 import com.kioke.journal.util.CustomLogger;
-import jakarta.servlet.http.HttpServletRequest;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.Optional;
@@ -31,10 +30,10 @@ public class JournalController {
 
   @GetMapping("/{jid}")
   public ResponseEntity<ResponseDto<GetJournalResponseDataDto>> getJournalById(
-      HttpServletRequest request, @RequestAttribute String requestId, @PathVariable String jid) {
-    String path = request.getRequestURI();
-    OffsetDateTime start = OffsetDateTime.now();
-
+      @RequestAttribute String requestId,
+      @RequestAttribute String path,
+      @RequestAttribute OffsetDateTime timestamp,
+      @PathVariable String jid) {
     log.info(requestId, "HTTP GET " + path);
 
     Optional<GetJournalResponseDataDto> data = Optional.empty();
@@ -66,7 +65,8 @@ public class JournalController {
     }
 
     OffsetDateTime end = OffsetDateTime.now();
-    log.info(requestId, "HTTP response took " + Duration.between(start, end).toMillisPart() + "ms");
+    log.info(
+        requestId, "HTTP response took " + Duration.between(timestamp, end).toMillisPart() + "ms");
 
     return ResponseEntity.status(status)
         .contentType(contentType)
@@ -74,7 +74,7 @@ public class JournalController {
             ResponseDto.<GetJournalResponseDataDto>builder()
                 .requestId(requestId)
                 .path(path)
-                .timestamp(start)
+                .timestamp(timestamp)
                 .status(status.value())
                 .success(error.isEmpty())
                 .data(data)
