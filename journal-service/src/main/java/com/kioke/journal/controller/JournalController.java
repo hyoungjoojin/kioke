@@ -191,7 +191,7 @@ public class JournalController {
       @RequestAttribute OffsetDateTime timestamp,
       MethodArgumentNotValidException e) {
     HttpStatus status = HttpStatus.BAD_REQUEST;
-    MediaType contentType = MediaType.APPLICATION_JSON;
+    MediaType contentType = MediaType.APPLICATION_PROBLEM_JSON;
 
     log.error(requestId, e.toString());
     Optional<ResponseErrorDto> error =
