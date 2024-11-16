@@ -1,28 +1,24 @@
 package com.kioke.journal.model;
 
+import com.kioke.journal.constant.BlockType;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "pages")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Page {
+public class Block {
   @Id private String id;
 
-  @NotNull private String template;
+  @NotNull private BlockType type;
 
-  @NotNull private LocalDateTime date;
-
-  private List<Block> blocks;
+  private String content;
 
   @CreatedDate private LocalDateTime createdAt;
 
