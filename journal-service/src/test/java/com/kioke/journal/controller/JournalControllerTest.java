@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kioke.journal.constant.ErrorCode;
+import com.kioke.journal.dto.journal.CreateJournalDto;
 import com.kioke.journal.dto.request.CreateJournalRequestBodyDto;
 import com.kioke.journal.exception.journal.JournalNotFoundException;
 import com.kioke.journal.model.Journal;
@@ -41,7 +42,9 @@ public class JournalControllerTest {
     expected.setTitle(expectedTitle);
     expected.setTemplate(expectedTemplate);
 
-    when(journalService.createJournal(expectedTitle, expectedTemplate)).thenReturn(expected);
+    when(journalService.createJournal(
+            CreateJournalDto.builder().title(expectedTitle).template(expectedTemplate).build()))
+        .thenReturn(expected);
 
     String content =
         objectMapper.writeValueAsString(
@@ -97,7 +100,9 @@ public class JournalControllerTest {
     String path = "/journals";
 
     String title = "title", template = "template";
-    when(journalService.createJournal(title, template)).thenThrow(RuntimeException.class);
+    when(journalService.createJournal(
+            CreateJournalDto.builder().title(title).template(template).build()))
+        .thenThrow(RuntimeException.class);
 
     String content =
         objectMapper.writeValueAsString(

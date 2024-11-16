@@ -1,6 +1,7 @@
 package com.kioke.journal.controller;
 
 import com.kioke.journal.constant.ErrorCode;
+import com.kioke.journal.dto.journal.CreateJournalDto;
 import com.kioke.journal.dto.request.CreateJournalRequestBodyDto;
 import com.kioke.journal.dto.response.ResponseDto;
 import com.kioke.journal.dto.response.data.CreateJournalResponseDataDto;
@@ -12,7 +13,6 @@ import com.kioke.journal.model.Journal;
 import com.kioke.journal.service.JournalService;
 import com.kioke.journal.util.CustomLogger;
 import jakarta.validation.Valid;
-import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +35,6 @@ public class JournalController {
       @RequestAttribute String path,
       @RequestAttribute OffsetDateTime timestamp,
       @RequestBody @Valid CreateJournalRequestBodyDto requestBody) {
-    log.info(requestId, "HTTP POST " + path);
-
     Optional<CreateJournalResponseDataDto> data = Optional.empty();
     Optional<ResponseErrorDto> error = Optional.empty();
 
@@ -44,8 +42,7 @@ public class JournalController {
     MediaType contentType = MediaType.APPLICATION_JSON;
 
     try {
-      Journal journal =
-          journalService.createJournal(requestBody.getTitle(), requestBody.getTemplate());
+      Journal journal = journalService.createJournal(CreateJournalDto.from(requestBody));
       data = Optional.of(CreateJournalResponseDataDto.from(journal));
 
       status = HttpStatus.CREATED;
@@ -59,10 +56,6 @@ public class JournalController {
       status = HttpStatus.INTERNAL_SERVER_ERROR;
       contentType = MediaType.APPLICATION_PROBLEM_JSON;
     }
-
-    OffsetDateTime end = OffsetDateTime.now();
-    log.info(
-        requestId, "HTTP response took " + Duration.between(timestamp, end).toMillisPart() + "ms");
 
     return ResponseEntity.status(status)
         .contentType(contentType)
@@ -84,8 +77,6 @@ public class JournalController {
       @RequestAttribute String path,
       @RequestAttribute OffsetDateTime timestamp,
       @PathVariable String jid) {
-    log.info(requestId, "HTTP GET " + path);
-
     Optional<GetJournalResponseDataDto> data = Optional.empty();
     Optional<ResponseErrorDto> error = Optional.empty();
 
@@ -114,10 +105,6 @@ public class JournalController {
       contentType = MediaType.APPLICATION_PROBLEM_JSON;
     }
 
-    OffsetDateTime end = OffsetDateTime.now();
-    log.info(
-        requestId, "HTTP response took " + Duration.between(timestamp, end).toMillisPart() + "ms");
-
     return ResponseEntity.status(status)
         .contentType(contentType)
         .body(
@@ -138,8 +125,6 @@ public class JournalController {
       @RequestAttribute String path,
       @RequestAttribute OffsetDateTime timestamp,
       @PathVariable String jid) {
-    log.info(requestId, "HTTP DELETE " + path);
-
     Optional<ResponseErrorDto> error = Optional.empty();
 
     HttpStatus status;
@@ -165,10 +150,6 @@ public class JournalController {
       status = HttpStatus.INTERNAL_SERVER_ERROR;
       contentType = MediaType.APPLICATION_PROBLEM_JSON;
     }
-
-    OffsetDateTime end = OffsetDateTime.now();
-    log.info(
-        requestId, "HTTP response took " + Duration.between(timestamp, end).toMillisPart() + "ms");
 
     return ResponseEntity.status(status)
         .contentType(contentType)
