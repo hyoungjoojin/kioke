@@ -1,4 +1,42 @@
 services:
+  user-service:
+    container_name: user-service
+    restart: unless-stopped
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    env_file:
+      - ./.env
+    environment:
+      - POSTGRES_USER=$USER_SERVICE_DATABASE_USER_USERNAME
+      - POSTGRES_PASSWORD=$USER_SERVICE_DATABASE_USER_PASSWORD
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://user-service-database:5432/$USER_SERVICE_DATABASE_NAME
+      - SPRING_DATASOURCE_USERNAME=$USER_SERVICE_DATABASE_USER_USERNAME
+      - SPRING_DATASOURCE_PASSWORD=$USER_SERVICE_DATABASE_USER_PASSWORD
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SERVER_PORT=$USER_SERVICE_PORT
+    ports:
+      - $USER_SERVICE_PORT:$USER_SERVICE_PORT
+    depends_on:
+      - user-service-database
+    networks:
+      - user-service-network
+
+  user-service-database:
+    container_name: user-service-database
+    restart: unless-stopped
+    image: postgres:17
+    env_file:
+      - ./.env
+    environment:
+      - POSTGRES_DB=$USER_SERVICE_DATABASE_NAME
+      - POSTGRES_USER=$USER_SERVICE_DATABASE_USER_USERNAME
+      - POSTGRES_PASSWORD=$USER_SERVICE_DATABASE_USER_PASSWORD
+    volumes:
+      - user-service-data:/var/lib/postgresql/data
+    networks:
+      - user-service-network
+
   journal-service:
     container_name: journal-service
     restart: unless-stopped
@@ -38,8 +76,11 @@ services:
       - journal-service-network
 
 volumes:
+  user-service-data:
   journal-service-data:
 
 networks:
+  user-service-network:
+    driver: bridge
   journal-service-network:
     driver: bridge
