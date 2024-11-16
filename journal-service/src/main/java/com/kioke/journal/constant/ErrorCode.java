@@ -2,6 +2,7 @@ package com.kioke.journal.constant;
 
 public enum ErrorCode {
   JOURNAL_NOT_FOUND("/errors/journal-not-found", "The requested journal could not be found."),
+  BAD_REQUEST("", "Bad request."),
   INTERNAL_SERVER_ERROR("", "Internal server error.");
 
   private final String type;

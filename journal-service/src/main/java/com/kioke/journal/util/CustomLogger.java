@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 public class CustomLogger {
   private final Logger log;
-  private final String format = "(Request ID {}) {}";
+  private final String format = "(requestId={}) {}";
 
   public CustomLogger(Class<?> clazz) {
     this.log = LoggerFactory.getLogger(clazz);
