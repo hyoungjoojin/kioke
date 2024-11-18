@@ -1,9 +1,11 @@
 package com.kioke.journal.model;
 
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -13,6 +15,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "pages")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Page {
@@ -20,7 +23,7 @@ public class Page {
 
   @NotNull private String template;
 
-  @NotNull private LocalDateTime date;
+  @NotNull private LocalDate date;
 
   private List<Block> blocks;
 
