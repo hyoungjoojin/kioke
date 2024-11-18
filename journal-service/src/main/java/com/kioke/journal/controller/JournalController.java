@@ -1,17 +1,13 @@
 package com.kioke.journal.controller;
 
-import com.kioke.journal.constant.ErrorCode;
-import com.kioke.journal.dto.journal.CreateJournalDto;
-import com.kioke.journal.dto.request.CreateJournalRequestBodyDto;
+import com.kioke.journal.dto.data.journal.CreateJournalDto;
+import com.kioke.journal.dto.request.journal.*;
 import com.kioke.journal.dto.response.ResponseDto;
-import com.kioke.journal.dto.response.data.CreateJournalResponseDataDto;
 import com.kioke.journal.dto.response.data.EmptyResponseDataDto;
-import com.kioke.journal.dto.response.data.GetJournalResponseDataDto;
-import com.kioke.journal.dto.response.error.ResponseErrorDto;
+import com.kioke.journal.dto.response.data.journal.*;
 import com.kioke.journal.exception.journal.JournalNotFoundException;
 import com.kioke.journal.model.Journal;
 import com.kioke.journal.service.JournalService;
-import com.kioke.journal.util.CustomLogger;
 import jakarta.validation.Valid;
 import java.time.OffsetDateTime;
 import java.util.Optional;
@@ -20,54 +16,34 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/journals")
 public class JournalController {
   @Autowired @Lazy private JournalService journalService;
-  private static final CustomLogger log = new CustomLogger(JournalController.class);
 
   @PostMapping
   public ResponseEntity<ResponseDto<CreateJournalResponseDataDto>> createJournal(
       @RequestAttribute String requestId,
       @RequestAttribute String path,
       @RequestAttribute OffsetDateTime timestamp,
-      @RequestBody @Valid CreateJournalRequestBodyDto requestBody) {
-    Optional<CreateJournalResponseDataDto> data = Optional.empty();
-    Optional<ResponseErrorDto> error = Optional.empty();
+      @RequestBody @Valid CreateJournalRequestBodyDto requestBody)
+      throws Exception {
+    Journal journal = journalService.createJournal(CreateJournalDto.from(requestBody));
+    var data = CreateJournalResponseDataDto.from(journal);
 
-    HttpStatus status;
-    MediaType contentType = MediaType.APPLICATION_JSON;
-
-    try {
-      Journal journal = journalService.createJournal(CreateJournalDto.from(requestBody));
-      data = Optional.of(CreateJournalResponseDataDto.from(journal));
-
-      status = HttpStatus.CREATED;
-      contentType = MediaType.APPLICATION_JSON;
-
-    } catch (Exception e) {
-      log.error(requestId, e.toString());
-      error =
-          Optional.of(ResponseErrorDto.from(ErrorCode.INTERNAL_SERVER_ERROR, e.toString(), path));
-
-      status = HttpStatus.INTERNAL_SERVER_ERROR;
-      contentType = MediaType.APPLICATION_PROBLEM_JSON;
-    }
-
-    return ResponseEntity.status(status)
-        .contentType(contentType)
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .contentType(MediaType.APPLICATION_JSON)
         .body(
             ResponseDto.<CreateJournalResponseDataDto>builder()
                 .requestId(requestId)
                 .path(path)
                 .timestamp(timestamp)
-                .status(status.value())
-                .success(error.isEmpty())
-                .data(data)
-                .error(error)
+                .status(HttpStatus.CREATED.value())
+                .success(true)
+                .data(Optional.of(data))
+                .error(Optional.empty())
                 .build());
   }
 
@@ -76,46 +52,22 @@ public class JournalController {
       @RequestAttribute String requestId,
       @RequestAttribute String path,
       @RequestAttribute OffsetDateTime timestamp,
-      @PathVariable String jid) {
-    Optional<GetJournalResponseDataDto> data = Optional.empty();
-    Optional<ResponseErrorDto> error = Optional.empty();
+      @PathVariable String jid)
+      throws JournalNotFoundException, Exception {
+    Journal journal = journalService.getJournalById(jid);
+    var data = GetJournalResponseDataDto.from(journal);
 
-    HttpStatus status;
-    MediaType contentType = MediaType.APPLICATION_JSON;
-
-    try {
-      Journal journal = journalService.getJournalById(jid);
-      data = Optional.of(GetJournalResponseDataDto.from(journal));
-
-      status = HttpStatus.OK;
-
-    } catch (JournalNotFoundException e) {
-      log.info(requestId, e.toString());
-      error = Optional.of(ResponseErrorDto.from(ErrorCode.JOURNAL_NOT_FOUND, e.toString(), path));
-
-      status = HttpStatus.NOT_FOUND;
-      contentType = MediaType.APPLICATION_PROBLEM_JSON;
-
-    } catch (Exception e) {
-      log.error(requestId, e.toString());
-      error =
-          Optional.of(ResponseErrorDto.from(ErrorCode.INTERNAL_SERVER_ERROR, e.toString(), path));
-
-      status = HttpStatus.INTERNAL_SERVER_ERROR;
-      contentType = MediaType.APPLICATION_PROBLEM_JSON;
-    }
-
-    return ResponseEntity.status(status)
-        .contentType(contentType)
+    return ResponseEntity.status(HttpStatus.OK)
+        .contentType(MediaType.APPLICATION_JSON)
         .body(
             ResponseDto.<GetJournalResponseDataDto>builder()
                 .requestId(requestId)
                 .path(path)
                 .timestamp(timestamp)
-                .status(status.value())
-                .success(error.isEmpty())
-                .data(data)
-                .error(error)
+                .status(HttpStatus.OK.value())
+                .success(true)
+                .data(Optional.of(data))
+                .error(Optional.empty())
                 .build());
   }
 
@@ -124,71 +76,21 @@ public class JournalController {
       @RequestAttribute String requestId,
       @RequestAttribute String path,
       @RequestAttribute OffsetDateTime timestamp,
-      @PathVariable String jid) {
-    Optional<ResponseErrorDto> error = Optional.empty();
+      @PathVariable String jid)
+      throws JournalNotFoundException, Exception {
+    journalService.deleteJournalById(jid);
 
-    HttpStatus status;
-    MediaType contentType = MediaType.APPLICATION_JSON;
-
-    try {
-      journalService.deleteJournalById(jid);
-
-      status = HttpStatus.OK;
-
-    } catch (JournalNotFoundException e) {
-      log.info(requestId, e.toString());
-      error = Optional.of(ResponseErrorDto.from(ErrorCode.JOURNAL_NOT_FOUND, e.toString(), path));
-
-      status = HttpStatus.NOT_FOUND;
-      contentType = MediaType.APPLICATION_PROBLEM_JSON;
-
-    } catch (Exception e) {
-      log.error(requestId, e.toString());
-      error =
-          Optional.of(ResponseErrorDto.from(ErrorCode.INTERNAL_SERVER_ERROR, e.toString(), path));
-
-      status = HttpStatus.INTERNAL_SERVER_ERROR;
-      contentType = MediaType.APPLICATION_PROBLEM_JSON;
-    }
-
-    return ResponseEntity.status(status)
-        .contentType(contentType)
+    return ResponseEntity.status(HttpStatus.OK)
+        .contentType(MediaType.APPLICATION_JSON)
         .body(
             ResponseDto.<EmptyResponseDataDto>builder()
                 .requestId(requestId)
                 .path(path)
                 .timestamp(timestamp)
-                .status(status.value())
-                .success(error.isEmpty())
-                .data(null)
-                .error(error)
-                .build());
-  }
-
-  @ExceptionHandler(value = MethodArgumentNotValidException.class)
-  public ResponseEntity<ResponseDto<EmptyResponseDataDto>> handleMethodArgumentNotValidException(
-      @RequestAttribute String requestId,
-      @RequestAttribute String path,
-      @RequestAttribute OffsetDateTime timestamp,
-      MethodArgumentNotValidException e) {
-    HttpStatus status = HttpStatus.BAD_REQUEST;
-    MediaType contentType = MediaType.APPLICATION_PROBLEM_JSON;
-
-    log.error(requestId, e.toString());
-    Optional<ResponseErrorDto> error =
-        Optional.of(ResponseErrorDto.from(ErrorCode.BAD_REQUEST, e.toString(), path));
-
-    return ResponseEntity.status(status)
-        .contentType(contentType)
-        .body(
-            ResponseDto.<EmptyResponseDataDto>builder()
-                .requestId(requestId)
-                .path(path)
-                .timestamp(timestamp)
-                .status(status.value())
-                .success(false)
-                .data(null)
-                .error(error)
+                .status(HttpStatus.OK.value())
+                .success(true)
+                .data(Optional.empty())
+                .error(Optional.empty())
                 .build());
   }
 }

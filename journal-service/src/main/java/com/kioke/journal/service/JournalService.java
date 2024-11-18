@@ -1,6 +1,6 @@
 package com.kioke.journal.service;
 
-import com.kioke.journal.dto.journal.CreateJournalDto;
+import com.kioke.journal.dto.data.journal.CreateJournalDto;
 import com.kioke.journal.exception.journal.JournalNotFoundException;
 import com.kioke.journal.model.Journal;
 import com.kioke.journal.model.Page;

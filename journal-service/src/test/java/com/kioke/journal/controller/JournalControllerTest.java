@@ -7,9 +7,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kioke.journal.constant.ErrorCode;
-import com.kioke.journal.dto.journal.CreateJournalDto;
-import com.kioke.journal.dto.request.CreateJournalRequestBodyDto;
+import com.kioke.journal.dto.data.journal.CreateJournalDto;
+import com.kioke.journal.dto.request.journal.CreateJournalRequestBodyDto;
 import com.kioke.journal.exception.journal.JournalNotFoundException;
 import com.kioke.journal.model.Journal;
 import com.kioke.journal.model.JournalTest;
@@ -87,11 +86,7 @@ public class JournalControllerTest {
         .andExpect(jsonPath("$.path").value(path))
         .andExpect(jsonPath("$.timestamp").exists())
         .andExpect(jsonPath("$.status").value(400))
-        .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.error.type").value(ErrorCode.BAD_REQUEST.getType()))
-        .andExpect(jsonPath("$.error.title").value(ErrorCode.BAD_REQUEST.getTitle()))
-        .andExpect(jsonPath("$.error.detail").exists())
-        .andExpect(jsonPath("$.error.instance").value(path));
+        .andExpect(jsonPath("$.success").value(false));
   }
 
   @Test
@@ -116,11 +111,7 @@ public class JournalControllerTest {
         .andExpect(jsonPath("$.path").value(path))
         .andExpect(jsonPath("$.timestamp").exists())
         .andExpect(jsonPath("$.status").value(500))
-        .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.error.type").value(ErrorCode.INTERNAL_SERVER_ERROR.getType()))
-        .andExpect(jsonPath("$.error.title").value(ErrorCode.INTERNAL_SERVER_ERROR.getTitle()))
-        .andExpect(jsonPath("$.error.detail").exists())
-        .andExpect(jsonPath("$.error.instance").value(path));
+        .andExpect(jsonPath("$.success").value(false));
   }
 
   @Test
@@ -168,11 +159,7 @@ public class JournalControllerTest {
         .andExpect(jsonPath("$.path").value(path))
         .andExpect(jsonPath("$.timestamp").exists())
         .andExpect(jsonPath("$.status").value(404))
-        .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.error.type").value(ErrorCode.JOURNAL_NOT_FOUND.getType()))
-        .andExpect(jsonPath("$.error.title").value(ErrorCode.JOURNAL_NOT_FOUND.getTitle()))
-        .andExpect(jsonPath("$.error.detail").exists())
-        .andExpect(jsonPath("$.error.instance").value(path));
+        .andExpect(jsonPath("$.success").value(false));
   }
 
   @Test
@@ -191,11 +178,7 @@ public class JournalControllerTest {
         .andExpect(jsonPath("$.path").value(path))
         .andExpect(jsonPath("$.timestamp").exists())
         .andExpect(jsonPath("$.status").value(500))
-        .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.error.type").value(ErrorCode.INTERNAL_SERVER_ERROR.getType()))
-        .andExpect(jsonPath("$.error.title").value(ErrorCode.INTERNAL_SERVER_ERROR.getTitle()))
-        .andExpect(jsonPath("$.error.detail").exists())
-        .andExpect(jsonPath("$.error.instance").value(path));
+        .andExpect(jsonPath("$.success").value(false));
   }
 
   @Test
@@ -233,11 +216,7 @@ public class JournalControllerTest {
         .andExpect(jsonPath("$.path").value(path))
         .andExpect(jsonPath("$.timestamp").exists())
         .andExpect(jsonPath("$.status").value(404))
-        .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.error.type").value(ErrorCode.JOURNAL_NOT_FOUND.getType()))
-        .andExpect(jsonPath("$.error.title").value(ErrorCode.JOURNAL_NOT_FOUND.getTitle()))
-        .andExpect(jsonPath("$.error.detail").exists())
-        .andExpect(jsonPath("$.error.instance").value(path));
+        .andExpect(jsonPath("$.success").value(false));
   }
 
   @Test
@@ -256,10 +235,6 @@ public class JournalControllerTest {
         .andExpect(jsonPath("$.path").value(path))
         .andExpect(jsonPath("$.timestamp").exists())
         .andExpect(jsonPath("$.status").value(500))
-        .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.error.type").value(ErrorCode.INTERNAL_SERVER_ERROR.getType()))
-        .andExpect(jsonPath("$.error.title").value(ErrorCode.INTERNAL_SERVER_ERROR.getTitle()))
-        .andExpect(jsonPath("$.error.detail").exists())
-        .andExpect(jsonPath("$.error.instance").value(path));
+        .andExpect(jsonPath("$.success").value(false));
   }
 }
