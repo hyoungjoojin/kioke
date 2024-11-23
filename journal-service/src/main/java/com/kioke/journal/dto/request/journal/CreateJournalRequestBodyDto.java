@@ -1,4 +1,4 @@
-package com.kioke.journal.dto.request;
+package com.kioke.journal.dto.request.journal;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;

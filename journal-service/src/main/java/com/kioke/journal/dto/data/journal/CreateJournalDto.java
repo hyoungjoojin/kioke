@@ -1,6 +1,6 @@
-package com.kioke.journal.dto.journal;
+package com.kioke.journal.dto.data.journal;
 
-import com.kioke.journal.dto.request.CreateJournalRequestBodyDto;
+import com.kioke.journal.dto.request.journal.CreateJournalRequestBodyDto;
 import lombok.Builder;
 import lombok.Data;
 
