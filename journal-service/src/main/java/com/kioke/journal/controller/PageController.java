@@ -5,11 +5,13 @@ import com.kioke.journal.dto.request.page.*;
 import com.kioke.journal.dto.response.ResponseDto;
 import com.kioke.journal.dto.response.data.page.*;
 import com.kioke.journal.exception.journal.JournalNotFoundException;
+import com.kioke.journal.model.Page;
 import com.kioke.journal.service.PageService;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,14 +34,20 @@ public class PageController {
       @PathVariable String jid,
       @RequestBody CreatePageRequestBodyDto requestBody)
       throws JournalNotFoundException, Exception {
+    Page page = pageService.createPage(jid, CreatePageDto.from(requestBody));
+    CreatePageResponseDataDto data = CreatePageResponseDataDto.from(page);
 
-    pageService.createPage(jid, CreatePageDto.from(requestBody));
-
-    Optional<CreatePageResponseDataDto> data =
-        Optional.of(CreatePageResponseDataDto.builder().date(requestBody.getDate()).build());
-
-    return ResponseEntity.status(200)
+    return ResponseEntity.status(HttpStatus.CREATED)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(ResponseDto.<CreatePageResponseDataDto>builder().data(data).build());
+        .body(
+            ResponseDto.<CreatePageResponseDataDto>builder()
+                .requestId(requestId)
+                .path(path)
+                .timestamp(timestamp)
+                .status(HttpStatus.CREATED.value())
+                .success(true)
+                .data(Optional.of(data))
+                .error(Optional.empty())
+                .build());
   }
 }

@@ -31,7 +31,7 @@ public class JournalController {
       @RequestBody @Valid CreateJournalRequestBodyDto requestBody)
       throws Exception {
     Journal journal = journalService.createJournal(CreateJournalDto.from(requestBody));
-    var data = CreateJournalResponseDataDto.from(journal);
+    CreateJournalResponseDataDto data = CreateJournalResponseDataDto.from(journal);
 
     return ResponseEntity.status(HttpStatus.CREATED)
         .contentType(MediaType.APPLICATION_JSON)
@@ -55,7 +55,7 @@ public class JournalController {
       @PathVariable String jid)
       throws JournalNotFoundException, Exception {
     Journal journal = journalService.getJournalById(jid);
-    var data = GetJournalResponseDataDto.from(journal);
+    GetJournalResponseDataDto data = GetJournalResponseDataDto.from(journal);
 
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)

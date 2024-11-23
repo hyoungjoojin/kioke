@@ -21,6 +21,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Page {
   @Id private String id;
 
+  @NotNull private String jid;
+
   @NotNull private String template;
 
   @NotNull private LocalDate date;

@@ -2,9 +2,11 @@ package com.kioke.journal.service;
 
 import com.kioke.journal.dto.data.page.CreatePageDto;
 import com.kioke.journal.exception.journal.JournalNotFoundException;
+import com.kioke.journal.model.Block;
 import com.kioke.journal.model.Journal;
 import com.kioke.journal.model.Page;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -20,7 +22,13 @@ public class PageService {
     LocalDate date = createPageDto.getDate().orElse(LocalDate.now());
     String template = createPageDto.getTemplate().orElse(journal.getTemplate());
 
-    Page pageToSave = Page.builder().date(date).template(template).build();
+    Page pageToSave =
+        Page.builder()
+            .jid(jid)
+            .template(template)
+            .date(date)
+            .blocks(new ArrayList<Block>())
+            .build();
     journal.getPages().add(pageToSave);
 
     return pageToSave;
