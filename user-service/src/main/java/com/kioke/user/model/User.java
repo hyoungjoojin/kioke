@@ -10,6 +10,7 @@ import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -22,6 +23,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class User implements UserDetails {
   @Id
   @UuidGenerator
@@ -48,7 +50,7 @@ public class User implements UserDetails {
 
   @Override
   public String getUsername() {
-    return email;
+    return id;
   }
 
   @Override
