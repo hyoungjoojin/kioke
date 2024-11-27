@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 @Builder
 public class CreateJournalDto {
+  private final String uid;
   private final String title;
   private final String template;
 
