@@ -28,9 +28,17 @@ public class JournalController {
       @RequestAttribute String requestId,
       @RequestAttribute String path,
       @RequestAttribute OffsetDateTime timestamp,
+      @RequestAttribute String uid,
       @RequestBody @Valid CreateJournalRequestBodyDto requestBody)
       throws Exception {
-    Journal journal = journalService.createJournal(CreateJournalDto.from(requestBody));
+    Journal journal =
+        journalService.createJournal(
+            CreateJournalDto.builder()
+                .uid(uid)
+                .title(requestBody.getTitle())
+                .template(requestBody.getTemplate())
+                .build());
+
     CreateJournalResponseDataDto data = CreateJournalResponseDataDto.from(journal);
 
     return ResponseEntity.status(HttpStatus.CREATED)
