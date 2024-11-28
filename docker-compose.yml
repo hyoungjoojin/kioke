@@ -73,6 +73,10 @@ services:
       - SECURITY_JWT_KEY=$JWT_TOKEN_SECRET_KEY
       - SECURITY_JWT_EXPIRATION=3600000
       - SERVER_PORT=$USER_SERVICE_PORT
+      - SPRING_RABBITMQ_HOST=message-broker
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=user
+      - SPRING_RABBITMQ_PASSWORD=password
     ports:
       - $USER_SERVICE_PORT:$USER_SERVICE_PORT
     depends_on:
@@ -80,6 +84,7 @@ services:
     networks:
       - user-service-network
       - service-discovery-network
+      - message-broker-network
 
   user-service-database:
     container_name: user-service-database
@@ -95,6 +100,16 @@ services:
       - user-service-data:/var/lib/postgresql/data
     networks:
       - user-service-network
+
+  message-broker:
+    container_name: message-broker
+    restart: unless-stopped
+    image: rabbitmq:4.0.4-alpine
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
+    networks:
+      - message-broker-network
 
   journal-service:
     container_name: journal-service
@@ -112,6 +127,11 @@ services:
       - SPRING_DATA_MONGODB_USERNAME=$JOURNAL_SERVICE_DATABASE_USER_USERNAME
       - SPRING_DATA_MONGODB_PASSWORD=$JOURNAL_SERVICE_DATABASE_USER_PASSWORD
       - SERVER_PORT=$JOURNAL_SERVICE_PORT
+      - SPRING_RABBITMQ_HOST=message-broker
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=user
+      - SPRING_RABBITMQ_PASSWORD=password
+      - SECURITY_JWT_KEY=$JWT_TOKEN_SECRET_KEY
     ports:
       - $JOURNAL_SERVICE_PORT:$JOURNAL_SERVICE_PORT
     depends_on:
@@ -119,6 +139,7 @@ services:
     networks:
       - journal-service-network
       - service-discovery-network
+      - message-broker-network
 
   journal-service-database:
     container_name: journal-service-database
@@ -142,11 +163,13 @@ volumes:
   journal-service-data:
 
 networks:
-  service-discovery-network:
-    driver: bridge
   user-service-network:
     driver: bridge
   auth-service-network:
     driver: bridge
   journal-service-network:
+    driver: bridge
+  service-discovery-network:
+    driver: bridge
+  message-broker-network:
     driver: bridge

@@ -1,6 +1,7 @@
 package com.kioke.journal.service;
 
 import com.kioke.journal.dto.data.journal.CreateJournalDto;
+import com.kioke.journal.dto.message.CreateJournalMessageDto;
 import com.kioke.journal.exception.journal.JournalNotFoundException;
 import com.kioke.journal.model.Journal;
 import com.kioke.journal.model.Page;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class JournalService {
   @Autowired @Lazy private JournalRepository journalRepository;
+  @Autowired @Lazy private MessageProducerService messageProducerService;
 
   public Journal createJournal(CreateJournalDto createJournalDto) {
     String title = createJournalDto.getTitle(), template = createJournalDto.getTemplate();
@@ -21,6 +23,13 @@ public class JournalService {
         Journal.builder().title(title).template(template).pages(new ArrayList<Page>()).build();
 
     Journal savedJournal = journalRepository.save(journalToSave);
+
+    messageProducerService.createJournal(
+        CreateJournalMessageDto.builder()
+            .uid(createJournalDto.getUid())
+            .jid(savedJournal.getId())
+            .build());
+
     return savedJournal;
   }
 
