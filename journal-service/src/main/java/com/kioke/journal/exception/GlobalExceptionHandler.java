@@ -28,6 +28,7 @@ public class GlobalExceptionHandler {
     MethodArgumentNotValidException.class,
     JournalNotFoundException.class,
     DateTimeParseException.class,
+    ServiceNotFoundException.class,
     Exception.class
   })
   public ResponseEntity<ResponseDto<EmptyResponseDataDto>> handleException(

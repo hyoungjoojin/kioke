@@ -14,22 +14,28 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Table
+@Table(name = "ACL_ENTRY_TABLE")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class AclEntry {
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  @GeneratedValue(strategy = GenerationType.UUID)
   private String id;
 
   @ManyToOne
-  @JoinColumn(name = "user", referencedColumnName = "uid")
+  @JoinColumn(name = "uid")
   private User user;
 
   @ManyToOne
-  @JoinColumn(name = "journal", referencedColumnName = "jid")
+  @JoinColumn(name = "jid")
   private Journal journal;
 
   @ElementCollection(fetch = FetchType.EAGER)
