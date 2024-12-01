@@ -19,13 +19,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
-@RequestMapping("")
 public class AclController {
   @Autowired @Lazy AclService aclService;
   @Autowired @Lazy JournalService journalService;
@@ -34,8 +32,8 @@ public class AclController {
   @GetMapping
   public ResponseEntity<GetJournalPermissionsResponseBodyDto> getJournalPermissions(
       @Valid @RequestBody GetJournalPermissionsRequestBodyDto requestBody) {
-    User user = userService.getUserById(requestBody.getUid());
-    Journal journal = journalService.getJournalById(requestBody.getJid());
+    User user = userService.getUser(requestBody.getUid());
+    Journal journal = journalService.getJournal(requestBody.getJid());
 
     List<Permission> permissions = aclService.getJournalPermissions(user, journal);
 
@@ -47,8 +45,8 @@ public class AclController {
   @ResponseStatus(HttpStatus.CREATED)
   public void createJournal(@Valid @RequestBody CreateJournalRequestBodyDto requestBody)
       throws Exception {
-    User user = userService.getUserById(requestBody.getUid());
-    Journal journal = journalService.getJournalById(requestBody.getJid());
-    aclService.createAclEntryForJournal(user, journal);
+    User user = userService.getOrCreateUser(requestBody.getUid());
+    Journal journal = journalService.getOrCreateJournal(requestBody.getJid());
+    aclService.createAclEntry(user, journal);
   }
 }

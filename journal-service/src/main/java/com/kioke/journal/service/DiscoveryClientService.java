@@ -35,7 +35,7 @@ public class DiscoveryClientService {
   private String getServiceUri(KiokeServices service) throws ServiceNotFoundException {
     List<ServiceInstance> instances = discoveryClient.getInstances(service.getServiceId());
     if (instances.size() == 0) {
-      throw new ServiceNotFoundException(service.getServiceId());
+      throw new ServiceNotFoundException(service);
     }
 
     int index = getRandomIndex(instances.size());
