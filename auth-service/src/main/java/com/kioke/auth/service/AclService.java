@@ -15,23 +15,19 @@ import org.springframework.stereotype.Service;
 public class AclService {
   @Autowired @Lazy AclRepository aclRepository;
 
-  public void createAclEntryForJournal(User user, Journal journal) {
-    Optional<AclEntry> optionalAclEntry = aclRepository.findByUserAndJournal(user, journal);
+  public void createAclEntry(User user, Journal journal) {
+    AclEntry aclEntry =
+        aclRepository
+            .findByUserAndJournal(user, journal)
+            .or(
+                () -> {
+                  AclEntry newAclEntry = AclEntry.builder().journal(journal).user(user).build();
+                  return Optional.of(newAclEntry);
+                })
+            .get();
 
     Permission[] permissions = {Permission.READ, Permission.WRITE};
-
-    AclEntry aclEntry;
-    if (optionalAclEntry.isPresent()) {
-      aclEntry = optionalAclEntry.get();
-      aclEntry.setPermissions(Arrays.asList(permissions));
-    } else {
-      aclEntry =
-          AclEntry.builder()
-              .journal(journal)
-              .user(user)
-              .permissions(Arrays.asList(permissions))
-              .build();
-    }
+    aclEntry.setPermissions(Arrays.asList(permissions));
 
     aclRepository.save(aclEntry);
   }

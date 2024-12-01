@@ -11,7 +11,11 @@ import org.springframework.stereotype.Service;
 public class JournalService {
   @Autowired @Lazy JournalRepository journalRepository;
 
-  public Journal getJournalById(String jid) {
+  public Journal getJournal(String jid) throws NoSuchElementException {
+    return journalRepository.findById(jid).get();
+  }
+
+  public Journal getOrCreateJournal(String jid) {
     try {
       return journalRepository.findById(jid).get();
     } catch (NoSuchElementException e) {

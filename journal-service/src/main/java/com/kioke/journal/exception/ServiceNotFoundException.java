@@ -1,14 +1,16 @@
 package com.kioke.journal.exception;
 
-public class ServiceNotFoundException extends Exception {
-  private String serviceId;
+import com.kioke.journal.constant.KiokeServices;
 
-  public ServiceNotFoundException(String serviceId) {
-    this.serviceId = serviceId;
+public class ServiceNotFoundException extends Exception {
+  private KiokeServices service;
+
+  public ServiceNotFoundException(KiokeServices service) {
+    this.service = service;
   }
 
   @Override
   public String toString() {
-    return "Service of ID " + serviceId + " could not be found.";
+    return "Service [" + service.getServiceId() + "] could not be found.";
   }
 }

@@ -11,7 +11,11 @@ import org.springframework.stereotype.Service;
 public class UserService {
   @Autowired @Lazy UserRepository userRepository;
 
-  public User getUserById(String uid) {
+  public User getUser(String uid) throws NoSuchElementException {
+    return userRepository.findById(uid).get();
+  }
+
+  public User getOrCreateUser(String uid) {
     try {
       return userRepository.findById(uid).get();
     } catch (NoSuchElementException e) {

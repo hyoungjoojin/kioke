@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientResponseException;
 
 @Service
 public class JournalService {
@@ -42,9 +43,13 @@ public class JournalService {
                   .build())
           .retrieve();
 
-    } catch (Exception e) {
+    } catch (ServiceNotFoundException e) {
       journalRepository.deleteById(savedJournal.getId());
-      throw new ServiceFailedException(KiokeServices.AUTH_SERVICE.getServiceId(), e.toString());
+      throw e;
+
+    } catch (RestClientResponseException e) {
+      journalRepository.deleteById(savedJournal.getId());
+      throw new ServiceFailedException(KiokeServices.AUTH_SERVICE, e.getMessage());
     }
 
     messageProducerService.createJournal(

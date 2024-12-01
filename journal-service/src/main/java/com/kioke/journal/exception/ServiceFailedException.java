@@ -1,16 +1,18 @@
 package com.kioke.journal.exception;
 
+import com.kioke.journal.constant.KiokeServices;
+
 public class ServiceFailedException extends Exception {
-  private String serviceId;
+  private KiokeServices service;
   private String details;
 
-  public ServiceFailedException(String serviceId, String details) {
-    this.serviceId = serviceId;
+  public ServiceFailedException(KiokeServices service, String details) {
+    this.service = service;
     this.details = details;
   }
 
   @Override
   public String toString() {
-    return "Service of ID " + serviceId + " has failed due to exception " + details;
+    return "Service [" + service.getServiceId() + "] has failed due to exception " + details;
   }
 }
