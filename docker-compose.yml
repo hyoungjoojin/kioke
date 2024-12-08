@@ -14,6 +14,22 @@ services:
     networks:
       - service-discovery-network
 
+  api-gateway:
+    container_name: api-gateway
+    restart: unless-stopped
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    env_file:
+      - ./.env
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-discovery:$SERVICE_DISCOVERY_PORT/eureka
+      - SERVER_PORT=$API_GATEWAY_PORT
+    ports:
+      - $API_GATEWAY_PORT:$API_GATEWAY_PORT
+    networks:
+      - service-discovery-network
+
   auth-service:
     container_name: auth-service
     restart: unless-stopped
