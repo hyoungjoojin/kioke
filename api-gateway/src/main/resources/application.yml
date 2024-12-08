@@ -1,10 +1,16 @@
 spring:
   application:
-    name: auth
+    name: gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
 
 eureka:
   instance:
-    appname: auth
+    appname: gateway
     instance-id: ${spring.cloud.client.hostname}:${spring.application.name}:${spring.application.instance_id:${server.port}}
   client:
     register-with-eureka: true
