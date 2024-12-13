@@ -1,20 +1,19 @@
-package com.kioke.user.configuration;
+package com.kioke.auth.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.server.SecurityWebFilterChain;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebFluxSecurity
 public class SecurityConfiguration {
   private static final Integer ARGON2_PASSWORD_ENCODER_SALT_LENGTH = 16;
   private static final Integer ARGON2_PASSWORD_ENCODER_HASH_LENGTH = 32;
@@ -23,22 +22,16 @@ public class SecurityConfiguration {
   private static final Integer ARGON2_PASSWORD_ENCODER_NUM_ITERATIONS = 2;
 
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-    return httpSecurity
-        .csrf(
-            csrf -> {
-              csrf.disable();
-            })
-        .sessionManagement(
-            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authorizeHttpRequests(
-            requests -> {
-              requests
-                  .requestMatchers("/auth/login", "/auth/register")
-                  .permitAll()
-                  .anyRequest()
-                  .authenticated();
-            })
+  public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) throws Exception {
+    return http.csrf(csrf -> csrf.disable())
+        .formLogin(formLogin -> formLogin.disable())
+        .authorizeExchange(
+            exchange ->
+                exchange
+                    .pathMatchers("/auth/login", "/auth/register")
+                    .permitAll()
+                    .anyExchange()
+                    .authenticated())
         .build();
   }
 

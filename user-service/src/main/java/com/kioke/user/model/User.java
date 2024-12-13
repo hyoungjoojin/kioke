@@ -7,16 +7,11 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import java.time.OffsetDateTime;
-import java.util.Collection;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UuidGenerator;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name = "USER_TABLE")
@@ -24,17 +19,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class User implements UserDetails {
+public class User  {
   @Id
-  @UuidGenerator
   @Column(unique = true, nullable = false)
-  private String id;
+  private String uid;
 
   @Column(unique = true)
   private String email;
-
-  @Column(nullable = false)
-  private String password;
 
   private String firstName;
 
@@ -47,14 +38,4 @@ public class User implements UserDetails {
   @CreationTimestamp
   @Temporal(TemporalType.TIMESTAMP)
   private OffsetDateTime lastUpdated;
-
-  @Override
-  public String getUsername() {
-    return id;
-  }
-
-  @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
-    return List.of();
-  }
 }
