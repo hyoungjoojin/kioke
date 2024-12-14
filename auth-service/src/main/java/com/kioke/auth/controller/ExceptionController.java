@@ -1,4 +1,4 @@
-package com.kioke.auth.exception;
+package com.kioke.auth.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 @Slf4j
-public class GlobalExceptionHandler {
+public class ExceptionController {
 
   @ExceptionHandler({Exception.class})
   public ResponseEntity<String> handleException(Exception e) {
-    HttpStatus status = GlobalExceptionHandler.getStatusFromException(e);
+    HttpStatus status = ExceptionController.getStatusFromException(e);
     log.error(e.toString());
     return ResponseEntity.status(status).body(e.toString());
   }

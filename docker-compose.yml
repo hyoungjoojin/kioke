@@ -14,6 +14,22 @@ services:
     networks:
       - service-discovery-network
 
+  api-gateway:
+    container_name: api-gateway
+    restart: unless-stopped
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    env_file:
+      - ./.env
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-discovery:$SERVICE_DISCOVERY_PORT/eureka
+      - SERVER_PORT=$API_GATEWAY_PORT
+    ports:
+      - $API_GATEWAY_PORT:$API_GATEWAY_PORT
+    networks:
+      - service-discovery-network
+
   auth-service:
     container_name: auth-service
     restart: unless-stopped
@@ -31,6 +47,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=$AUTH_SERVICE_DATABASE_USER_PASSWORD
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SERVER_PORT=$AUTH_SERVICE_PORT
+      - SECURITY_JWT_EXPIRATION=3600000
     ports:
       - $AUTH_SERVICE_PORT:$AUTH_SERVICE_PORT
     depends_on:
@@ -70,8 +87,6 @@ services:
       - SPRING_DATASOURCE_USERNAME=$USER_SERVICE_DATABASE_USER_USERNAME
       - SPRING_DATASOURCE_PASSWORD=$USER_SERVICE_DATABASE_USER_PASSWORD
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - SECURITY_JWT_KEY=$JWT_TOKEN_SECRET_KEY
-      - SECURITY_JWT_EXPIRATION=3600000
       - SERVER_PORT=$USER_SERVICE_PORT
       - SPRING_RABBITMQ_HOST=message-broker
       - SPRING_RABBITMQ_PORT=5672
@@ -131,7 +146,6 @@ services:
       - SPRING_RABBITMQ_PORT=5672
       - SPRING_RABBITMQ_USERNAME=user
       - SPRING_RABBITMQ_PASSWORD=password
-      - SECURITY_JWT_KEY=$JWT_TOKEN_SECRET_KEY
     ports:
       - $JOURNAL_SERVICE_PORT:$JOURNAL_SERVICE_PORT
     depends_on:

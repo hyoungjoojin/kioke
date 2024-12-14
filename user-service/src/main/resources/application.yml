@@ -1,6 +1,6 @@
 spring:
   application:
-    name: Kioke User Service
+    name: user
 
 rabbitmq:
   queue:
@@ -11,9 +11,11 @@ rabbitmq:
     key: journals.created
 
 eureka:
+  instance:
+    appname: user
+    instance-id: ${spring.cloud.client.hostname}:${spring.application.name}:${spring.application.instance_id:${server.port}}
   client:
     register-with-eureka: true
     fetch-registry: true
     service-url:
       defaultZone: http://localhost:8761/eureka
-
