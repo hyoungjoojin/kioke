@@ -1,4 +1,4 @@
-package com.kioke.auth.exception;
+package com.kioke.auth.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

@@ -9,12 +9,10 @@ import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 public class DiscoveryClientService {
   @Autowired @Lazy private DiscoveryClient discoveryClient;
-  @Autowired @Lazy private WebClient.Builder webClientBuilder;
 
   private Random random = new Random();
 

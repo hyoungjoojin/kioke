@@ -49,8 +49,7 @@ public class KiokeApiGatewayApplication {
                     .filters(
                         f ->
                             f.filter(
-                                tokenAuthenticationFilter.apply(
-                                    new TokenAuthenticationFilterConfig())))
+                                tokenAuthenticationFilter.apply(tokenAuthenticationFilterConfig)))
                     .uri("lb://user"))
         .build();
   }
