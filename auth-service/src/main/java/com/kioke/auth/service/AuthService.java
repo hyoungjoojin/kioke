@@ -5,6 +5,7 @@ import com.kioke.auth.dto.external.user.CreateUserRequestBodyDto;
 import com.kioke.auth.exception.ServiceNotFoundException;
 import com.kioke.auth.exception.UserAlreadyExistsException;
 import com.kioke.auth.exception.UserDoesNotExistException;
+import com.kioke.auth.exception.UserDoesNotExistException.UserIdentifierType;
 import com.kioke.auth.model.User;
 import com.kioke.auth.repository.UserRepository;
 import java.util.UUID;
@@ -70,7 +71,7 @@ public class AuthService {
     User user =
         userRepository
             .findUserByEmail(email)
-            .orElseThrow(() -> new UserDoesNotExistException(email));
+            .orElseThrow(() -> new UserDoesNotExistException(UserIdentifierType.EMAIL, email));
 
     authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(user.getUid(), password));

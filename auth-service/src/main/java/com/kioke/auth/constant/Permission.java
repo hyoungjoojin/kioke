@@ -1,6 +1,8 @@
 package com.kioke.auth.constant;
 
 public enum Permission {
+  CREATE,
   READ,
-  WRITE
+  UPDATE,
+  DELETE,
 }

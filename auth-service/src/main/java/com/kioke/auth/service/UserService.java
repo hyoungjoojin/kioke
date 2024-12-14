@@ -1,9 +1,9 @@
 package com.kioke.auth.service;
 
 import com.kioke.auth.exception.UserDoesNotExistException;
+import com.kioke.auth.exception.UserDoesNotExistException.UserIdentifierType;
 import com.kioke.auth.model.User;
 import com.kioke.auth.repository.UserRepository;
-import java.util.NoSuchElementException;
 import org.hibernate.validator.internal.util.stereotypes.Lazy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,21 +25,15 @@ public class UserService implements UserDetailsService {
             });
   }
 
+  public User getUserById(String uid) throws UserDoesNotExistException {
+    return userRepository
+        .findById(uid)
+        .orElseThrow(() -> new UserDoesNotExistException(UserIdentifierType.UID, uid));
+  }
+
   public User getUserByEmail(String email) throws UserDoesNotExistException {
     return userRepository
         .findUserByEmail(email)
-        .orElseThrow(() -> new UserDoesNotExistException(email));
-  }
-
-  public User getUser(String uid) throws NoSuchElementException {
-    return userRepository.findById(uid).get();
-  }
-
-  public User getOrCreateUser(String uid) {
-    try {
-      return userRepository.findById(uid).get();
-    } catch (NoSuchElementException e) {
-      return userRepository.save(User.builder().uid(uid).build());
-    }
+        .orElseThrow(() -> new UserDoesNotExistException(UserIdentifierType.EMAIL, email));
   }
 }

@@ -32,7 +32,7 @@ public class AclService {
             .findByUserAndJournal(user, journal)
             .or(
                 () -> {
-                  AclEntry newAclEntry = AclEntry.builder().journal(journal).user(user).build();
+                  AclEntry newAclEntry = AclEntry.builder().user(user).journal(journal).build();
                   return Optional.of(newAclEntry);
                 })
             .get();
