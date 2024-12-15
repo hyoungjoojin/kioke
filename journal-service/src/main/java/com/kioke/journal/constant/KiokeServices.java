@@ -1,9 +1,9 @@
 package com.kioke.journal.constant;
 
 public enum KiokeServices {
-  AUTH_SERVICE("Kioke Auth Service"),
-  USER_SERVICE("Kioke User Service"),
-  JOURNAL_SERVICE("Kioke Journal Service");
+  AUTH_SERVICE("auth"),
+  USER_SERVICE("user"),
+  JOURNAL_SERVICE("journal");
 
   String serviceId;
 

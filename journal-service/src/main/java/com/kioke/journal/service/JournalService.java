@@ -2,7 +2,6 @@ package com.kioke.journal.service;
 
 import com.kioke.journal.constant.KiokeServices;
 import com.kioke.journal.dto.data.journal.CreateJournalDto;
-import com.kioke.journal.dto.external.auth.AuthServiceCreateJournalRequestBodyDto;
 import com.kioke.journal.dto.message.CreateJournalMessageDto;
 import com.kioke.journal.exception.ServiceFailedException;
 import com.kioke.journal.exception.ServiceNotFoundException;
@@ -13,8 +12,8 @@ import com.kioke.journal.repository.JournalRepository;
 import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientResponseException;
 
 @Service
@@ -22,6 +21,8 @@ public class JournalService {
   @Autowired @Lazy private JournalRepository journalRepository;
   @Autowired @Lazy private MessageProducerService messageProducerService;
   @Autowired @Lazy private DiscoveryClientService discoveryClientService;
+
+  private RestClient restClient = RestClient.create();
 
   public Journal createJournal(CreateJournalDto createJournalDto)
       throws ServiceNotFoundException, ServiceFailedException {
@@ -33,14 +34,16 @@ public class JournalService {
     Journal savedJournal = journalRepository.save(journalToSave);
 
     try {
-      discoveryClientService
-          .getRestClient(KiokeServices.AUTH_SERVICE, "")
-          .method(HttpMethod.POST)
-          .body(
-              AuthServiceCreateJournalRequestBodyDto.builder()
-                  .uid(createJournalDto.getUid())
-                  .jid(savedJournal.getId())
-                  .build())
+      String authServiceUri = discoveryClientService.getServiceUri(KiokeServices.AUTH_SERVICE);
+
+      restClient
+          .post()
+          .uri(
+              authServiceUri
+                  + "/permissions/"
+                  + createJournalDto.getUid()
+                  + "?jid="
+                  + savedJournal.getId())
           .retrieve();
 
     } catch (ServiceNotFoundException e) {

@@ -53,15 +53,19 @@ public class TokenAuthenticationFilter
 
       try {
         String uid = jwtService.extractSubject(token);
-        exchange.mutate().request(r -> r.headers(headers -> headers.set("Kioke-Uid", uid)));
+        exchange =
+            exchange
+                .mutate()
+                .request(r -> r.headers(headers -> headers.set("Kioke-Uid", uid)))
+                .build();
+
+        return chain.filter(exchange);
 
       } catch (Exception e) {
         throw new ResponseStatusException(
             HttpStatus.INTERNAL_SERVER_ERROR,
             "User ID could not be found inside the authorization token.");
       }
-
-      return chain.filter(exchange);
     };
   }
 
