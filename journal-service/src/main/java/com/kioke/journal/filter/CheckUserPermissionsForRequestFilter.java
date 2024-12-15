@@ -16,9 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.server.ResponseStatusException;
 
 @Component
 @Order(4)
@@ -34,11 +36,17 @@ public class CheckUserPermissionsForRequestFilter extends OncePerRequestFilter {
       throws ServletException, IOException {
     String uid = request.getHeader("Kioke-Uid");
     if (uid == null) {
-      throw new ServletException("User is not authorized");
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized.");
     }
 
+    request.setAttribute("uid", uid);
+
     JournalServiceRoute journalServiceRoute =
-        JournalServiceRoute.getJournalServiceRouteFromRequest(request).orElseThrow();
+        JournalServiceRoute.getJournalServiceRouteFromRequest(request)
+            .orElseThrow(
+                () ->
+                    new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "Given route is not accessible."));
 
     String jid = journalServiceRoute.extractJournalId(request.getRequestURI());
 
@@ -48,7 +56,7 @@ public class CheckUserPermissionsForRequestFilter extends OncePerRequestFilter {
       List<Permission> permissions =
           restClient
               .get()
-              .uri(authServiceUri + "/permissions/" + uid + (jid == null ? "" : "?jid=" + jid))
+              .uri(authServiceUri + "/permissions/" + uid + (jid.isBlank() ? "" : ("?jid=" + jid)))
               .retrieve()
               .body(new ParameterizedTypeReference<GetPermissionsResponseBodyDto>() {})
               .intoPermissionsList();

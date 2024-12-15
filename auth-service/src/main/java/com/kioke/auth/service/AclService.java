@@ -37,7 +37,7 @@ public class AclService {
                 })
             .get();
 
-    Permission[] permissions = {Permission.READ, Permission.WRITE};
+    Permission[] permissions = {Permission.READ, Permission.UPDATE, Permission.DELETE};
     aclEntry.setPermissions(Arrays.asList(permissions));
 
     aclRepository.save(aclEntry);

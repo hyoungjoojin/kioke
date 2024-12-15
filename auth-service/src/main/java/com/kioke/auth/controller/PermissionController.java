@@ -20,22 +20,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@RequestMapping("/permissions")
+@RequestMapping("/permissions/{uid}")
 public class PermissionController {
   @Autowired @Lazy AclService aclService;
   @Autowired @Lazy JournalService journalService;
   @Autowired @Lazy UserService userService;
 
-  @GetMapping("/{uid}")
+  @GetMapping
   public ResponseEntity<GetPermissionsResponseBodyDto> getJournalPermissions(
-      @PathVariable String uid, @RequestParam String jid) throws UserDoesNotExistException {
+      @PathVariable String uid, @RequestParam(required = false) String jid)
+      throws UserDoesNotExistException {
     User user = userService.getUserById(uid);
 
     if (jid == null) {
-      // Todo: Depending on future payment models, a limit on the number of journals will exist.
-      return ResponseEntity.status(HttpStatus.OK).body(GetPermissionsResponseBodyDto.privileged());
+      GetPermissionsResponseBodyDto responseBodyDto = new GetPermissionsResponseBodyDto();
+      responseBodyDto.setCanCreate(true);
+
+      return ResponseEntity.status(HttpStatus.OK).body(responseBodyDto);
     }
 
     Journal journal = journalService.getJournal(jid);
@@ -46,9 +50,13 @@ public class PermissionController {
         .body(new GetPermissionsResponseBodyDto(permissions));
   }
 
-  @PostMapping("/{uid}")
+  @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public void createJournal(@PathVariable String uid, @RequestParam String jid) throws Exception {
+    if (jid == null) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+    }
+
     User user = userService.getUserById(uid);
     Journal journal = journalService.getOrCreateJournal(jid);
     aclService.createAclEntry(user, journal);

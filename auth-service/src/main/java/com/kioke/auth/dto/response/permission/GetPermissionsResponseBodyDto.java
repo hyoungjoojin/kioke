@@ -13,6 +13,13 @@ public class GetPermissionsResponseBodyDto {
   private Boolean canUpdate = false;
   private Boolean canDelete = false;
 
+  public GetPermissionsResponseBodyDto() {
+    canCreate = false;
+    canRead = false;
+    canUpdate = false;
+    canDelete = false;
+  }
+
   public GetPermissionsResponseBodyDto(List<Permission> permissions) {
     for (Permission permission : permissions) {
       switch (permission) {
