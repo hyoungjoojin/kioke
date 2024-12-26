@@ -12,7 +12,10 @@ public class UserService {
 
   public void createUser(String uid, String email) {
     User user = User.builder().uid(uid).email(email).build();
-
     userRepository.save(user);
+  }
+
+  public User getUser(String uid) {
+    return userRepository.findById(uid).orElseThrow();
   }
 }

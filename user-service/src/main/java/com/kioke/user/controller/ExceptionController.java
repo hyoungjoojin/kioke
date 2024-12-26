@@ -1,10 +1,7 @@
-package com.kioke.auth.controller;
+package com.kioke.user.controller;
 
-import com.kioke.auth.exception.UserAlreadyExistsException;
-import com.kioke.auth.exception.UserDoesNotExistException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
@@ -13,32 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-@Slf4j
 public class ExceptionController {
-
-  @ExceptionHandler(UserDoesNotExistException.class)
-  public ResponseEntity<ProblemDetail> userDoesNotExistExceptionHandler(
-      UserDoesNotExistException e, HttpServletRequest request) {
-    URI type = UserDoesNotExistException.TYPE;
-    String title = "User does not exist.";
-    HttpStatus status = HttpStatus.NOT_FOUND;
-    String detail = e.getMessage();
-    String instance = request.getRequestURI();
-
-    return buildResponseEntity(type, title, status, detail, instance);
-  }
-
-  @ExceptionHandler(UserAlreadyExistsException.class)
-  public ResponseEntity<ProblemDetail> userAlreadyExistsExceptionHandler(
-      UserAlreadyExistsException e, HttpServletRequest request) {
-    URI type = UserAlreadyExistsException.TYPE;
-    String title = "User already exists.";
-    HttpStatus status = HttpStatus.CONFLICT;
-    String detail = e.getMessage();
-    String instance = request.getRequestURI();
-
-    return buildResponseEntity(type, title, status, detail, instance);
-  }
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ProblemDetail> exceptionHandler(Exception e, HttpServletRequest request) {

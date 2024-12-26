@@ -2,7 +2,6 @@ package com.kioke.gateway.filter;
 
 import com.kioke.gateway.service.JwtService;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHeaders;
 import org.hibernate.validator.internal.util.stereotypes.Lazy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
 @Component
-@Slf4j
 public class TokenAuthenticationFilter
     extends AbstractGatewayFilterFactory<
         TokenAuthenticationFilter.TokenAuthenticationFilterConfig> {

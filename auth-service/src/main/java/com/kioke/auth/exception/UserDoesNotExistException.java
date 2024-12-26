@@ -1,6 +1,10 @@
 package com.kioke.auth.exception;
 
+import java.net.URI;
+
 public class UserDoesNotExistException extends Exception {
+  public static final URI TYPE = URI.create("users/does-not-exist");
+
   public static enum UserIdentifierType {
     UID,
     EMAIL

@@ -14,13 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientResponseException;
 
 @Service
 @Slf4j
@@ -34,7 +34,7 @@ public class AuthService {
   private RestClient restClient = RestClient.create();
 
   public User registerUser(String email, String password)
-      throws UserAlreadyExistsException, ServiceNotFoundException, RestClientResponseException {
+      throws UserAlreadyExistsException, ServiceNotFoundException, Exception {
     if (userRepository.findUserByEmail(email).isPresent()) {
       throw new UserAlreadyExistsException(email);
     }
@@ -44,26 +44,23 @@ public class AuthService {
     User user = User.builder().uid(uid).email(email).password(encodedPassword).build();
 
     String userServiceUri = discoveryClientService.getServiceUri(KiokeServices.USER_SERVICE);
-    restClient
-        .post()
-        .uri(userServiceUri + "/users")
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(new CreateUserRequestBodyDto(uid, email))
-        .retrieve()
-        .onStatus(
-            status -> !status.isSameCodeAs(HttpStatus.CREATED),
-            (request, response) -> {
-              throw new RestClientResponseException(
-                  "User service has failed to create a new user.",
-                  response.getStatusCode(),
-                  response.getStatusText(),
-                  response.getHeaders(),
-                  response.getBody().readAllBytes(),
-                  null);
-            });
 
-    userRepository.save(user);
-    return user;
+    ResponseEntity<Void> response =
+        restClient
+            .post()
+            .uri(userServiceUri + "/users")
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(new CreateUserRequestBodyDto(uid, email))
+            .retrieve()
+            .toBodilessEntity();
+
+    if (response.getStatusCode().isSameCodeAs(HttpStatus.CREATED)) {
+      userRepository.save(user);
+      return user;
+
+    } else {
+      throw new Exception("invalid status code");
+    }
   }
 
   public User loginUser(String email, String password)
