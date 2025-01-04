@@ -1,5 +1,7 @@
 package com.kioke.user.service;
 
+import com.kioke.user.exception.UserDoesNotExistException;
+import com.kioke.user.exception.UserDoesNotExistException.UserIdentifierType;
 import com.kioke.user.model.User;
 import com.kioke.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +17,9 @@ public class UserService {
     userRepository.save(user);
   }
 
-  public User getUser(String uid) {
-    return userRepository.findById(uid).orElseThrow();
+  public User getUserById(String uid) throws UserDoesNotExistException {
+    return userRepository
+        .findById(uid)
+        .orElseThrow(() -> new UserDoesNotExistException(UserIdentifierType.UID, uid));
   }
 }

@@ -2,6 +2,7 @@ package com.kioke.auth.service;
 
 import com.kioke.auth.constant.KiokeServices;
 import com.kioke.auth.dto.external.user.CreateUserRequestBodyDto;
+import com.kioke.auth.exception.ServiceFailedException;
 import com.kioke.auth.exception.ServiceNotFoundException;
 import com.kioke.auth.exception.UserAlreadyExistsException;
 import com.kioke.auth.exception.UserDoesNotExistException;
@@ -9,12 +10,10 @@ import com.kioke.auth.exception.UserDoesNotExistException.UserIdentifierType;
 import com.kioke.auth.model.User;
 import com.kioke.auth.repository.UserRepository;
 import java.util.UUID;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 @Service
-@Slf4j
 public class AuthService {
   @Autowired @Lazy private UserRepository userRepository;
 
@@ -34,7 +32,7 @@ public class AuthService {
   private RestClient restClient = RestClient.create();
 
   public User registerUser(String email, String password)
-      throws UserAlreadyExistsException, ServiceNotFoundException, Exception {
+      throws UserAlreadyExistsException, ServiceNotFoundException, ServiceFailedException {
     if (userRepository.findUserByEmail(email).isPresent()) {
       throw new UserAlreadyExistsException(email);
     }
@@ -45,22 +43,22 @@ public class AuthService {
 
     String userServiceUri = discoveryClientService.getServiceUri(KiokeServices.USER_SERVICE);
 
-    ResponseEntity<Void> response =
-        restClient
-            .post()
-            .uri(userServiceUri + "/users")
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(new CreateUserRequestBodyDto(uid, email))
-            .retrieve()
-            .toBodilessEntity();
+    restClient
+        .post()
+        .uri(userServiceUri + "/users")
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(new CreateUserRequestBodyDto(uid, email))
+        .retrieve()
+        .onStatus(
+            status -> status != HttpStatus.CREATED,
+            (req, res) -> {
+              throw new ServiceFailedException(
+                  KiokeServices.USER_SERVICE, res.getStatusCode(), res.getBody().toString());
+            })
+        .toBodilessEntity();
 
-    if (response.getStatusCode().isSameCodeAs(HttpStatus.CREATED)) {
-      userRepository.save(user);
-      return user;
-
-    } else {
-      throw new Exception("invalid status code");
-    }
+    userRepository.save(user);
+    return user;
   }
 
   public User loginUser(String email, String password)

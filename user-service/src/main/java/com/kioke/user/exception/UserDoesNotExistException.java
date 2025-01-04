@@ -1,4 +1,4 @@
-package com.kioke.auth.exception;
+package com.kioke.user.exception;
 
 import java.net.URI;
 import org.springframework.http.HttpStatus;

@@ -14,7 +14,6 @@ import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
@@ -31,10 +30,8 @@ public class User {
   @Column(unique = true)
   private String email;
 
-  @ColumnDefault("")
   private String firstName;
 
-  @ColumnDefault("")
   private String lastName;
 
   @Default

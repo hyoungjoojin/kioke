@@ -3,6 +3,7 @@ package com.kioke.user.controller;
 import com.kioke.user.dto.request.user.CreateUserRequestBodyDto;
 import com.kioke.user.dto.response.data.user.GetUserResponseBodyDto;
 import com.kioke.user.dto.response.data.user.GetUserResponseBodyDto.*;
+import com.kioke.user.exception.UserDoesNotExistException;
 import com.kioke.user.model.User;
 import com.kioke.user.service.UserService;
 import jakarta.validation.Valid;
@@ -28,8 +29,9 @@ public class UserController {
 
   @GetMapping
   public ResponseEntity<GetAuthenticatedUserResponseBodyDto> getAuthenticatedUser(
-      @RequestAttribute(required = true, name = "uid") String requesterUid) {
-    User user = userService.getUser(requesterUid);
+      @RequestAttribute(required = true, name = "uid") String requesterUid)
+      throws UserDoesNotExistException {
+    User user = userService.getUserById(requesterUid);
 
     return ResponseEntity.status(HttpStatus.OK)
         .body(GetAuthenticatedUserResponseBodyDto.from(user));
@@ -38,8 +40,9 @@ public class UserController {
   @GetMapping("/{uid}")
   public ResponseEntity<? extends GetUserResponseBodyDto> getUserById(
       @RequestAttribute(required = false, name = "uid") String requesterUid,
-      @PathVariable(name = "uid") String requestedUid) {
-    User user = userService.getUser(requestedUid);
+      @PathVariable(name = "uid") String requestedUid)
+      throws UserDoesNotExistException {
+    User user = userService.getUserById(requestedUid);
     if (requesterUid != null && requesterUid.equals(requestedUid)) {
       return getAuthenticatedUser(requesterUid);
     }

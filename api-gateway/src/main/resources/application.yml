@@ -8,6 +8,40 @@ spring:
           enabled: false
           lower-case-service-id: true
 
+      default-filters:
+        - RemoveRequestHeader=Kioke-Uid
+        - RemoveRequestHeader=Kioke-Request-Id
+        - RequestLoggingFilter
+
+      routes:
+        - id: Kioke Auth Service Login
+          uri: lb://auth
+          predicates:
+            - Path=/auth/login
+            - Method=POST
+
+        - id: Kioke Auth Service Registration
+          uri: lb://auth
+          predicates:
+            - Path=/auth/register
+            - Method=POST
+
+        - id: Kioke User Service Get Authenticated User Inforrmation"
+          uri: lb://user
+          predicates:
+            - Path=/users
+            - Method=GET
+          filters:
+            - TokenAuthenticationFilter
+
+        - id: Kioke User Service Get User Inforrmation"
+          uri: lb://user
+          predicates:
+            - Path=/users/{uid}
+            - Method=GET
+          filters:
+            - TokenAuthenticationFilter
+
 eureka:
   instance:
     appname: gateway

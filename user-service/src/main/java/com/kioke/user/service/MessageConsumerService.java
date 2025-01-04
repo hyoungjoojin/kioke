@@ -3,7 +3,8 @@ package com.kioke.user.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kioke.user.dto.message.CreateJournalMessageDto;
-import com.kioke.user.exception.user.UserNotFoundException;
+import com.kioke.user.exception.UserDoesNotExistException;
+import com.kioke.user.exception.UserDoesNotExistException.UserIdentifierType;
 import com.kioke.user.model.Journal;
 import com.kioke.user.model.User;
 import com.kioke.user.repository.JournalRepository;
@@ -34,14 +35,14 @@ public class MessageConsumerService {
               .findById(uid)
               .orElseThrow(
                   () -> {
-                    return new UserNotFoundException(uid);
+                    return new UserDoesNotExistException(UserIdentifierType.UID, uid);
                   });
       Journal journal = Journal.builder().jid(jid).owner(user).build();
       journalRepository.save(journal);
 
     } catch (JsonProcessingException e) {
       log.error("Error while processing RabbitMQ message: ", e.toString());
-    } catch (UserNotFoundException e) {
+    } catch (UserDoesNotExistException e) {
       log.error("User not found for message in RabbitMQ: ", e.toString());
     }
   }
