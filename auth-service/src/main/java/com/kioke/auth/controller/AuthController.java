@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestClientResponseException;
 
 @RestController
 @RequestMapping("/auth")
@@ -34,18 +33,22 @@ public class AuthController {
     String email = requestBodyDto.getEmail(), password = requestBodyDto.getPassword();
     String uid = authService.loginUser(email, password).getUid();
 
+    String accessToken = jwtService.buildToken(uid);
+
     return ResponseEntity.status(HttpStatus.CREATED)
-        .body(new LoginUserResponseBodyDto(jwtService.buildToken(uid)));
+        .body(LoginUserResponseBodyDto.builder().uid(uid).accessToken(accessToken).build());
   }
 
   @PostMapping("/register")
   public ResponseEntity<RegisterUserResponseBodyDto> registerUser(
       @RequestBody @Valid RegisterUserRequestBodyDto requestBodyDto)
-      throws UserAlreadyExistsException, ServiceNotFoundException, RestClientResponseException {
+      throws UserAlreadyExistsException, ServiceNotFoundException, Exception {
     String email = requestBodyDto.getEmail(), password = requestBodyDto.getPassword();
     String uid = authService.registerUser(email, password).getUid();
 
+    String accessToken = jwtService.buildToken(uid);
+
     return ResponseEntity.status(HttpStatus.CREATED)
-        .body(new RegisterUserResponseBodyDto(jwtService.buildToken(uid)));
+        .body(RegisterUserResponseBodyDto.builder().uid(uid).accessToken(accessToken).build());
   }
 }
