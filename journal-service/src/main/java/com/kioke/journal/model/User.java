@@ -1,8 +1,6 @@
 package com.kioke.journal.model;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -13,18 +11,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "JOURNAL_TABLE")
+@Table(name = "USER_TABLE")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Journal {
-  @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
-  private String jid;
+public class User {
+  @Id private String uid;
 
-  @OneToMany(mappedBy = "journal")
-  private List<JournalPermission> users;
-
-  private String title;
+  @OneToMany(mappedBy = "user")
+  private List<JournalPermission> journals;
 }

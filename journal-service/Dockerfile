@@ -10,7 +10,7 @@ COPY src src
 
 RUN mvn package -DskipTests
 
-FROM eclipse-temurin:17 as jre-builder
+FROM eclipse-temurin:17 AS jre-builder
 
 RUN $JAVA_HOME/bin/jlink \
     --add-modules ALL-MODULE-PATH \

@@ -5,25 +5,29 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
-@Order(2)
 @Slf4j
-public class ExceptionHandlerFilter extends OncePerRequestFilter {
+public class ExtractHeaderValuesToAttributesFilter extends OncePerRequestFilter {
 
   @Override
   protected void doFilterInternal(
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
-    try {
-      filterChain.doFilter(request, response);
-    } catch (Exception e) {
-      log.info(e.toString());
-      return;
+    String requestId = request.getHeader("Kioke-Request-Id");
+    if (!Objects.isNull(requestId)) {
+      request.setAttribute("requestId", requestId);
     }
+
+    String uid = request.getHeader("Kioke-Uid");
+    if (!Objects.isNull(uid)) {
+      request.setAttribute("uid", uid);
+    }
+
+    doFilter(request, response, filterChain);
   }
 }

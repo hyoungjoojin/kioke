@@ -1,16 +1,16 @@
 package com.kioke.journal.controller;
 
-import com.kioke.journal.dto.data.journal.CreateJournalDto;
-import com.kioke.journal.dto.request.journal.*;
-import com.kioke.journal.dto.response.ResponseDto;
-import com.kioke.journal.dto.response.data.EmptyResponseDataDto;
-import com.kioke.journal.dto.response.data.journal.*;
+import com.kioke.journal.dto.request.journal.CreateJournalRequestBodyDto;
+import com.kioke.journal.dto.response.journal.CreateJournalResponseBodyDto;
+import com.kioke.journal.dto.response.journal.GetJournalResponseBodyDto;
 import com.kioke.journal.exception.journal.JournalNotFoundException;
+import com.kioke.journal.exception.permission.AccessDeniedException;
+import com.kioke.journal.exception.user.UserNotFoundException;
 import com.kioke.journal.model.Journal;
+import com.kioke.journal.model.User;
+import com.kioke.journal.service.JournalPermissionService;
 import com.kioke.journal.service.JournalService;
-import jakarta.validation.Valid;
-import java.time.OffsetDateTime;
-import java.util.Optional;
+import com.kioke.journal.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
@@ -22,83 +22,48 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/journals")
 public class JournalController {
   @Autowired @Lazy private JournalService journalService;
+  @Autowired @Lazy private UserService userService;
+  @Autowired @Lazy private JournalPermissionService journalPermissionService;
 
   @PostMapping
-  public ResponseEntity<ResponseDto<CreateJournalResponseDataDto>> createJournal(
-      @RequestAttribute String requestId,
-      @RequestAttribute String path,
-      @RequestAttribute OffsetDateTime timestamp,
-      @RequestAttribute String uid,
-      @RequestBody @Valid CreateJournalRequestBodyDto requestBody)
-      throws Exception {
-    Journal journal =
-        journalService.createJournal(
-            CreateJournalDto.builder()
-                .uid(uid)
-                .title(requestBody.getTitle())
-                .template(requestBody.getTemplate())
-                .build());
+  public ResponseEntity<CreateJournalResponseBodyDto> createJournal(
+      @RequestAttribute(required = true, name = "uid") String uid,
+      @RequestBody CreateJournalRequestBodyDto requestBodyDto) {
+    String title = requestBodyDto.getTitle();
 
-    CreateJournalResponseDataDto data = CreateJournalResponseDataDto.from(journal);
+    User user = userService.getUserByIdOrElseCreate(uid);
+    Journal journal = journalService.createJournal(user, title);
+
+    journalPermissionService.grantAuthorPermissionsToUser(user, journal);
 
     return ResponseEntity.status(HttpStatus.CREATED)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(
-            ResponseDto.<CreateJournalResponseDataDto>builder()
-                .requestId(requestId)
-                .path(path)
-                .timestamp(timestamp)
-                .status(HttpStatus.CREATED.value())
-                .success(true)
-                .data(Optional.of(data))
-                .error(Optional.empty())
-                .build());
+        .body(CreateJournalResponseBodyDto.from(journal));
   }
 
   @GetMapping("/{jid}")
-  public ResponseEntity<ResponseDto<GetJournalResponseDataDto>> getJournalById(
-      @RequestAttribute String requestId,
-      @RequestAttribute String path,
-      @RequestAttribute OffsetDateTime timestamp,
-      @PathVariable String jid)
-      throws JournalNotFoundException, Exception {
+  public ResponseEntity<GetJournalResponseBodyDto> getJournal(
+      @RequestAttribute(required = true, name = "uid") String uid, @PathVariable String jid)
+      throws UserNotFoundException, JournalNotFoundException, AccessDeniedException {
+    User user = userService.getUserById(uid);
     Journal journal = journalService.getJournalById(jid);
-    GetJournalResponseDataDto data = GetJournalResponseDataDto.from(journal);
+
+    journalPermissionService.checkReadPermissions(user, journal);
 
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(
-            ResponseDto.<GetJournalResponseDataDto>builder()
-                .requestId(requestId)
-                .path(path)
-                .timestamp(timestamp)
-                .status(HttpStatus.OK.value())
-                .success(true)
-                .data(Optional.of(data))
-                .error(Optional.empty())
-                .build());
+        .body(GetJournalResponseBodyDto.from(journal));
   }
 
   @DeleteMapping("/{jid}")
-  public ResponseEntity<ResponseDto<EmptyResponseDataDto>> deleteJournalById(
-      @RequestAttribute String requestId,
-      @RequestAttribute String path,
-      @RequestAttribute OffsetDateTime timestamp,
-      @PathVariable String jid)
-      throws JournalNotFoundException, Exception {
-    journalService.deleteJournalById(jid);
+  public ResponseEntity<Void> deleteJournal(
+      @RequestAttribute(required = true, name = "uid") String uid, @PathVariable String jid)
+      throws UserNotFoundException, JournalNotFoundException, AccessDeniedException {
+    User user = userService.getUserById(uid);
+    Journal journal = journalService.getJournalById(jid);
 
-    return ResponseEntity.status(HttpStatus.OK)
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(
-            ResponseDto.<EmptyResponseDataDto>builder()
-                .requestId(requestId)
-                .path(path)
-                .timestamp(timestamp)
-                .status(HttpStatus.OK.value())
-                .success(true)
-                .data(Optional.empty())
-                .error(Optional.empty())
-                .build());
+    journalPermissionService.checkDeletePermissions(user, journal);
+
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
   }
 }

@@ -1,12 +1,16 @@
 package com.kioke.journal.dto.request.journal;
 
-import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@Builder
+@AllArgsConstructor
 public class CreateJournalRequestBodyDto {
-  @NotNull private final String title;
-  @NotNull private final String template;
+  private static final String DEFAULT_TITLE = "";
+
+  private final String title;
+
+  public CreateJournalRequestBodyDto() {
+    this.title = DEFAULT_TITLE;
+  }
 }
