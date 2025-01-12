@@ -1,0 +1,25 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:postgresql://localhost:5432/authdb
+    username: kioke
+    password: password
+
+postgres:
+  user: kioke
+  password: password
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:${SERVICE_DISCOVERY_PORT}/eureka
+
+security:
+  jwt:
+    expiration: 1000000000
+
+server:
+  port: ${AUTH_SERVICE_PORT}
+

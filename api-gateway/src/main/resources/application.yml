@@ -1,6 +1,7 @@
 spring:
   application:
     name: gateway
+
   cloud:
     gateway:
       discovery:
@@ -42,6 +43,22 @@ spring:
           filters:
             - TokenAuthenticationFilter
 
+        - id: Kioke Journal Service Create Journal"
+          uri: lb://journal
+          predicates:
+            - Path=/journals
+            - Method=POST
+          filters:
+            - TokenAuthenticationFilter
+
+        - id: Kioke Journal Service Read Journal"
+          uri: lb://journal
+          predicates:
+            - Path=/journals/{jid}
+            - Method=GET
+          filters:
+            - TokenAuthenticationFilter
+
 eureka:
   instance:
     appname: gateway
@@ -49,5 +66,3 @@ eureka:
   client:
     register-with-eureka: true
     fetch-registry: true
-    service-url:
-      defaultZone: http://localhost:8761/eureka
