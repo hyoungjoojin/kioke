@@ -22,6 +22,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useTranslations } from "next-intl";
 import { SelectLanguage } from "@/components/utils/i18n";
+import { MainLogo } from "@/components/utils/logo";
 
 const LoginFormSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -45,6 +46,10 @@ export default function Login() {
 
   return (
     <div className="flex w-full h-dvh items-center justify-center bg-gray-50">
+      <div className="absolute top-10 left-10">
+        <MainLogo />
+      </div>
+
       <Card className="w-1/2">
         <CardHeader>
           <CardTitle>{t("title")}</CardTitle>
