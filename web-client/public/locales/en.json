@@ -1,0 +1,16 @@
+{
+  "Login": {
+    "title": "Capture this moment with kioke.",
+    "description": "Login to your kioke account and start journaling.",
+    "email": {
+      "label": "Email",
+      "placeholder": "Enter your email"
+    },
+    "password": {
+      "label": "Password",
+      "placeholder": "Enter your password"
+    },
+    "forgot-password": "Forgot your password?",
+    "login-button": "Login"
+  }
+}

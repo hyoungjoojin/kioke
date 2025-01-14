@@ -20,6 +20,8 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useTranslations } from "next-intl";
+import { SelectLanguage } from "@/components/utils/i18n";
 
 const LoginFormSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -27,6 +29,8 @@ const LoginFormSchema = z.object({
 });
 
 export default function Login() {
+  const t = useTranslations("Login");
+
   const loginForm = useForm<z.infer<typeof LoginFormSchema>>({
     resolver: zodResolver(LoginFormSchema),
     defaultValues: {
@@ -43,10 +47,8 @@ export default function Login() {
     <div className="flex w-full h-dvh items-center justify-center bg-gray-50">
       <Card className="w-1/2">
         <CardHeader>
-          <CardTitle>Login to your kioke account.</CardTitle>
-          <CardDescription>
-            Start your journey towards endless possibilities.
-          </CardDescription>
+          <CardTitle>{t("title")}</CardTitle>
+          <CardDescription>{t("description")}</CardDescription>
         </CardHeader>
 
         <CardContent>
@@ -59,11 +61,14 @@ export default function Login() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="flex justify-between items-center">
-                        <div className="text-black">Email</div>
+                        <div className="text-black">{t("email.label")}</div>
                         <FormMessage />
                       </FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter your email" {...field} />
+                        <Input
+                          placeholder={t("email.placeholder")}
+                          {...field}
+                        />
                       </FormControl>
                     </FormItem>
                   )}
@@ -77,13 +82,13 @@ export default function Login() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="flex justify-between items-center">
-                        <div className="text-black">Password</div>
+                        <div className="text-black">{t("password.label")}</div>
                         <FormMessage />
                       </FormLabel>
                       <FormControl>
                         <Input
                           type="password"
-                          placeholder="Enter your password"
+                          placeholder={t("password.placeholder")}
                           {...field}
                         />
                       </FormControl>
@@ -92,18 +97,22 @@ export default function Login() {
                 />
                 <div className="flex justify-end my-2">
                   <span className=" text-sm hover:underline hover:cursor-pointer">
-                    Forgot your password?
+                    {t("forgot-password")}
                   </span>
                 </div>
               </div>
 
               <div className="my-2">
-                <Button type="submit">Login</Button>
+                <Button type="submit">{t("login-button")}</Button>
               </div>
             </form>
           </Form>
         </CardContent>
       </Card>
+
+      <div className="absolute bottom-10 right-10">
+        <SelectLanguage />
+      </div>
     </div>
   );
 }
