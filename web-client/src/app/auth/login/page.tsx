@@ -23,6 +23,7 @@ import { z } from "zod";
 import { useTranslations } from "next-intl";
 import { SelectLanguage } from "@/components/utils/i18n";
 import { MainLogo } from "@/components/utils/logo";
+import { ToggleDarkModeButton } from "@/components/utils/theme";
 
 const LoginFormSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -45,12 +46,12 @@ export default function Login() {
   };
 
   return (
-    <div className="flex w-full h-dvh items-center justify-center bg-gray-50">
+    <div className="flex w-full h-dvh items-center justify-center bg-gray-50 dark:bg-black">
       <div className="absolute top-10 left-10">
         <MainLogo />
       </div>
 
-      <Card className="w-1/2">
+      <Card className="w-[28rem] dark:bg-zinc-900">
         <CardHeader>
           <CardTitle>{t("title")}</CardTitle>
           <CardDescription>{t("description")}</CardDescription>
@@ -66,7 +67,9 @@ export default function Login() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="flex justify-between items-center">
-                        <div className="text-black">{t("email.label")}</div>
+                        <div className="text-black dark:text-white">
+                          {t("email.label")}
+                        </div>
                         <FormMessage />
                       </FormLabel>
                       <FormControl>
@@ -87,7 +90,9 @@ export default function Login() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="flex justify-between items-center">
-                        <div className="text-black">{t("password.label")}</div>
+                        <div className="text-black dark:text-white">
+                          {t("password.label")}
+                        </div>
                         <FormMessage />
                       </FormLabel>
                       <FormControl>
@@ -114,6 +119,10 @@ export default function Login() {
           </Form>
         </CardContent>
       </Card>
+
+      <div className="absolute bottom-10 left-10">
+        <ToggleDarkModeButton />
+      </div>
 
       <div className="absolute bottom-10 right-10">
         <SelectLanguage />
