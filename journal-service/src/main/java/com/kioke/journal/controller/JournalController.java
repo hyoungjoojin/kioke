@@ -64,6 +64,7 @@ public class JournalController {
 
     journalPermissionService.checkDeletePermissions(user, journal);
 
+    journalService.deleteJournal(journal);
     return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
   }
 }

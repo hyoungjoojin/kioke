@@ -19,7 +19,3 @@ eureka:
 security:
   jwt:
     expiration: 1000000000
-
-server:
-  port: ${AUTH_SERVICE_PORT}
-
