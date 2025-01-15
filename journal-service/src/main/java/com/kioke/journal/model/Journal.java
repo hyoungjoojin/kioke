@@ -1,32 +1,31 @@
 package com.kioke.journal.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "journals")
+@Entity
+@Table(name = "JOURNAL_TABLE")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Journal {
-  @Id private String id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  private String jid;
+
+  @OneToMany(mappedBy = "journal")
+  private List<JournalPermission> users;
 
   @NotNull private String title;
-
-  @NotNull private String template;
-
-  private List<Page> pages;
-
-  @CreatedDate private LocalDateTime createdAt;
-
-  @LastModifiedDate private LocalDateTime lastUpdated;
 }
