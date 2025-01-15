@@ -1,6 +1,6 @@
 package com.kioke.journal.repository;
 
 import com.kioke.journal.model.Journal;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface JournalRepository extends MongoRepository<Journal, String> {}
+public interface JournalRepository extends JpaRepository<Journal, String> {}

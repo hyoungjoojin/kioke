@@ -1,3 +1,6 @@
+server:
+  port: ${SERVICE_DISCOVERY_PORT}
+
 spring:
   application:
     name: Kioke Service Discovery
@@ -6,8 +9,3 @@ eureka:
   client:
     register-with-eureka: false
     fetch-registry: false
-
-logging:
-  level:
-    com.netflix.eureka: OFF
-    com.netflix.discovery: OFF
