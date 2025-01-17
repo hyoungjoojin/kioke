@@ -1,16 +1,9 @@
 "use client";
-import LoginForm, {
-  LoginFormSchema,
-} from "@/components/pages/auth/login/LoginForm";
+
+import LoginForm from "@/components/pages/auth/login/LoginForm";
 import { SelectLanguage } from "@/components/utils/i18n";
-import { z } from "zod";
 import { MainLogo } from "@/components/utils/logo";
 import { ToggleDarkModeButton } from "@/components/utils/theme";
-import { signInWithCredentials } from "@/lib/auth/actions";
-
-const formSubmitHandler = async (values: z.infer<typeof LoginFormSchema>) => {
-  signInWithCredentials(values);
-};
 
 export default function Login() {
   return (
@@ -27,7 +20,7 @@ export default function Login() {
         <SelectLanguage />
       </div>
 
-      <LoginForm onSubmit={formSubmitHandler} />
+      <LoginForm />
     </div>
   );
 }

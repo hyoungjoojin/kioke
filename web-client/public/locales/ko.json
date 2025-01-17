@@ -4,11 +4,13 @@
     "description": "계정 로그인 후에 오늘의 일들을 기록해보세요.",
     "email": {
       "label": "이메일",
-      "placeholder": "이메일을 입력하세요"
+      "placeholder": "이메일을 입력하세요",
+      "invalid-email": "이메일 형식이 잘못되었습니다."
     },
     "password": {
       "label": "비밀번호",
-      "placeholder": "비밀번호를 입력하세요"
+      "placeholder": "비밀번호를 입력하세요",
+      "empty": "비밀번호가 입력되지 않았습니다."
     },
     "forgot-password": "비밀번호를 잊으셨나요?",
     "login-button": "로그인"

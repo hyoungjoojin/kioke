@@ -4,11 +4,13 @@
     "description": "Login to your kioke account and start journaling.",
     "email": {
       "label": "Email",
-      "placeholder": "Enter your email"
+      "placeholder": "Enter your email",
+      "invalid-email": "Invalid email address."
     },
     "password": {
       "label": "Password",
-      "placeholder": "Enter your password"
+      "placeholder": "Enter your password",
+      "empty": "Password is empty."
     },
     "forgot-password": "Forgot your password?",
     "login-button": "Login"
