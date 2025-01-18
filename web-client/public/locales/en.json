@@ -1,0 +1,25 @@
+{
+  "login": {
+    "title": "Capture this moment with kioke.",
+    "description": "Login to your kioke account and start journaling.",
+    "email": {
+      "label": "Email",
+      "placeholder": "Enter your email",
+      "invalid-email": "Invalid email address."
+    },
+    "password": {
+      "label": "Password",
+      "placeholder": "Enter your password",
+      "empty": "Password is empty."
+    },
+    "forgot-password": "Forgot your password?",
+    "login-button": "Login"
+  },
+  "error": {
+    "internal-server-error": "Internal server error.",
+    "login": {
+      "invalid-credentials": "Invalid credentials."
+    },
+    "unknown-error": "Internal server error."
+  }
+}

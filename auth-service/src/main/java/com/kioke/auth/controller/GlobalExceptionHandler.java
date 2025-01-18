@@ -10,6 +10,7 @@ import java.net.URI;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -26,6 +27,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ProblemDetail.forStatusAndDetail(e.getHttpStatus(), e.getMessage());
     problemDetail.setType(e.getType());
     problemDetail.setTitle(e.getTitle());
+    problemDetail.setInstance(URI.create(request.getRequestURI()));
+
+    return problemDetail;
+  }
+
+  @ExceptionHandler({BadCredentialsException.class})
+  public ProblemDetail badCredentialsExceptionHandler(Exception e, HttpServletRequest request) {
+    ProblemDetail problemDetail =
+        ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage());
+    problemDetail.setType(URI.create("about:blank"));
+    problemDetail.setTitle("Bad credentials");
     problemDetail.setInstance(URI.create(request.getRequestURI()));
 
     return problemDetail;
