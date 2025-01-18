@@ -21,16 +21,21 @@ import {
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { redirect } from "next/navigation";
 import { signInWithCredentials } from "@/lib/auth/actions";
+import { useState } from "react";
+import { getErrorMessage } from "@/constants/errors";
+import { redirect } from "next/navigation";
 
 export const LoginFormSchema = z.object({
-  email: z.string().email({ message: "Invalid email address." }),
-  password: z.string().nonempty({ message: "Password is empty." }),
+  email: z.string().email(),
+  password: z.string().nonempty(),
 });
 
 export default function LoginForm() {
-  const t = useTranslations("Login");
+  const t = useTranslations("");
+
+  const [isError, setIsError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const loginForm = useForm<z.infer<typeof LoginFormSchema>>({
     resolver: zodResolver(LoginFormSchema),
@@ -41,21 +46,35 @@ export default function LoginForm() {
   });
 
   const formSubmitHandler = async (values: z.infer<typeof LoginFormSchema>) => {
-    try {
-      await signInWithCredentials(values);
-    } finally {
+    setIsError(false);
+    const { success, code } = await signInWithCredentials(
+      values.email,
+      values.password,
+    );
+
+    if (success) {
       redirect("/");
+    }
+
+    if (!success && code) {
+      setIsError(true);
+      setErrorMessage(getErrorMessage(code));
     }
   };
 
   return (
     <Card className="w-[28rem] dark:bg-zinc-900">
       <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-        <CardDescription>{t("description")}</CardDescription>
+        <CardTitle>{t("login.title")}</CardTitle>
+        <CardDescription>{t("login.description")}</CardDescription>
       </CardHeader>
 
       <CardContent>
+        {isError && (
+          <p className="text-[0.8rem] font-medium text-destructive">
+            {t(errorMessage)}
+          </p>
+        )}
         <Form {...loginForm}>
           <form onSubmit={loginForm.handleSubmit(formSubmitHandler)}>
             <div className="my-3">
@@ -66,12 +85,17 @@ export default function LoginForm() {
                   <FormItem>
                     <FormLabel className="flex justify-between items-center">
                       <div className="text-black dark:text-white">
-                        {t("email.label")}
+                        {t("login.email.label")}
                       </div>
-                      <FormMessage>{t("email.invalid-email")}</FormMessage>
+                      <FormMessage>
+                        {t("login.email.invalid-email")}
+                      </FormMessage>
                     </FormLabel>
                     <FormControl>
-                      <Input placeholder={t("email.placeholder")} {...field} />
+                      <Input
+                        placeholder={t("login.email.placeholder")}
+                        {...field}
+                      />
                     </FormControl>
                   </FormItem>
                 )}
@@ -86,14 +110,14 @@ export default function LoginForm() {
                   <FormItem>
                     <FormLabel className="flex justify-between items-center">
                       <div className="text-black dark:text-white">
-                        {t("password.label")}
+                        {t("login.password.label")}
                       </div>
-                      <FormMessage>{t("password.empty")}</FormMessage>
+                      <FormMessage>{t("login.password.empty")}</FormMessage>
                     </FormLabel>
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder={t("password.placeholder")}
+                        placeholder={t("login.password.placeholder")}
                         {...field}
                       />
                     </FormControl>
@@ -101,14 +125,14 @@ export default function LoginForm() {
                 )}
               />
               <div className="flex justify-end my-2">
-                <span className=" text-sm hover:underline hover:cursor-pointer">
-                  {t("forgot-password")}
+                <span className="text-sm hover:underline hover:cursor-pointer">
+                  {t("login.forgot-password")}
                 </span>
               </div>
             </div>
 
             <div className="my-2">
-              <Button type="submit">{t("login-button")}</Button>
+              <Button type="submit">{t("login.login-button")}</Button>
             </div>
           </form>
         </Form>

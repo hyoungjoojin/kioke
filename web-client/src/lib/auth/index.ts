@@ -1,5 +1,10 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import {
+  AuthLoginInvalidCredentialsError,
+  AuthServiceInternalServerError,
+  AuthServiceNotAvailableError,
+} from "./errors";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -17,33 +22,34 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         },
       },
       authorize: async (credentials) => {
-        try {
-          const response = await fetch(
-            `${process.env.API_GATEWAY_URL}/auth/login`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                email: credentials.email,
-                password: credentials.password,
-              }),
-            },
-          );
+        const { email, password } = credentials;
 
-          if (response.status === 201) {
-            const body = await response.json();
-            return {
-              id: body.uid,
-              accessToken: body.accessToken,
-            };
-          }
+        let response: Response;
+        try {
+          response = await fetch(`${process.env.API_GATEWAY_URL}/auth/login`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email, password }),
+          });
         } catch (error) {
-          console.log(error);
+          throw new AuthServiceNotAvailableError();
         }
 
-        return null as any;
+        if (response.status === 500) {
+          throw new AuthServiceInternalServerError();
+        }
+
+        if (response.status !== 201) {
+          throw new AuthLoginInvalidCredentialsError();
+        }
+
+        const body = await response.json();
+        return {
+          id: body.uid,
+          accessToken: body.accessToken,
+        };
       },
     }),
   ],

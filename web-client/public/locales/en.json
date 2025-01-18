@@ -1,5 +1,5 @@
 {
-  "Login": {
+  "login": {
     "title": "Capture this moment with kioke.",
     "description": "Login to your kioke account and start journaling.",
     "email": {
@@ -14,5 +14,12 @@
     },
     "forgot-password": "Forgot your password?",
     "login-button": "Login"
+  },
+  "error": {
+    "internal-server-error": "Internal server error.",
+    "login": {
+      "invalid-credentials": "Invalid credentials."
+    },
+    "unknown-error": "Internal server error."
   }
 }

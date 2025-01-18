@@ -1,5 +1,5 @@
 {
-  "Login": {
+  "login": {
     "title": "이 순간을 기억해, 키오케와 함께.",
     "description": "계정 로그인 후에 오늘의 일들을 기록해보세요.",
     "email": {
@@ -14,5 +14,12 @@
     },
     "forgot-password": "비밀번호를 잊으셨나요?",
     "login-button": "로그인"
+  },
+  "error": {
+    "internal-server-error": "내부 서버 에러",
+    "login": {
+      "invalid-credentials": "입력된 개인정보가 틀렸습니다."
+    },
+    "unknown-error": "내부 서버 에러"
   }
 }
