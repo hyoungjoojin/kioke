@@ -1,5 +1,6 @@
 package com.kioke.user.service;
 
+import com.kioke.user.dto.data.user.CreateUserDto;
 import com.kioke.user.exception.UserDoesNotExistException;
 import com.kioke.user.exception.UserDoesNotExistException.UserIdentifierType;
 import com.kioke.user.model.User;
@@ -12,8 +13,14 @@ import org.springframework.stereotype.Service;
 public class UserService {
   @Autowired @Lazy UserRepository userRepository;
 
-  public void createUser(String uid, String email) {
-    User user = User.builder().uid(uid).email(email).build();
+  public void createUser(CreateUserDto data) {
+    User user =
+        User.builder()
+            .uid(data.getUid())
+            .email(data.getEmail())
+            .firstName(data.getFirstName())
+            .lastName(data.getLastName())
+            .build();
     userRepository.save(user);
   }
 

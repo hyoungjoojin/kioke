@@ -1,6 +1,7 @@
 package com.kioke.auth.service;
 
 import com.kioke.auth.constant.KiokeServices;
+import com.kioke.auth.dto.data.auth.RegisterUserDto;
 import com.kioke.auth.dto.external.user.CreateUserRequestBodyDto;
 import com.kioke.auth.exception.ServiceFailedException;
 import com.kioke.auth.exception.ServiceNotFoundException;
@@ -31,8 +32,10 @@ public class AuthService {
   @Autowired @Lazy private DiscoveryClientService discoveryClientService;
   private RestClient restClient = RestClient.create();
 
-  public User registerUser(String email, String password)
+  public User registerUser(RegisterUserDto data)
       throws UserAlreadyExistsException, ServiceNotFoundException, ServiceFailedException {
+    String email = data.getEmail(), password = data.getPassword();
+
     if (userRepository.findUserByEmail(email).isPresent()) {
       throw new UserAlreadyExistsException(email);
     }
@@ -47,7 +50,7 @@ public class AuthService {
         .post()
         .uri(userServiceUri + "/users")
         .contentType(MediaType.APPLICATION_JSON)
-        .body(new CreateUserRequestBodyDto(uid, email))
+        .body(new CreateUserRequestBodyDto(uid, email, data.getFirstName(), data.getLastName()))
         .retrieve()
         .onStatus(
             status -> status != HttpStatus.CREATED,

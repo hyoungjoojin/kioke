@@ -1,5 +1,6 @@
 package com.kioke.auth.controller;
 
+import com.kioke.auth.dto.data.auth.RegisterUserDto;
 import com.kioke.auth.dto.request.auth.LoginUserRequestBodyDto;
 import com.kioke.auth.dto.request.auth.RegisterUserRequestBodyDto;
 import com.kioke.auth.dto.response.auth.LoginUserResponseBodyDto;
@@ -43,8 +44,7 @@ public class AuthController {
   public ResponseEntity<RegisterUserResponseBodyDto> registerUser(
       @RequestBody @Valid RegisterUserRequestBodyDto requestBodyDto)
       throws UserAlreadyExistsException, ServiceNotFoundException, Exception {
-    String email = requestBodyDto.getEmail(), password = requestBodyDto.getPassword();
-    String uid = authService.registerUser(email, password).getUid();
+    String uid = authService.registerUser(RegisterUserDto.from(requestBodyDto)).getUid();
 
     String accessToken = jwtService.buildToken(uid);
 

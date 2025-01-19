@@ -1,5 +1,6 @@
 package com.kioke.user.controller;
 
+import com.kioke.user.dto.data.user.CreateUserDto;
 import com.kioke.user.dto.request.user.CreateUserRequestBodyDto;
 import com.kioke.user.dto.response.data.user.GetUserResponseBodyDto;
 import com.kioke.user.dto.response.data.user.GetUserResponseBodyDto.*;
@@ -21,8 +22,7 @@ public class UserController {
   @PostMapping
   public ResponseEntity<Void> createUser(
       @RequestBody @Valid CreateUserRequestBodyDto requestBodyDto) {
-    String uid = requestBodyDto.getUid(), email = requestBodyDto.getEmail();
-    userService.createUser(uid, email);
+    userService.createUser(CreateUserDto.from(requestBodyDto));
 
     return ResponseEntity.status(HttpStatus.CREATED).body(null);
   }
