@@ -12,8 +12,9 @@ import org.springframework.stereotype.Service;
 public class UserService {
   @Autowired @Lazy UserRepository userRepository;
 
-  public void createUser(String uid, String email) {
-    User user = User.builder().uid(uid).email(email).build();
+  public void createUser(String uid, String email, String firstName, String lastName) {
+    User user =
+        User.builder().uid(uid).email(email).firstName(firstName).lastName(lastName).build();
     userRepository.save(user);
   }
 

@@ -43,8 +43,14 @@ public class AuthController {
   public ResponseEntity<RegisterUserResponseBodyDto> registerUser(
       @RequestBody @Valid RegisterUserRequestBodyDto requestBodyDto)
       throws UserAlreadyExistsException, ServiceNotFoundException, Exception {
-    String email = requestBodyDto.getEmail(), password = requestBodyDto.getPassword();
-    String uid = authService.registerUser(email, password).getUid();
+    String uid =
+        authService
+            .registerUser(
+                requestBodyDto.getEmail(),
+                requestBodyDto.getPassword(),
+                requestBodyDto.getFirstName(),
+                requestBodyDto.getLastName())
+            .getUid();
 
     String accessToken = jwtService.buildToken(uid);
 
