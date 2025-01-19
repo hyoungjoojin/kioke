@@ -127,8 +127,21 @@ export default function LoginForm() {
               </div>
             </div>
 
-            <div className="my-2">
-              <Button type="submit">{t("login.login-button")}</Button>
+            <div className="flex justify-center">
+              <Button type="submit" className="w-full">
+                {t("login.login-button")}
+              </Button>
+            </div>
+
+            <div
+              onClick={() => {
+                redirect("/auth/register");
+              }}
+              className="flex justify-center my-2"
+            >
+              <span className="text-sm hover:underline hover:cursor-pointer">
+                Not a member? Sign up now.
+              </span>
             </div>
           </form>
         </Form>

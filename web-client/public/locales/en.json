@@ -21,5 +21,43 @@
       "invalid-credentials": "Invalid credentials."
     },
     "unknown-error": "Internal server error."
+  },
+  "register": {
+    "title": "Embark on a whole new journey with kioke.",
+    "description": "Create a new kioke account to start journaling.",
+    "email": {
+      "label": "Email",
+      "placeholder": "Enter your email",
+      "invalid-email": "Invalid email address."
+    },
+    "firstName": {
+      "label": "First Name",
+      "placeholder": "Enter your first name",
+      "invalid-name": "Name cannot be empty."
+    },
+    "lastName": {
+      "label": "Last Name",
+      "placeholder": "Enter your last name",
+      "invalid-name": "Name cannot be empty."
+    },
+    "password": {
+      "label": "Password",
+      "placeholder": "Enter your password",
+      "empty": "Password is empty."
+    },
+    "verifyPassword": {
+      "label": "Verify Password",
+      "placeholder": "Enter your password again",
+      "invalid": "Passwords does not match."
+    },
+    "forgot-password": "Forgot your password?",
+    "login-button": "Login"
+  },
+  "error": {
+    "internal-server-error": "Internal server error.",
+    "login": {
+      "invalid-credentials": "Invalid credentials."
+    },
+    "unknown-error": "Internal server error."
   }
 }
