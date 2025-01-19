@@ -21,8 +21,11 @@ public class UserController {
   @PostMapping
   public ResponseEntity<Void> createUser(
       @RequestBody @Valid CreateUserRequestBodyDto requestBodyDto) {
-    String uid = requestBodyDto.getUid(), email = requestBodyDto.getEmail();
-    userService.createUser(uid, email);
+    userService.createUser(
+        requestBodyDto.getUid(),
+        requestBodyDto.getEmail(),
+        requestBodyDto.getFirstName(),
+        requestBodyDto.getLastName());
 
     return ResponseEntity.status(HttpStatus.CREATED).body(null);
   }

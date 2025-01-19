@@ -25,11 +25,7 @@ import { signInWithCredentials } from "@/lib/auth/actions";
 import { useState } from "react";
 import { getErrorMessage } from "@/constants/errors";
 import { redirect } from "next/navigation";
-
-export const LoginFormSchema = z.object({
-  email: z.string().email(),
-  password: z.string().nonempty(),
-});
+import { LoginFormSchema } from "@/lib/auth";
 
 export default function LoginForm() {
   const t = useTranslations("");

@@ -31,7 +31,7 @@ public class AuthService {
   @Autowired @Lazy private DiscoveryClientService discoveryClientService;
   private RestClient restClient = RestClient.create();
 
-  public User registerUser(String email, String password)
+  public User registerUser(String email, String password, String firstName, String lastName)
       throws UserAlreadyExistsException, ServiceNotFoundException, ServiceFailedException {
     if (userRepository.findUserByEmail(email).isPresent()) {
       throw new UserAlreadyExistsException(email);
@@ -47,7 +47,7 @@ public class AuthService {
         .post()
         .uri(userServiceUri + "/users")
         .contentType(MediaType.APPLICATION_JSON)
-        .body(new CreateUserRequestBodyDto(uid, email))
+        .body(new CreateUserRequestBodyDto(uid, email, firstName, lastName))
         .retrieve()
         .onStatus(
             status -> status != HttpStatus.CREATED,

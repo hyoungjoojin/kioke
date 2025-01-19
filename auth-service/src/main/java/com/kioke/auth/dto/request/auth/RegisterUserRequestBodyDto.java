@@ -7,4 +7,6 @@ import lombok.Data;
 public class RegisterUserRequestBodyDto {
   @NotNull private final String email;
   @NotNull private final String password;
+  @NotNull private final String firstName;
+  @NotNull private final String lastName;
 }
