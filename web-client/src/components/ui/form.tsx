@@ -150,7 +150,7 @@ interface FormMessageProps extends React.HTMLAttributes<HTMLParagraphElement> {
 
 const FormMessage = React.forwardRef<HTMLParagraphElement, FormMessageProps>(
   ({ className, children, ...props }, ref) => {
-    const t = props.t;
+    const { t, ...props_ } = props;
     const { error, formMessageId } = useFormField();
     if (!error) {
       return null;
@@ -171,7 +171,7 @@ const FormMessage = React.forwardRef<HTMLParagraphElement, FormMessageProps>(
         ref={ref}
         id={formMessageId}
         className={cn("text-[0.8rem] font-medium text-destructive", className)}
-        {...props}
+        {...props_}
       >
         {body}
       </p>

@@ -23,6 +23,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { credentialsRegister } from "@/utils/server/auth";
 import { redirect } from "next/navigation";
+import { useState } from "react";
 
 export const RegisterFormSchema = z
   .object({
@@ -59,26 +60,39 @@ export const RegisterFormSchema = z
 export default function RegisterForm() {
   const t = useTranslations("");
 
+  const [isError, setIsError] = useState(false);
+
   const registerForm = useForm<z.infer<typeof RegisterFormSchema>>({
     resolver: zodResolver(RegisterFormSchema),
     defaultValues: {
-      email: "",
-      firstName: "",
-      lastName: "",
-      password: "",
-      verifyPassword: "",
+      email: "a@c.com",
+      firstName: "qasdf",
+      lastName: "sdfasf",
+      password: "12345678",
+      verifyPassword: "12345678",
     },
   });
 
   const formSubmitHandler = async (
     values: z.infer<typeof RegisterFormSchema>,
   ) => {
+    setIsError(false);
+
     const fields = RegisterFormSchema.parse(values);
     const { email, password, firstName, lastName } = fields;
 
-    credentialsRegister(email, password, firstName, lastName).then((_) =>
-      redirect("/auth/login"),
+    const success = await credentialsRegister(
+      email,
+      password,
+      firstName,
+      lastName,
     );
+
+    if (success) {
+      redirect("/auth/login");
+    } else {
+      setIsError(true);
+    }
   };
 
   return (
@@ -89,9 +103,18 @@ export default function RegisterForm() {
       </CardHeader>
 
       <CardContent>
+        {isError && (
+          <p className="text-[0.8rem] font-medium text-destructive">
+            {t("error.internal-server-error")}
+          </p>
+        )}
+
         <Form {...registerForm}>
-          <form onSubmit={registerForm.handleSubmit(formSubmitHandler)}>
-            <div>
+          <form
+            onSubmit={registerForm.handleSubmit(formSubmitHandler)}
+            method="post"
+          >
+            <div className="my-3">
               <FormField
                 name="email"
                 control={registerForm.control}
