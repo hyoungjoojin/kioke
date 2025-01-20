@@ -14,6 +14,7 @@ import {
 
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
+import { Formats, TranslationValues } from "next-intl";
 
 const Form = FormProvider;
 
@@ -143,32 +144,40 @@ const FormDescription = React.forwardRef<
 });
 FormDescription.displayName = "FormDescription";
 
-const FormMessage = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
->(({ className, children, ...props }, ref) => {
-  const { error, formMessageId } = useFormField();
-  if (!error) {
-    return null;
-  }
+interface FormMessageProps extends React.HTMLAttributes<HTMLParagraphElement> {
+  t?: (key: string, values?: TranslationValues, formats?: Formats) => string;
+}
 
-  const body = children ? children : String(error.message);
+const FormMessage = React.forwardRef<HTMLParagraphElement, FormMessageProps>(
+  ({ className, children, ...props }, ref) => {
+    const t = props.t;
+    const { error, formMessageId } = useFormField();
+    if (!error) {
+      return null;
+    }
 
-  if (!body) {
-    return null;
-  }
+    const body = children
+      ? children
+      : t
+        ? t(String(error.message))
+        : String(error.message);
 
-  return (
-    <p
-      ref={ref}
-      id={formMessageId}
-      className={cn("text-[0.8rem] font-medium text-destructive", className)}
-      {...props}
-    >
-      {body}
-    </p>
-  );
-});
+    if (!body) {
+      return null;
+    }
+
+    return (
+      <p
+        ref={ref}
+        id={formMessageId}
+        className={cn("text-[0.8rem] font-medium text-destructive", className)}
+        {...props}
+      >
+        {body}
+      </p>
+    );
+  },
+);
 FormMessage.displayName = "FormMessage";
 
 export {

@@ -28,30 +28,34 @@
     "email": {
       "label": "Email",
       "placeholder": "Enter your email",
-      "invalid-email": "Invalid email address."
+      "invalid": "Enter a valid email address.",
+      "empty": "This field is required."
     },
     "firstName": {
       "label": "First Name",
       "placeholder": "Enter your first name",
-      "invalid-name": "Name cannot be empty."
+      "empty": "This field is required."
     },
     "lastName": {
       "label": "Last Name",
       "placeholder": "Enter your last name",
-      "invalid-name": "Name cannot be empty."
+      "empty": "This field is required."
     },
     "password": {
       "label": "Password",
       "placeholder": "Enter your password",
-      "empty": "Password is empty."
+      "empty": "Password is empty.",
+      "short": "Password has to be longer than 8 characters."
     },
     "verifyPassword": {
       "label": "Verify Password",
       "placeholder": "Enter your password again",
+      "empty": "This field is required.",
       "invalid": "Passwords does not match."
     },
-    "forgot-password": "Forgot your password?",
-    "login-button": "Login"
+    "submit": {
+      "label": "Sign up"
+    }
   },
   "error": {
     "internal-server-error": "Internal server error.",
