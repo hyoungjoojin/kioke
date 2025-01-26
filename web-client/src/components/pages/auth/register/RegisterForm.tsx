@@ -21,9 +21,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { credentialsRegister } from "@/utils/server/auth";
 import { redirect } from "next/navigation";
 import { useState } from "react";
+import { registerWithCredentials } from "@/utils/server/auth";
 
 export const RegisterFormSchema = z
   .object({
@@ -53,8 +53,14 @@ export const RegisterFormSchema = z
       message: "register.verifyPassword.empty",
     }),
   })
-  .refine((values) => values.password === values.verifyPassword, {
-    message: "register.verifyPassword.invalid",
+  .superRefine((val, ctx) => {
+    if (val.password !== val.verifyPassword) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "register.verifyPassword.invalid",
+        path: ["verifyPassword"],
+      });
+    }
   });
 
 export default function RegisterForm() {
@@ -65,11 +71,11 @@ export default function RegisterForm() {
   const registerForm = useForm<z.infer<typeof RegisterFormSchema>>({
     resolver: zodResolver(RegisterFormSchema),
     defaultValues: {
-      email: "a@c.com",
-      firstName: "qasdf",
-      lastName: "sdfasf",
-      password: "12345678",
-      verifyPassword: "12345678",
+      email: "",
+      firstName: "",
+      lastName: "",
+      password: "",
+      verifyPassword: "",
     },
   });
 
@@ -81,7 +87,7 @@ export default function RegisterForm() {
     const fields = RegisterFormSchema.parse(values);
     const { email, password, firstName, lastName } = fields;
 
-    const success = await credentialsRegister(
+    const success = await registerWithCredentials(
       email,
       password,
       firstName,

@@ -83,9 +83,7 @@ export default function LoginForm() {
                       <div className="text-black dark:text-white">
                         {t("login.email.label")}
                       </div>
-                      <FormMessage>
-                        {t("login.email.invalid-email")}
-                      </FormMessage>
+                      <FormMessage t={t} />
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -108,7 +106,7 @@ export default function LoginForm() {
                       <div className="text-black dark:text-white">
                         {t("login.password.label")}
                       </div>
-                      <FormMessage>{t("login.password.empty")}</FormMessage>
+                      <FormMessage t={t} />
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -140,7 +138,7 @@ export default function LoginForm() {
               className="flex justify-center my-2"
             >
               <span className="text-sm hover:underline hover:cursor-pointer">
-                Not a member? Sign up now.
+                {t("login.register")}
               </span>
             </div>
           </form>

@@ -3,7 +3,7 @@
 import { CredentialsLoginResponseBody } from "@/types/server/auth";
 import { kioke } from "./";
 
-export const credentialsLogin = async (email: string, password: string) => {
+export const loginWithCredentials = async (email: string, password: string) => {
   const response = kioke.post<CredentialsLoginResponseBody>("auth/login", {
     json: {
       email,
@@ -14,7 +14,7 @@ export const credentialsLogin = async (email: string, password: string) => {
   return response;
 };
 
-export const credentialsRegister = async (
+export const registerWithCredentials = async (
   email: string,
   password: string,
   firstName: string,

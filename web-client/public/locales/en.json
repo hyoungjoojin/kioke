@@ -5,7 +5,7 @@
     "email": {
       "label": "Email",
       "placeholder": "Enter your email",
-      "invalid-email": "Invalid email address."
+      "invalid": "Invalid email address."
     },
     "password": {
       "label": "Password",
@@ -13,7 +13,8 @@
       "empty": "Password is empty."
     },
     "forgot-password": "Forgot your password?",
-    "login-button": "Login"
+    "login-button": "Login",
+    "register": "Not a member? Sign up now."
   },
   "error": {
     "internal-server-error": "Internal server error.",

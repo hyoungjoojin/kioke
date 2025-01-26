@@ -5,7 +5,7 @@
     "email": {
       "label": "이메일",
       "placeholder": "이메일을 입력하세요",
-      "invalid-email": "이메일 형식이 잘못되었습니다."
+      "invalid": "이메일 형식이 잘못되었습니다."
     },
     "password": {
       "label": "비밀번호",
