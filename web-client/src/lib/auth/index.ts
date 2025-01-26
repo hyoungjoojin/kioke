@@ -5,14 +5,18 @@ import {
   AuthServiceInternalServerError,
   AuthServiceNotAvailableError,
 } from "./errors";
-import { credentialsLogin } from "@/utils/server/auth";
 import { getMyInformation } from "@/utils/server/user";
 import { z } from "zod";
 import { HTTPError } from "ky";
+import { loginWithCredentials } from "@/utils/server/auth";
 
 export const LoginFormSchema = z.object({
-  email: z.string().email(),
-  password: z.string().nonempty(),
+  email: z.string().email({
+    message: "login.email.invalid",
+  }),
+  password: z.string().nonempty({
+    message: "login.password.empty",
+  }),
 });
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -38,7 +42,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         const { email, password } = fields.data;
 
-        const { uid, accessToken } = await credentialsLogin(email, password)
+        const { uid, accessToken } = await loginWithCredentials(email, password)
           .then((response) => response.json())
           .catch((error) => {
             if (error instanceof HTTPError) {

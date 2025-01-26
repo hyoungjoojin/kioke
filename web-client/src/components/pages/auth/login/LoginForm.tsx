@@ -83,9 +83,7 @@ export default function LoginForm() {
                       <div className="text-black dark:text-white">
                         {t("login.email.label")}
                       </div>
-                      <FormMessage>
-                        {t("login.email.invalid-email")}
-                      </FormMessage>
+                      <FormMessage t={t} />
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -108,7 +106,7 @@ export default function LoginForm() {
                       <div className="text-black dark:text-white">
                         {t("login.password.label")}
                       </div>
-                      <FormMessage>{t("login.password.empty")}</FormMessage>
+                      <FormMessage t={t} />
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -127,8 +125,21 @@ export default function LoginForm() {
               </div>
             </div>
 
-            <div className="my-2">
-              <Button type="submit">{t("login.login-button")}</Button>
+            <div className="flex justify-center">
+              <Button type="submit" className="w-full">
+                {t("login.login-button")}
+              </Button>
+            </div>
+
+            <div
+              onClick={() => {
+                redirect("/auth/register");
+              }}
+              className="flex justify-center my-2"
+            >
+              <span className="text-sm hover:underline hover:cursor-pointer">
+                {t("login.register")}
+              </span>
             </div>
           </form>
         </Form>

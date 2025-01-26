@@ -5,7 +5,7 @@
     "email": {
       "label": "Email",
       "placeholder": "Enter your email",
-      "invalid-email": "Invalid email address."
+      "invalid": "Invalid email address."
     },
     "password": {
       "label": "Password",
@@ -13,7 +13,50 @@
       "empty": "Password is empty."
     },
     "forgot-password": "Forgot your password?",
-    "login-button": "Login"
+    "login-button": "Login",
+    "register": "Not a member? Sign up now."
+  },
+  "error": {
+    "internal-server-error": "Internal server error.",
+    "login": {
+      "invalid-credentials": "Invalid credentials."
+    },
+    "unknown-error": "Internal server error."
+  },
+  "register": {
+    "title": "Embark on a whole new journey with kioke.",
+    "description": "Create a new kioke account to start journaling.",
+    "email": {
+      "label": "Email",
+      "placeholder": "Enter your email",
+      "invalid": "Enter a valid email address.",
+      "empty": "This field is required."
+    },
+    "firstName": {
+      "label": "First Name",
+      "placeholder": "Enter your first name",
+      "empty": "This field is required."
+    },
+    "lastName": {
+      "label": "Last Name",
+      "placeholder": "Enter your last name",
+      "empty": "This field is required."
+    },
+    "password": {
+      "label": "Password",
+      "placeholder": "Enter your password",
+      "empty": "Password is empty.",
+      "short": "Password has to be longer than 8 characters."
+    },
+    "verifyPassword": {
+      "label": "Verify Password",
+      "placeholder": "Enter your password again",
+      "empty": "This field is required.",
+      "invalid": "Passwords does not match."
+    },
+    "submit": {
+      "label": "Sign up"
+    }
   },
   "error": {
     "internal-server-error": "Internal server error.",
