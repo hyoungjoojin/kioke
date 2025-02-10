@@ -10,7 +10,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,22 +17,22 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "JOURNAL_TABLE")
+@Table(name = "SHELF_TABLE")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Journal {
+public class Shelf {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  private String jid;
-
-  @OneToMany(mappedBy = "journal")
-  private List<JournalPermission> users;
+  private String id;
 
   @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
-  @JoinColumn(name = "SHELF_ID")
-  private Shelf shelf;
+  @JoinColumn(name = "USER_ID", nullable = false)
+  private User owner;
 
-  @NotNull private String title;
+  @OneToMany(mappedBy = "shelf")
+  private List<Journal> journals;
+
+  private String name;
 }
