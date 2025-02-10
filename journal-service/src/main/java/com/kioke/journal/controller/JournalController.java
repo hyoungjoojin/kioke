@@ -5,12 +5,16 @@ import com.kioke.journal.dto.response.journal.CreateJournalResponseBodyDto;
 import com.kioke.journal.dto.response.journal.GetJournalResponseBodyDto;
 import com.kioke.journal.exception.journal.JournalNotFoundException;
 import com.kioke.journal.exception.permission.AccessDeniedException;
+import com.kioke.journal.exception.shelf.ShelfNotFoundException;
 import com.kioke.journal.exception.user.UserNotFoundException;
 import com.kioke.journal.model.Journal;
+import com.kioke.journal.model.Shelf;
 import com.kioke.journal.model.User;
 import com.kioke.journal.service.JournalPermissionService;
 import com.kioke.journal.service.JournalService;
+import com.kioke.journal.service.ShelfService;
 import com.kioke.journal.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
@@ -24,15 +28,18 @@ public class JournalController {
   @Autowired @Lazy private JournalService journalService;
   @Autowired @Lazy private UserService userService;
   @Autowired @Lazy private JournalPermissionService journalPermissionService;
+  @Autowired @Lazy private ShelfService shelfService;
 
   @PostMapping
   public ResponseEntity<CreateJournalResponseBodyDto> createJournal(
       @RequestAttribute(required = true, name = "uid") String uid,
-      @RequestBody CreateJournalRequestBodyDto requestBodyDto) {
-    String title = requestBodyDto.getTitle();
+      @RequestBody @Valid CreateJournalRequestBodyDto requestBodyDto)
+      throws ShelfNotFoundException {
+    String shelfId = requestBodyDto.getShelfId(), title = requestBodyDto.getTitle();
 
+    Shelf shelf = shelfService.getShelfById(shelfId);
     User user = userService.getUserByIdOrElseCreate(uid);
-    Journal journal = journalService.createJournal(user, title);
+    Journal journal = journalService.createJournal(user, shelf, title);
 
     journalPermissionService.grantAuthorPermissionsToUser(user, journal);
 

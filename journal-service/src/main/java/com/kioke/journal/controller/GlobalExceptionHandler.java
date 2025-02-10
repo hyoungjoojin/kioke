@@ -2,6 +2,7 @@ package com.kioke.journal.controller;
 
 import com.kioke.journal.exception.journal.JournalNotFoundException;
 import com.kioke.journal.exception.permission.AccessDeniedException;
+import com.kioke.journal.exception.shelf.ShelfNotFoundException;
 import com.kioke.journal.exception.user.UserNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
@@ -28,7 +29,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return problemDetail;
   }
 
-  @ExceptionHandler({UserNotFoundException.class, JournalNotFoundException.class})
+  @ExceptionHandler({
+    UserNotFoundException.class,
+    JournalNotFoundException.class,
+    ShelfNotFoundException.class
+  })
   public ProblemDetail resourceNotFoundExceptionHandler(Exception e, HttpServletRequest request) {
     log.debug(e.toString());
 
