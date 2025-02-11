@@ -34,11 +34,11 @@ public class JournalController {
   public ResponseEntity<CreateJournalResponseBodyDto> createJournal(
       @RequestAttribute(required = true, name = "uid") String uid,
       @RequestBody @Valid CreateJournalRequestBodyDto requestBodyDto)
-      throws ShelfNotFoundException {
+      throws UserNotFoundException, ShelfNotFoundException {
     String shelfId = requestBodyDto.getShelfId(), title = requestBodyDto.getTitle();
 
+    User user = userService.getUserById(uid);
     Shelf shelf = shelfService.getShelfById(shelfId);
-    User user = userService.getUserByIdOrElseCreate(uid);
     Journal journal = journalService.createJournal(user, shelf, title);
 
     journalPermissionService.grantAuthorPermissionsToUser(user, journal);

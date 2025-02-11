@@ -5,6 +5,8 @@ import com.kioke.user.dto.request.user.CreateUserRequestBodyDto;
 import com.kioke.user.dto.response.data.user.GetUserResponseBodyDto;
 import com.kioke.user.dto.response.data.user.GetUserResponseBodyDto.*;
 import com.kioke.user.exception.UserDoesNotExistException;
+import com.kioke.user.exception.discovery.ServiceFailedException;
+import com.kioke.user.exception.discovery.ServiceNotFoundException;
 import com.kioke.user.model.User;
 import com.kioke.user.service.UserService;
 import jakarta.validation.Valid;
@@ -21,7 +23,8 @@ public class UserController {
 
   @PostMapping
   public ResponseEntity<Void> createUser(
-      @RequestBody @Valid CreateUserRequestBodyDto requestBodyDto) {
+      @RequestBody @Valid CreateUserRequestBodyDto requestBodyDto)
+      throws ServiceNotFoundException, ServiceFailedException {
     userService.createUser(CreateUserDto.from(requestBodyDto));
 
     return ResponseEntity.status(HttpStatus.CREATED).body(null);
