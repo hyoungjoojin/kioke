@@ -4,6 +4,7 @@ import com.kioke.journal.exception.shelf.ShelfNotFoundException;
 import com.kioke.journal.model.Shelf;
 import com.kioke.journal.model.User;
 import com.kioke.journal.repository.ShelfRepository;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -20,5 +21,9 @@ public class ShelfService {
 
   public Shelf getShelfById(String shelfId) throws ShelfNotFoundException {
     return shelfRepository.findById(shelfId).orElseThrow(() -> new ShelfNotFoundException(shelfId));
+  }
+
+  public List<Shelf> getShelves(User user) {
+    return user.getShelves();
   }
 }

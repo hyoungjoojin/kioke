@@ -2,17 +2,20 @@ package com.kioke.journal.controller;
 
 import com.kioke.journal.dto.request.shelf.CreateShelfRequestBodyDto;
 import com.kioke.journal.dto.response.shelf.CreateShelfResponseBodyDto;
+import com.kioke.journal.dto.response.shelf.GetShelvesResponseBodyDto;
 import com.kioke.journal.exception.user.UserNotFoundException;
 import com.kioke.journal.model.Shelf;
 import com.kioke.journal.model.User;
 import com.kioke.journal.service.ShelfService;
 import com.kioke.journal.service.UserService;
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,5 +42,17 @@ public class ShelfController {
     return ResponseEntity.status(HttpStatus.CREATED)
         .contentType(MediaType.APPLICATION_JSON)
         .body(CreateShelfResponseBodyDto.from(shelf));
+  }
+
+  @GetMapping
+  public ResponseEntity<GetShelvesResponseBodyDto> getShelves(
+      @RequestAttribute(required = true, name = "uid") String uid) throws UserNotFoundException {
+    User user = userService.getUserById(uid);
+
+    List<Shelf> shelves = shelfService.getShelves(user);
+
+    return ResponseEntity.status(HttpStatus.OK)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(GetShelvesResponseBodyDto.from(shelves));
   }
 }
