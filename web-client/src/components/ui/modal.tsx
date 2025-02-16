@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import Image from "next/image";
+import { X } from "lucide-react";
 
 interface ModalProps {
   children: React.ReactNode;
@@ -36,12 +36,7 @@ export default function Modal({ children, title }: ModalProps) {
             router.back();
           }}
         >
-          <Image
-            src="/assets/icons/close.svg"
-            alt="Close Modal"
-            width={20}
-            height={20}
-          />
+          <X />
         </div>
       </div>
       <div>{children}</div>
