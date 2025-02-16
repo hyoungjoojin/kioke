@@ -10,8 +10,10 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
+  modal,
 }: Readonly<{
   children: React.ReactNode;
+  modal: React.ReactNode;
 }>) {
   const locale = await getLocale();
   const messages = await getMessages();
@@ -27,6 +29,7 @@ export default async function RootLayout({
             disableTransitionOnChange
           >
             {children}
+            {modal}
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>
