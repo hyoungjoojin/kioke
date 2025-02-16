@@ -8,6 +8,7 @@ import com.kioke.user.exception.discovery.ServiceFailedException;
 import com.kioke.user.exception.discovery.ServiceNotFoundException;
 import com.kioke.user.model.User;
 import com.kioke.user.repository.UserRepository;
+import com.kioke.user.service.DiscoveryClientService.KiokeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
@@ -34,7 +35,7 @@ public class UserService {
 
     restClient
         .post()
-        .uri(discoveryClientService.getServiceUri("journal") + "/users")
+        .uri(discoveryClientService.getServiceUri(KiokeService.JOURNAL) + "/users")
         .body(new JournalServiceCreateUserRequestBodyDto(user.getUid()))
         .retrieve()
         .onStatus(
