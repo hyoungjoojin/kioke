@@ -5,10 +5,10 @@ import {
   AuthServiceInternalServerError,
   AuthServiceNotAvailableError,
 } from "./errors";
-import { getMyInformation } from "@/utils/server/user";
 import { z } from "zod";
 import { HTTPError } from "ky";
-import { loginWithCredentials } from "@/utils/server/auth";
+import { loginWithCredentials } from "@/app/api/auth";
+import { getMyInformation } from "@/app/api/user";
 
 export const LoginFormSchema = z.object({
   email: z.string().email({

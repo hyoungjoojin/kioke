@@ -1,7 +1,7 @@
 "use server";
 
 import { CredentialsLoginResponseBody } from "@/types/server/auth";
-import { kioke } from "./";
+import { kioke } from "@/utils/server";
 
 export const loginWithCredentials = async (email: string, password: string) => {
   const response = kioke.post<CredentialsLoginResponseBody>("auth/login", {

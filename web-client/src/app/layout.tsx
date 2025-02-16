@@ -3,6 +3,10 @@ import "@/styles/globals.css";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import QueryProvider from "@/components/providers/QueryProvider";
+import { StoreProvider } from "@/components/providers/StoreProvider";
+import { AuthProvider } from "@/components/providers/AuthProvider";
+import { auth } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "kioke",
@@ -13,6 +17,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
   const locale = await getLocale();
   const messages = await getMessages();
 
@@ -26,7 +31,11 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <AuthProvider session={session}>
+              <StoreProvider>
+                <QueryProvider>{children}</QueryProvider>
+              </StoreProvider>
+            </AuthProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>

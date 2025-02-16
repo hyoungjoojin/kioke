@@ -46,6 +46,22 @@ spring:
           filters:
             - TokenAuthenticationFilter
 
+        - id: Kioke Journal Service Create Shelf
+          uri: lb://journal
+          predicates:
+            - Path=/shelves
+            - Method=POST
+          filters:
+            - TokenAuthenticationFilter
+
+        - id: Kioke Journal Service Get Shelves
+          uri: lb://journal
+          predicates:
+            - Path=/shelves
+            - Method=GET
+          filters:
+            - TokenAuthenticationFilter
+
         - id: Kioke Journal Service Create Journal
           uri: lb://journal
           predicates:
