@@ -14,8 +14,10 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
+  modal,
 }: Readonly<{
   children: React.ReactNode;
+  modal: React.ReactNode;
 }>) {
   const session = await auth();
   const locale = await getLocale();
@@ -33,7 +35,10 @@ export default async function RootLayout({
           >
             <AuthProvider session={session}>
               <StoreProvider>
-                <QueryProvider>{children}</QueryProvider>
+                <QueryProvider>
+                  {children}
+                  {modal}
+                </QueryProvider>
               </StoreProvider>
             </AuthProvider>
           </ThemeProvider>
