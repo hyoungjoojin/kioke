@@ -2,6 +2,8 @@ package com.kioke.user.controller;
 
 import com.kioke.user.exception.ExpectedException;
 import com.kioke.user.exception.UserDoesNotExistException;
+import com.kioke.user.exception.discovery.ServiceFailedException;
+import com.kioke.user.exception.discovery.ServiceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +30,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return problemDetail;
   }
 
-  @ExceptionHandler(Exception.class)
+  @ExceptionHandler({Exception.class, ServiceNotFoundException.class, ServiceFailedException.class})
   public ProblemDetail exceptionHandler(Exception e, HttpServletRequest request) {
     log.error(e.getMessage());
     log.info(e.getStackTrace().toString());

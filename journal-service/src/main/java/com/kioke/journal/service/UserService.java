@@ -13,11 +13,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
   @Autowired @Lazy private UserRepository userRepository;
 
-  public User getUserById(String uid) throws UserNotFoundException {
-    return userRepository.findById(uid).orElseThrow(() -> new UserNotFoundException(uid));
-  }
-
-  public User getUserByIdOrElseCreate(String uid) {
+  public User createUser(String uid) {
     Optional<User> user = userRepository.findById(uid);
     if (user.isPresent()) {
       return user.get();
@@ -26,5 +22,9 @@ public class UserService {
     User newUser = User.builder().uid(uid).journals(new ArrayList<>()).build();
     newUser = userRepository.save(newUser);
     return newUser;
+  }
+
+  public User getUserById(String uid) throws UserNotFoundException {
+    return userRepository.findById(uid).orElseThrow(() -> new UserNotFoundException(uid));
   }
 }

@@ -19,6 +19,9 @@ import lombok.NoArgsConstructor;
 public class User {
   @Id private String uid;
 
+  @OneToMany(mappedBy = "owner")
+  private List<Shelf> shelves;
+
   @OneToMany(mappedBy = "user")
   private List<JournalPermission> journals;
 }

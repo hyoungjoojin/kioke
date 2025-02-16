@@ -2,6 +2,16 @@ import { auth } from "@/lib/auth";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import ShelfHeader from "@/components/pages/home/ShelfHeader";
+import { getShelves } from "../api/shelf";
+import JournalList from "@/components/pages/home/JournalList";
 
 export default async function Home() {
   const session = await auth();
@@ -10,6 +20,8 @@ export default async function Home() {
   if (!user) {
     redirect("/auth/login");
   }
+
+  const shelves = await getShelves();
 
   return (
     <>
@@ -22,9 +34,27 @@ export default async function Home() {
               </AvatarFallback>
             </Avatar>
           </Link>
-          <span></span>
         </div>
       </header>
+      <main>
+        <div className="w-full flex flex-col justify-center items-center">
+          <ShelfHeader shelves={shelves} />
+
+          <div className="lg:w-1/2 w-4/5">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Description</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <JournalList />
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+      </main>
     </>
   );
 }
