@@ -38,7 +38,9 @@ export default async function Home() {
       </header>
       <main>
         <div className="w-full flex flex-col justify-center items-center">
-          <ShelfHeader shelves={shelves} />
+          <Link href="/shelves">
+            <ShelfHeader shelves={shelves} />
+          </Link>
 
           <div className="lg:w-1/2 w-4/5">
             <Table>
