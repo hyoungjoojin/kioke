@@ -1,12 +1,10 @@
 "use client";
 
-import { useBoundStore } from "@/components/providers/StoreProvider";
 import { TableCell, TableRow } from "@/components/ui/table";
+import { useShelf } from "@/hooks/store";
 
 export default function JournalList() {
-  const selectedShelf = useBoundStore((state) =>
-    state.actions.getSelectedShelf(),
-  );
+  const { selectedShelf } = useShelf();
 
   return (
     <>

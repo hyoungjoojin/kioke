@@ -1,6 +1,6 @@
 "use client";
 
-import { useBoundStore } from "@/components/providers/StoreProvider";
+import { useShelf, useShelfActions } from "@/hooks/store";
 import { GetShelvesResponseBody } from "@/types/server/shelf";
 import { useEffect } from "react";
 
@@ -9,10 +9,8 @@ export default function ShelfHeader({
 }: {
   shelves: GetShelvesResponseBody;
 }) {
-  const setShelves = useBoundStore((state) => state.actions.setShelves);
-  const selectedShelf = useBoundStore((state) =>
-    state.actions.getSelectedShelf(),
-  );
+  const { selectedShelf } = useShelf();
+  const { setShelves } = useShelfActions();
 
   useEffect(() => {
     setShelves(shelves);
