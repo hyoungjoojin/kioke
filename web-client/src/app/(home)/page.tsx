@@ -12,6 +12,8 @@ import {
 import ShelfHeader from "@/components/pages/home/ShelfHeader";
 import { getShelves } from "../api/shelf";
 import JournalList from "@/components/pages/home/JournalList";
+import { Button } from "@/components/ui/button";
+import { SquarePen } from "lucide-react";
 
 export default async function Home() {
   const session = await auth();
@@ -43,6 +45,13 @@ export default async function Home() {
           </Link>
 
           <div className="lg:w-1/2 w-4/5">
+            <div className="flex w-full justify-end">
+              <Link href="/journal/new">
+                <Button variant="outline">
+                  <SquarePen />
+                </Button>
+              </Link>
+            </div>
             <Table>
               <TableHeader>
                 <TableRow>
