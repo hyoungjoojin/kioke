@@ -9,6 +9,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { useShelf, useShelfActions } from "@/hooks/store";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -33,10 +34,8 @@ export default function ShelvesModal() {
     };
   });
 
-  const setSelectedShelf = useBoundStore(
-    (state) => state.actions.setSelectedShelf,
-  );
-  const shelves = useBoundStore((state) => state.shelves);
+  const { shelves } = useShelf();
+  const { setSelectedShelf } = useShelfActions();
 
   return (
     <Command
