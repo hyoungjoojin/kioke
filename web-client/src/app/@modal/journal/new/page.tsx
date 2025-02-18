@@ -13,9 +13,9 @@ import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { useBoundStore } from "@/components/providers/StoreProvider";
 import { createJournal } from "@/app/api/journal";
 import { useRouter } from "next/navigation";
+import { useShelf } from "@/hooks/store";
 
 const CreateJournalFormSchema = z.object({
   title: z.string().nonempty(),
@@ -24,9 +24,7 @@ const CreateJournalFormSchema = z.object({
 export default function CreateJournalModal() {
   const router = useRouter();
 
-  const selectedShelf = useBoundStore((state) =>
-    state.actions.getSelectedShelf(),
-  );
+  const { selectedShelf } = useShelf();
 
   const createJournalForm = useForm<z.infer<typeof CreateJournalFormSchema>>({
     resolver: zodResolver(CreateJournalFormSchema),
