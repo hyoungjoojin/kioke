@@ -2,10 +2,10 @@ package com.kioke.user.service;
 
 import com.kioke.user.dto.data.user.CreateUserDto;
 import com.kioke.user.dto.external.journal.JournalServiceCreateUserRequestBodyDto;
-import com.kioke.user.exception.UserDoesNotExistException;
-import com.kioke.user.exception.UserDoesNotExistException.UserIdentifierType;
 import com.kioke.user.exception.discovery.ServiceFailedException;
 import com.kioke.user.exception.discovery.ServiceNotFoundException;
+import com.kioke.user.exception.user.UserDoesNotExistException;
+import com.kioke.user.exception.user.UserDoesNotExistException.UserIdentifierType;
 import com.kioke.user.model.User;
 import com.kioke.user.repository.UserRepository;
 import com.kioke.user.service.DiscoveryClientService.KiokeService;

@@ -46,6 +46,22 @@ spring:
           filters:
             - TokenAuthenticationFilter
 
+        - id: Kioke User Service Get Friends
+          uri: lb://user
+          predicates:
+            - Path=/friends
+            - Method=GET
+          filters:
+            - TokenAuthenticationFilter
+
+        - id: Kioke User Service Add Friend
+          uri: lb://user
+          predicates:
+            - Path=/friends
+            - Method=POST
+          filters:
+            - TokenAuthenticationFilter
+
         - id: Kioke Journal Service Create Shelf
           uri: lb://journal
           predicates:
