@@ -14,6 +14,7 @@ import JournalList from "@/components/pages/home/JournalList";
 import { Button } from "@/components/ui/button";
 import { SquarePen } from "lucide-react";
 import ProfileButton from "@/components/pages/home/ProfileButton";
+import SocialButton from "@/components/pages/home/SocialButton";
 
 export default async function Home() {
   const session = await auth();
@@ -27,8 +28,9 @@ export default async function Home() {
 
   return (
     <>
-      <header className="flex justify-between items-center w-screen my-3">
+      <header className="flex justify-between items-center w-screen my-3 px-4">
         <ProfileButton firstName={user.firstName} lastName={user.lastName} />
+        <SocialButton />
       </header>
 
       <main>

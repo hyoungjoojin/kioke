@@ -24,7 +24,7 @@ export default function ProfileButton({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <div className="flex justify-center items-center mx-4">
+        <div className="flex justify-center items-center hover:cursor-pointer">
           <Avatar className="mr-2 h-8 w-8">
             <AvatarFallback>{`${firstName[0]}${lastName[0]}`}</AvatarFallback>
           </Avatar>
