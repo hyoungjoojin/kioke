@@ -10,6 +10,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { useShelf, useShelfActions } from "@/hooks/store";
+import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -42,7 +43,11 @@ export default function ShelvesModal() {
       onClick={(e) => {
         e.stopPropagation();
       }}
-      className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2/5 h-1/2 border border-black"
+      className={cn(
+        "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2",
+        "w-2/5 h-1/2",
+        "bg-white shadow-lg dark:bg-gray-700 border",
+      )}
     >
       <CommandInput placeholder="Enter a shelf to move to" />
       <CommandList>

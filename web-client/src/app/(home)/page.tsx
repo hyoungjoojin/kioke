@@ -1,13 +1,6 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import ShelfHeader from "@/components/pages/home/ShelfHeader";
 import { getShelves } from "../api/shelf";
 import JournalList from "@/components/pages/home/JournalList";
@@ -45,17 +38,8 @@ export default async function Home() {
                 </Button>
               </Link>
             </div>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Description</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <JournalList />
-              </TableBody>
-            </Table>
+
+            <JournalList />
           </div>
         </div>
       </main>
