@@ -1,5 +1,4 @@
 import { auth } from "@/lib/auth";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import {
@@ -14,6 +13,7 @@ import { getShelves } from "../api/shelf";
 import JournalList from "@/components/pages/home/JournalList";
 import { Button } from "@/components/ui/button";
 import { SquarePen } from "lucide-react";
+import ProfileButton from "@/components/pages/home/ProfileButton";
 
 export default async function Home() {
   const session = await auth();
@@ -27,17 +27,10 @@ export default async function Home() {
 
   return (
     <>
-      <header className="flex justify-between items-center w-screen my-5">
-        <div>
-          <Link href="/settings">
-            <Avatar className="mx-5">
-              <AvatarFallback>
-                {`${user.firstName[0]}${user.lastName[0]}`}
-              </AvatarFallback>
-            </Avatar>
-          </Link>
-        </div>
+      <header className="flex justify-between items-center w-screen my-3">
+        <ProfileButton firstName={user.firstName} lastName={user.lastName} />
       </header>
+
       <main>
         <div className="w-full flex flex-col justify-center items-center">
           <Link href="/shelves">
