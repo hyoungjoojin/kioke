@@ -1,9 +1,9 @@
 package com.kioke.user.controller;
 
-import com.kioke.user.exception.ExpectedException;
-import com.kioke.user.exception.UserDoesNotExistException;
-import com.kioke.user.exception.discovery.ServiceFailedException;
-import com.kioke.user.exception.discovery.ServiceNotFoundException;
+import com.kioke.user.exception.KiokeException;
+import com.kioke.user.exception.discovery.*;
+import com.kioke.user.exception.friend.*;
+import com.kioke.user.exception.user.*;
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import lombok.extern.slf4j.Slf4j;
@@ -17,17 +17,15 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @Slf4j
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-  @ExceptionHandler({UserDoesNotExistException.class})
-  public ProblemDetail expectedExceptionHandler(ExpectedException e, HttpServletRequest request) {
-    log.info(e.getMessage());
-
-    ProblemDetail problemDetail =
-        ProblemDetail.forStatusAndDetail(e.getHttpStatus(), e.getMessage());
-    problemDetail.setType(e.getType());
-    problemDetail.setTitle(e.getTitle());
-    problemDetail.setInstance(URI.create(request.getRequestURI()));
-
-    return problemDetail;
+  @ExceptionHandler({
+    UserDoesNotExistException.class,
+    CannotAddSelfAsFriendException.class,
+    FriendRelationAlreadyExistsException.class,
+    FriendRequestAlreadySentException.class
+  })
+  public ProblemDetail kiokeExceptionHandler(KiokeException e, HttpServletRequest request) {
+    URI instance = URI.create(request.getRequestURI());
+    return e.intoProblemDetail(instance);
   }
 
   @ExceptionHandler({Exception.class, ServiceNotFoundException.class, ServiceFailedException.class})

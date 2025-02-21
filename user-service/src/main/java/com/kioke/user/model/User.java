@@ -5,10 +5,12 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import java.time.OffsetDateTime;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Builder.Default;
@@ -33,6 +35,12 @@ public class User {
   private String firstName;
 
   private String lastName;
+
+  @OneToMany(mappedBy = "friend")
+  private List<Friend> inboundFriendships;
+
+  @OneToMany(mappedBy = "user")
+  private List<Friend> outboundFriendships;
 
   @Default
   @Convert(converter = PreferencesConverter.class)
