@@ -7,6 +7,11 @@ spring:
     username: kioke
     password: password
 
+  devtools:
+    restart:
+      enabled:
+        true
+
 postgres:
   user: kioke
   password: password
