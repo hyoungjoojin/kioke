@@ -9,13 +9,17 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { useShelf, useShelfActions } from "@/hooks/store";
+import { useShelvesQuery } from "@/hooks/query";
+import { useSetSelectedShelfIndex } from "@/hooks/store";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function ShelvesModal() {
   const router = useRouter();
+
+  const { data: getShelvesResponse } = useShelvesQuery();
+  const setSelectedShelfIndex = useSetSelectedShelfIndex();
 
   useEffect(() => {
     const clickHandler = () => {
@@ -35,8 +39,7 @@ export default function ShelvesModal() {
     };
   });
 
-  const { shelves } = useShelf();
-  const { setSelectedShelf } = useShelfActions();
+  const shelves = getShelvesResponse?.shelves;
 
   return (
     <Command
@@ -51,15 +54,14 @@ export default function ShelvesModal() {
     >
       <CommandInput placeholder="Enter a shelf to move to" />
       <CommandList>
-        <CommandEmpty>No results found.</CommandEmpty>
-
         <CommandGroup heading="Shelves">
+          <CommandEmpty>No results found.</CommandEmpty>
           {shelves &&
             shelves.map((shelf, index) => (
               <CommandItem
                 key={index}
                 onSelect={() => {
-                  setSelectedShelf(index);
+                  setSelectedShelfIndex(shelves, index);
                   router.back();
                 }}
               >

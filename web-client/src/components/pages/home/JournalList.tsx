@@ -1,6 +1,5 @@
 "use client";
 
-import { useShelf } from "@/hooks/store";
 import {
   Table,
   TableBody,
@@ -10,6 +9,8 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { useRouter } from "next/navigation";
+import { useShelvesQuery } from "@/hooks/query";
+import { useGetSelectedShelf } from "@/hooks/store";
 
 interface JournalRowProps {
   id: string;
@@ -35,7 +36,8 @@ const JournalRow = (props: JournalRowProps) => {
 };
 
 export default function JournalList() {
-  const { selectedShelf } = useShelf();
+  const { data: getShelvesResponse, isLoading, isError } = useShelvesQuery();
+  const selectedShelf = useGetSelectedShelf(getShelvesResponse?.shelves);
 
   return (
     <Table>
@@ -45,12 +47,15 @@ export default function JournalList() {
           <TableHead>Description</TableHead>
         </TableRow>
       </TableHeader>
+
       <TableBody>
-        {selectedShelf?.journals.map((journal, index) => {
-          return (
-            <JournalRow key={index} id={journal.id} title={journal.title} />
-          );
-        })}
+        {!isLoading && !isError && selectedShelf
+          ? selectedShelf.journals.map((journal, index) => {
+              return (
+                <JournalRow key={index} id={journal.id} title={journal.title} />
+              );
+            })
+          : null}
       </TableBody>
     </Table>
   );

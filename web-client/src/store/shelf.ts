@@ -1,25 +1,14 @@
 import { StateCreator } from "zustand";
 import { produce } from "immer";
-import { GetShelvesResponseBody } from "@/types/server/shelf";
-
-interface Shelf {
-  id: string;
-  name: string;
-  journals: {
-    id: string;
-    title: string;
-  }[];
-}
+import { Shelf } from "@/types/shelf";
 
 interface ShelfState {
   selectedShelfIndex: number;
-  shelves: Shelf[];
 }
 
 interface ShelfActions {
-  setShelves: (shelves: GetShelvesResponseBody) => void;
-  getSelectedShelf: () => Shelf | null;
-  setSelectedShelf: (index: number) => void;
+  getSelectedShelf: (shelves: Shelf[] | undefined) => Shelf | null;
+  setSelectedShelfIndex: (shelves: Shelf[], index: number) => void;
 }
 
 export type ShelfSlice = ShelfState & {
@@ -27,44 +16,54 @@ export type ShelfSlice = ShelfState & {
 };
 
 const initialState: ShelfState = {
-  shelves: [],
   selectedShelfIndex: -1,
 };
-
 export const createShelfSlice: StateCreator<ShelfSlice, [], [], ShelfSlice> = (
   set,
   get,
 ) => ({
   ...initialState,
   actions: {
-    setShelves: ({ shelves }) => {
-      if (shelves.length === 0) return;
+    getSelectedShelf: (shelves: Shelf[] | undefined) => {
+      if (shelves === undefined) {
+        set(
+          produce((state: ShelfSlice) => {
+            state.selectedShelfIndex = -1;
+          }),
+        );
+
+        return null;
+      }
+
+      const { selectedShelfIndex } = get();
+      if (selectedShelfIndex >= 0 && selectedShelfIndex < shelves.length) {
+        return shelves[selectedShelfIndex];
+      }
+
+      if (shelves.length > 0) {
+        set(
+          produce((state: ShelfSlice) => {
+            state.selectedShelfIndex = 0;
+          }),
+        );
+
+        return shelves[0];
+      }
 
       set(
         produce((state: ShelfSlice) => {
-          if (state.shelves.length === 0) state.selectedShelfIndex = 0;
-
-          state.shelves = shelves.map((shelf) => {
-            return {
-              id: shelf.id,
-              name: shelf.name,
-              journals: shelf.journals,
-            };
-          });
+          state.selectedShelfIndex = -1;
         }),
       );
-    },
-    getSelectedShelf: () => {
-      const { selectedShelfIndex, shelves } = get();
-      if (selectedShelfIndex === -1 || selectedShelfIndex >= shelves.length)
-        return null;
 
-      return shelves[selectedShelfIndex];
+      return null;
     },
-    setSelectedShelf: (index: number) => {
+
+    setSelectedShelfIndex: (shelves: Shelf[], index: number) => {
       set(
         produce((state: ShelfSlice) => {
-          state.selectedShelfIndex = index;
+          state.selectedShelfIndex =
+            index >= 0 && index < shelves.length ? index : -1;
         }),
       );
     },
