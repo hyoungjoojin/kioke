@@ -1,6 +1,5 @@
 "use client";
 
-import { useBoundStore } from "@/components/providers/StoreProvider";
 import {
   Command,
   CommandEmpty,
@@ -9,12 +8,17 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { useShelf, useShelfActions } from "@/hooks/store";
+import { useShelvesQuery } from "@/hooks/query";
+import { useSelectedShelfIndex } from "@/hooks/store";
+import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function ShelvesModal() {
   const router = useRouter();
+
+  const { data } = useShelvesQuery();
+  const { setSelectedShelfIndex } = useSelectedShelfIndex();
 
   useEffect(() => {
     const clickHandler = () => {
@@ -34,27 +38,29 @@ export default function ShelvesModal() {
     };
   });
 
-  const { shelves } = useShelf();
-  const { setSelectedShelf } = useShelfActions();
+  const shelves = data?.shelves;
 
   return (
     <Command
       onClick={(e) => {
         e.stopPropagation();
       }}
-      className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2/5 h-1/2 border border-black"
+      className={cn(
+        "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2",
+        "w-2/5 h-1/2",
+        "bg-white shadow-lg dark:bg-gray-700 border",
+      )}
     >
       <CommandInput placeholder="Enter a shelf to move to" />
       <CommandList>
-        <CommandEmpty>No results found.</CommandEmpty>
-
         <CommandGroup heading="Shelves">
+          <CommandEmpty>No results found.</CommandEmpty>
           {shelves &&
             shelves.map((shelf, index) => (
               <CommandItem
                 key={index}
                 onSelect={() => {
-                  setSelectedShelf(index);
+                  setSelectedShelfIndex(shelves, index);
                   router.back();
                 }}
               >

@@ -1,10 +1,5 @@
+import { Shelf } from "@/types/shelf";
+
 export interface GetShelvesResponseBody {
-  shelves: {
-    id: string;
-    name: string;
-    journals: {
-      id: string;
-      title: string;
-    }[];
-  }[];
+  shelves: Shelf[];
 }

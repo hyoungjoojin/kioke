@@ -1,20 +1,26 @@
 "use client";
 
-import { useShelf, useShelfActions } from "@/hooks/store";
-import { GetShelvesResponseBody } from "@/types/server/shelf";
-import { useEffect } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useShelvesQuery } from "@/hooks/query";
+import { useSelectedShelf } from "@/hooks/store";
 
-export default function ShelfHeader({
-  shelves,
-}: {
-  shelves: GetShelvesResponseBody;
-}) {
-  const { selectedShelf } = useShelf();
-  const { setShelves } = useShelfActions();
+const ShelfHeaderSkeleton = () => {
+  return <Skeleton className="h-12 w-64 my-10 rounded-lg" />;
+};
 
-  useEffect(() => {
-    setShelves(shelves);
-  }, [shelves, setShelves]);
+export default function ShelfHeader() {
+  const { data, isLoading, isError } = useShelvesQuery();
+  const selectedShelf = useSelectedShelf(data?.shelves);
 
-  return <h1 className="text-3xl my-10">{selectedShelf?.name}</h1>;
+  if (isLoading || isError) {
+    return <ShelfHeaderSkeleton />;
+  }
+
+  return selectedShelf ? (
+    <div className="h-16 my-10 flex justify-center items-center">
+      <h1 className="text-3xl">{selectedShelf.name}</h1>
+    </div>
+  ) : (
+    <ShelfHeaderSkeleton />
+  );
 }

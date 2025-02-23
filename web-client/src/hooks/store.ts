@@ -1,18 +1,20 @@
 import { useBoundStore } from "@/components/providers/StoreProvider";
+import { Shelf } from "@/types/shelf";
 
-export const useShelf = () => {
-  const shelves = useBoundStore((state) => state.shelves);
+export const useSelectedShelf = (shelves: Shelf[] | undefined) => {
   const selectedShelf = useBoundStore((state) =>
-    state.actions.getSelectedShelf(),
+    state.actions.getSelectedShelf(shelves),
   );
 
-  return { shelves, selectedShelf };
+  return selectedShelf;
 };
 
-export const useShelfActions = () => {
-  const { setShelves, getSelectedShelf, setSelectedShelf } = useBoundStore(
-    (state) => state.actions,
+export const useSelectedShelfIndex = () => {
+  const selectedShelfIndex = useBoundStore((state) => state.selectedShelfIndex);
+
+  const setSelectedShelfIndex = useBoundStore(
+    (state) => state.actions.setSelectedShelfIndex,
   );
 
-  return { setShelves, getSelectedShelf, setSelectedShelf };
+  return { selectedShelfIndex, setSelectedShelfIndex };
 };

@@ -22,4 +22,5 @@ export const protectedKioke = kioke.extend({
       },
     ],
   },
+  credentials: "include",
 });

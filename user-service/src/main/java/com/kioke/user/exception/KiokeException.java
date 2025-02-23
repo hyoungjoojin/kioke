@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 
 public abstract class KiokeException extends Exception {
+  public KiokeException() {}
+
   public KiokeException(String message) {
     super(message);
   }
