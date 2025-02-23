@@ -18,6 +18,7 @@ export type ShelfSlice = ShelfState & {
 const initialState: ShelfState = {
   selectedShelfIndex: -1,
 };
+
 export const createShelfSlice: StateCreator<ShelfSlice, [], [], ShelfSlice> = (
   set,
   get,

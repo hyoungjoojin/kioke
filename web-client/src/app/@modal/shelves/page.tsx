@@ -1,6 +1,5 @@
 "use client";
 
-import { useBoundStore } from "@/components/providers/StoreProvider";
 import {
   Command,
   CommandEmpty,
@@ -10,7 +9,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { useShelvesQuery } from "@/hooks/query";
-import { useSetSelectedShelfIndex } from "@/hooks/store";
+import { useSelectedShelfIndex } from "@/hooks/store";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -18,8 +17,8 @@ import { useEffect } from "react";
 export default function ShelvesModal() {
   const router = useRouter();
 
-  const { data: getShelvesResponse } = useShelvesQuery();
-  const setSelectedShelfIndex = useSetSelectedShelfIndex();
+  const { data } = useShelvesQuery();
+  const { setSelectedShelfIndex } = useSelectedShelfIndex();
 
   useEffect(() => {
     const clickHandler = () => {
@@ -39,7 +38,7 @@ export default function ShelvesModal() {
     };
   });
 
-  const shelves = getShelvesResponse?.shelves;
+  const shelves = data?.shelves;
 
   return (
     <Command

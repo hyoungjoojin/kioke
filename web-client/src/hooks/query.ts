@@ -6,6 +6,7 @@ export const useShelvesQuery = () => {
   return useQuery({
     queryKey: ["shelves"],
     queryFn: getShelves,
+    staleTime: 60 * 1000,
   });
 };
 
@@ -15,5 +16,6 @@ export const useJournalQuery = (jid: string) => {
     queryFn: () => {
       return getJournal(jid);
     },
+    staleTime: 60 * 1000,
   });
 };

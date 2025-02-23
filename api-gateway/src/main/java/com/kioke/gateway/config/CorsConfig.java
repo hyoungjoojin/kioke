@@ -8,7 +8,6 @@ import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 @Configuration
-@Slf4j
 public class CorsConfig {
 
   @Bean

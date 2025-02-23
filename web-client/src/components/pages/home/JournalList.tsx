@@ -10,21 +10,19 @@ import {
 } from "@/components/ui/table";
 import { useRouter } from "next/navigation";
 import { useShelvesQuery } from "@/hooks/query";
-import { useGetSelectedShelf } from "@/hooks/store";
+import { useSelectedShelf } from "@/hooks/store";
 
-interface JournalRowProps {
+interface JournalListItemProps {
   id: string;
   title: string;
 }
 
-const JournalRow = (props: JournalRowProps) => {
+const JournalListItem = ({ id, title }: JournalListItemProps) => {
   const router = useRouter();
-
-  const { title, id } = props;
 
   return (
     <TableRow
-      className="hover:bg-muted hover:cursor-pointer"
+      changeOnHover
       onClick={() => {
         router.push(`/journal/${id}/preview`);
       }}
@@ -36,8 +34,8 @@ const JournalRow = (props: JournalRowProps) => {
 };
 
 export default function JournalList() {
-  const { data: getShelvesResponse, isLoading, isError } = useShelvesQuery();
-  const selectedShelf = useGetSelectedShelf(getShelvesResponse?.shelves);
+  const { data, isLoading, isError } = useShelvesQuery();
+  const selectedShelf = useSelectedShelf(data?.shelves);
 
   return (
     <Table>
@@ -52,7 +50,11 @@ export default function JournalList() {
         {!isLoading && !isError && selectedShelf
           ? selectedShelf.journals.map((journal, index) => {
               return (
-                <JournalRow key={index} id={journal.id} title={journal.title} />
+                <JournalListItem
+                  key={index}
+                  id={journal.id}
+                  title={journal.title}
+                />
               );
             })
           : null}

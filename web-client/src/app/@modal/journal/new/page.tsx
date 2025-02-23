@@ -16,9 +16,9 @@ import { Button } from "@/components/ui/button";
 import { createJournal } from "@/app/api/journal";
 import { useRouter } from "next/navigation";
 import { useShelvesQuery } from "@/hooks/query";
-import { useGetSelectedShelf } from "@/hooks/store";
 import { getQueryClient } from "@/components/providers/QueryProvider";
 import { getShelves } from "@/app/api/shelf";
+import { useSelectedShelf } from "@/hooks/store";
 
 const CreateJournalFormSchema = z.object({
   title: z.string().nonempty(),
@@ -29,8 +29,8 @@ export default function CreateJournalModal() {
 
   const queryClient = getQueryClient();
 
-  const { data: getShelvesResponse } = useShelvesQuery();
-  const selectedShelf = useGetSelectedShelf(getShelvesResponse?.shelves);
+  const { data } = useShelvesQuery();
+  const selectedShelf = useSelectedShelf(data?.shelves);
 
   const createJournalForm = useForm<z.infer<typeof CreateJournalFormSchema>>({
     resolver: zodResolver(CreateJournalFormSchema),

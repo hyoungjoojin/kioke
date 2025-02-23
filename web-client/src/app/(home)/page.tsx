@@ -10,7 +10,7 @@ import {
   QueryClient,
 } from "@tanstack/react-query";
 import AddJournalButton from "@/components/pages/home/AddJournalButton";
-import ShelfListButton from "@/components/pages/home/ShelfListButton";
+import ShowShelfListButton from "@/components/pages/home/ShowShelfListButton";
 
 export default async function Home() {
   const session = await auth();
@@ -40,7 +40,7 @@ export default async function Home() {
 
           <div className="lg:w-1/2 w-4/5">
             <div className="flex w-full justify-end">
-              <ShelfListButton />
+              <ShowShelfListButton className="mx-2" />
               <AddJournalButton />
             </div>
 

@@ -1,23 +1,17 @@
-import { getJournal } from "@/app/api/journal";
-import JournalPreviewModal from "@/components/pages/journal/preview/JournalPreviewModal";
-import { QueryClient } from "@tanstack/react-query";
+"use client";
 
-export default async function JournalPreview({
-  params,
-}: {
-  params: Promise<{ jid: string }>;
-}) {
-  const queryClient = new QueryClient();
+import Modal from "@/components/ui/modal";
+import { useJournalQuery } from "@/hooks/query";
+import { useParams } from "next/navigation";
 
-  const jid = (await params).jid;
+export default function JournalPreview() {
+  const { jid } = useParams<{ jid: string }>();
 
-  queryClient.prefetchQuery({
-    queryKey: ["journals", jid],
-    queryFn: () => {
-      return getJournal(jid);
-    },
-    staleTime: 60 * 1000,
-  });
+  const { data } = useJournalQuery(jid);
 
-  return <JournalPreviewModal jid={jid} />;
+  return (
+    <Modal title={data ? data.title : "Loading..."}>
+      {data ? data.jid : "Loading..."}
+    </Modal>
+  );
 }
