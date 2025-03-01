@@ -11,6 +11,13 @@ import {
 import { useRouter } from "next/navigation";
 import { useShelvesQuery } from "@/hooks/query";
 import { useSelectedShelf } from "@/hooks/store";
+import { Ellipsis, Trash2 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface JournalListItemProps {
   id: string;
@@ -27,8 +34,35 @@ const JournalListItem = ({ id, title }: JournalListItemProps) => {
         router.push(`/journal/${id}/preview`);
       }}
     >
-      <TableCell>{title}</TableCell>
-      <TableCell>{id}</TableCell>
+      <TableCell>
+        <p className="select-none">{title}</p>
+      </TableCell>
+
+      <TableCell>
+        <p className="select-none">{id}</p>
+      </TableCell>
+
+      <TableCell
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+      >
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <div>
+              <Ellipsis size={15} />
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent loop align="center">
+            <DropdownMenuItem>
+              <div className="flex items-center text-red-500">
+                <Trash2 size={16} className="mx-1" />
+                Delete Journal
+              </div>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </TableCell>
     </TableRow>
   );
 };
@@ -43,6 +77,7 @@ export default function JournalList() {
         <TableRow>
           <TableHead>Title</TableHead>
           <TableHead>Description</TableHead>
+          <TableHead></TableHead>
         </TableRow>
       </TableHeader>
 
