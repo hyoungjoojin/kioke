@@ -31,7 +31,7 @@ public class Shelf {
   @JoinColumn(name = "USER_ID", nullable = false)
   private User owner;
 
-  @OneToMany(mappedBy = "shelf")
+  @OneToMany(mappedBy = "shelf", orphanRemoval = true)
   private List<Journal> journals;
 
   private String name;

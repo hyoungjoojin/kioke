@@ -94,6 +94,14 @@ spring:
           filters:
             - TokenAuthenticationFilter
 
+        - id: Kioke Journal Service Delete Journal
+          uri: lb://journal
+          predicates:
+            - Path=/journals/{jid}
+            - Method=DELETE
+          filters:
+            - TokenAuthenticationFilter
+
 eureka:
   instance:
     appname: gateway

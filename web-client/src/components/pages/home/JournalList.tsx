@@ -1,5 +1,6 @@
 "use client";
 
+import { getShelves } from "@/app/api/shelf";
 import {
   Table,
   TableBody,
@@ -27,12 +28,18 @@ import {
 import { DialogFooter, DialogHeader } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { JSX, useState } from "react";
+import { getQueryClient } from "@/components/providers/QueryProvider";
+import { deleteJournal } from "@/app/api/journal";
 
-interface JournalListItemMenuProps {
+const JournalListItemMenu = ({
+  jid,
+  title,
+}: {
+  jid: string;
   title: string;
-}
+}) => {
+  const queryClient = getQueryClient();
 
-const JournalListItemMenu = ({ title }: JournalListItemMenuProps) => {
   enum JournalListItemMenuModal {
     DELETE_JOURNAL = "delete",
   }
@@ -66,7 +73,20 @@ const JournalListItemMenu = ({ title }: JournalListItemMenuProps) => {
 
         <DialogFooter>
           <Button onClick={closeModal}>Cancel</Button>
-          <Button type="submit" variant="destructive">
+          <Button
+            type="submit"
+            variant="destructive"
+            onClick={async () => {
+              await deleteJournal(jid);
+
+              queryClient.invalidateQueries({
+                queryKey: ["shelves"],
+                queryFn: getShelves,
+              });
+
+              closeModal();
+            }}
+          >
             Delete
           </Button>
         </DialogFooter>
@@ -101,18 +121,18 @@ const JournalListItemMenu = ({ title }: JournalListItemMenuProps) => {
 };
 
 interface JournalListItemProps {
-  id: string;
+  jid: string;
   title: string;
 }
 
-const JournalListItem = ({ id, title }: JournalListItemProps) => {
+const JournalListItem = ({ jid, title }: JournalListItemProps) => {
   const router = useRouter();
 
   return (
     <TableRow
       changeOnHover
       onClick={() => {
-        router.push(`/journal/${id}/preview`);
+        router.push(`/journal/${jid}/preview`);
       }}
     >
       <TableCell>
@@ -120,7 +140,7 @@ const JournalListItem = ({ id, title }: JournalListItemProps) => {
       </TableCell>
 
       <TableCell>
-        <p className="select-none">{id}</p>
+        <p className="select-none">{jid}</p>
       </TableCell>
 
       <TableCell
@@ -128,7 +148,7 @@ const JournalListItem = ({ id, title }: JournalListItemProps) => {
           e.stopPropagation();
         }}
       >
-        <JournalListItemMenu title={title} />
+        <JournalListItemMenu jid={jid} title={title} />
       </TableCell>
     </TableRow>
   );
@@ -154,7 +174,7 @@ export default function JournalList() {
               return (
                 <JournalListItem
                   key={index}
-                  id={journal.id}
+                  jid={journal.id}
                   title={journal.title}
                 />
               );
