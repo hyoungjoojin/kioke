@@ -8,7 +8,7 @@ interface ShelfState {
 
 interface ShelfActions {
   getSelectedShelf: (shelves: Shelf[] | undefined) => Shelf | null;
-  setSelectedShelfIndex: (shelves: Shelf[], index: number) => void;
+  setSelectedShelfIndex: (shelves: Shelf[] | undefined, index: number) => void;
 }
 
 export type ShelfSlice = ShelfState & {
@@ -60,7 +60,11 @@ export const createShelfSlice: StateCreator<ShelfSlice, [], [], ShelfSlice> = (
       return null;
     },
 
-    setSelectedShelfIndex: (shelves: Shelf[], index: number) => {
+    setSelectedShelfIndex: (shelves: Shelf[] | undefined, index: number) => {
+      if (shelves === undefined) {
+        return;
+      }
+
       set(
         produce((state: ShelfSlice) => {
           state.selectedShelfIndex =

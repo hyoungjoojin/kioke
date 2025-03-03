@@ -1,7 +1,7 @@
 "use client";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { useShelvesQuery } from "@/hooks/query";
+import { useShelvesQuery } from "@/hooks/query/shelf";
 import { useSelectedShelf } from "@/hooks/store";
 
 const ShelfHeaderSkeleton = () => {

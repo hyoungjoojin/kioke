@@ -5,4 +5,5 @@ export interface Shelf {
     id: string;
     title: string;
   }[];
+  isArchive: boolean;
 }

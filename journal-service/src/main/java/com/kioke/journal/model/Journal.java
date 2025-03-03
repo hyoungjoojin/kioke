@@ -28,7 +28,7 @@ public class Journal {
   @GeneratedValue(strategy = GenerationType.UUID)
   private String jid;
 
-  @OneToMany(mappedBy = "journal")
+  @OneToMany(mappedBy = "journal", orphanRemoval = true)
   private List<JournalPermission> users;
 
   @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
@@ -36,4 +36,6 @@ public class Journal {
   private Shelf shelf;
 
   @NotNull private String title;
+
+  @NotNull private boolean isDeleted;
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import Modal from "@/components/ui/modal";
-import { useJournalQuery } from "@/hooks/query";
+import { useJournalQuery } from "@/hooks/query/journal";
 import { useParams } from "next/navigation";
 
 export default function JournalPreview() {

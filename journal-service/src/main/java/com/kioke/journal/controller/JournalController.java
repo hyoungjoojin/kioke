@@ -3,6 +3,7 @@ package com.kioke.journal.controller;
 import com.kioke.journal.dto.request.journal.CreateJournalRequestBodyDto;
 import com.kioke.journal.dto.response.journal.CreateJournalResponseBodyDto;
 import com.kioke.journal.dto.response.journal.GetJournalResponseBodyDto;
+import com.kioke.journal.exception.journal.CannotCreateJournalInArchiveException;
 import com.kioke.journal.exception.journal.JournalNotFoundException;
 import com.kioke.journal.exception.permission.AccessDeniedException;
 import com.kioke.journal.exception.shelf.ShelfNotFoundException;
@@ -34,11 +35,15 @@ public class JournalController {
   public ResponseEntity<CreateJournalResponseBodyDto> createJournal(
       @RequestAttribute(required = true, name = "uid") String uid,
       @RequestBody @Valid CreateJournalRequestBodyDto requestBodyDto)
-      throws UserNotFoundException, ShelfNotFoundException {
+      throws UserNotFoundException, ShelfNotFoundException, CannotCreateJournalInArchiveException {
     String shelfId = requestBodyDto.getShelfId(), title = requestBodyDto.getTitle();
 
     User user = userService.getUserById(uid);
     Shelf shelf = shelfService.getShelfById(shelfId);
+    if (shelf.isArchive()) {
+      throw new CannotCreateJournalInArchiveException();
+    }
+
     Journal journal = journalService.createJournal(user, shelf, title);
 
     journalPermissionService.grantAuthorPermissionsToUser(user, journal);
@@ -71,7 +76,8 @@ public class JournalController {
 
     journalPermissionService.checkDeletePermissions(user, journal);
 
-    journalService.deleteJournal(journal);
+    journalService.deleteJournal(user, journal);
+
     return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
   }
 }

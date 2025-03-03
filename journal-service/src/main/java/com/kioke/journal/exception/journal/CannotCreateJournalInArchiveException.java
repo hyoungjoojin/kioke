@@ -3,15 +3,15 @@ package com.kioke.journal.exception.journal;
 import com.kioke.journal.exception.KiokeException;
 import org.springframework.http.HttpStatus;
 
-public class JournalNotFoundException extends KiokeException {
+public class CannotCreateJournalInArchiveException extends KiokeException {
 
   @Override
   protected HttpStatus getStatus() {
-    return HttpStatus.NOT_FOUND;
+    return HttpStatus.BAD_REQUEST;
   }
 
   @Override
   protected String getTitle() {
-    return "Journal not found.";
+    return "Cannot create journal inside archive.";
   }
 }

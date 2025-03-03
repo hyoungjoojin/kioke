@@ -1,8 +1,17 @@
 package com.kioke.journal.exception.user;
 
-public class UserNotFoundException extends Exception {
+import com.kioke.journal.exception.KiokeException;
+import org.springframework.http.HttpStatus;
 
-  public UserNotFoundException(String uid) {
-    super("User with ID " + uid + " could not be found.");
+public class UserNotFoundException extends KiokeException {
+
+  @Override
+  protected HttpStatus getStatus() {
+    return HttpStatus.NOT_FOUND;
+  }
+
+  @Override
+  protected String getTitle() {
+    return "User not found.";
   }
 }

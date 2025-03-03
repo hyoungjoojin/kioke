@@ -26,3 +26,7 @@ export const getJournal = async (jid: string) => {
 
   return response;
 };
+
+export const deleteJournal = async (jid: string) => {
+  await protectedKioke.delete(`journals/${jid}`).json();
+};

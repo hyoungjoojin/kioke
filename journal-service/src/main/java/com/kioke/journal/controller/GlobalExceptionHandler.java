@@ -1,9 +1,6 @@
 package com.kioke.journal.controller;
 
-import com.kioke.journal.exception.journal.JournalNotFoundException;
-import com.kioke.journal.exception.permission.AccessDeniedException;
-import com.kioke.journal.exception.shelf.ShelfNotFoundException;
-import com.kioke.journal.exception.user.UserNotFoundException;
+import com.kioke.journal.exception.KiokeException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import lombok.extern.slf4j.Slf4j;
@@ -17,36 +14,14 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @Slf4j
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-  @ExceptionHandler(AccessDeniedException.class)
-  public ProblemDetail accessDeniedExceptionHandler(Exception e, HttpServletRequest request) {
+  @ExceptionHandler(KiokeException.class)
+  public ProblemDetail kiokeExceptionHandler(KiokeException e, HttpServletRequest request) {
     log.debug(e.toString());
 
-    ProblemDetail problemDetail =
-        ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, "Access denied.");
-    problemDetail.setType(URI.create("about:blank"));
-    problemDetail.setTitle("Access denied.");
-    problemDetail.setInstance(URI.create(request.getRequestURI()));
-    return problemDetail;
+    return e.intoProblemDetail(URI.create(request.getRequestURI()));
   }
 
-  @ExceptionHandler({
-    UserNotFoundException.class,
-    JournalNotFoundException.class,
-    ShelfNotFoundException.class
-  })
-  public ProblemDetail resourceNotFoundExceptionHandler(Exception e, HttpServletRequest request) {
-    log.debug(e.toString());
-
-    ProblemDetail problemDetail =
-        ProblemDetail.forStatusAndDetail(
-            HttpStatus.NOT_FOUND, "The requested resource could not be found.");
-    problemDetail.setType(URI.create("about:blank"));
-    problemDetail.setTitle("The requested resource could not be found.");
-    problemDetail.setInstance(URI.create(request.getRequestURI()));
-    return problemDetail;
-  }
-
-  @ExceptionHandler(Exception.class)
+  @ExceptionHandler({IllegalStateException.class, Exception.class})
   public ProblemDetail globalExceptionHandler(Exception e, HttpServletRequest request) {
     log.error(e.toString());
     log.debug(e.getMessage());

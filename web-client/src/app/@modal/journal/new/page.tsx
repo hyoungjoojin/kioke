@@ -15,7 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { createJournal } from "@/app/api/journal";
 import { useRouter } from "next/navigation";
-import { useShelvesQuery } from "@/hooks/query";
+import { useShelvesQuery } from "@/hooks/query/shelf";
 import { getQueryClient } from "@/components/providers/QueryProvider";
 import { getShelves } from "@/app/api/shelf";
 import { useSelectedShelf } from "@/hooks/store";
