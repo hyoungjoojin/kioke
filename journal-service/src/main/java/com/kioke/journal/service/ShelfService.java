@@ -26,7 +26,7 @@ public class ShelfService {
   }
 
   public Shelf getShelfById(String shelfId) throws ShelfNotFoundException {
-    return shelfRepository.findById(shelfId).orElseThrow(() -> new ShelfNotFoundException(shelfId));
+    return shelfRepository.findById(shelfId).orElseThrow(() -> new ShelfNotFoundException());
   }
 
   public List<Shelf> getShelves(User user) {

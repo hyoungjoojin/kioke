@@ -18,13 +18,7 @@ public class GetShelvesResponseBodyDto {
 
   public static GetShelvesResponseBodyDto from(List<Shelf> shelves) {
     return GetShelvesResponseBodyDto.builder()
-        .shelves(
-            shelves.stream()
-                .map(
-                    shelf -> {
-                      return ShelfDto.from(shelf);
-                    })
-                .toList())
+        .shelves(shelves.stream().map(shelf -> ShelfDto.from(shelf)).toList())
         .build();
   }
 

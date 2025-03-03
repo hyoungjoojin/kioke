@@ -8,7 +8,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { useShelvesQuery } from "@/hooks/query";
+import { useShelvesQuery } from "@/hooks/query/shelf";
 import { useSelectedShelfIndex } from "@/hooks/store";
 import { cn } from "@/lib/utils";
 import { CommandSeparator } from "cmdk";
@@ -41,6 +41,7 @@ export default function ShelvesModal() {
   });
 
   const shelves = data?.shelves;
+  const archiveIndex = shelves?.findIndex((shelf) => shelf.isArchive);
 
   return (
     <Command
@@ -80,25 +81,17 @@ export default function ShelvesModal() {
         <CommandSeparator />
 
         <CommandGroup heading="">
-          {shelves &&
-            shelves.map((shelf, index) => {
-              if (!shelf.isArchive) {
-                return null;
-              }
-
-              return (
-                <CommandItem
-                  key={index}
-                  onSelect={() => {
-                    setSelectedShelfIndex(shelves, index);
-                    router.back();
-                  }}
-                >
-                  <Trash2 />
-                  Archive
-                </CommandItem>
-              );
-            })}
+          {archiveIndex && archiveIndex !== -1 && (
+            <CommandItem
+              onSelect={() => {
+                setSelectedShelfIndex(shelves, archiveIndex);
+                router.back();
+              }}
+            >
+              <Trash2 />
+              Archive
+            </CommandItem>
+          )}
         </CommandGroup>
       </CommandList>
     </Command>

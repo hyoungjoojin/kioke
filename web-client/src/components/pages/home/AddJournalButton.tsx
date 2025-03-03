@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useShelvesQuery } from "@/hooks/query";
+import { useShelvesQuery } from "@/hooks/query/shelf";
 import { useSelectedShelf } from "@/hooks/store";
 import { SquarePen } from "lucide-react";
 import Link from "next/link";
@@ -10,7 +10,6 @@ export default function AddJournalButton() {
   const { data } = useShelvesQuery();
   const selectedShelf = useSelectedShelf(data?.shelves);
 
-  console.log(selectedShelf);
   if (selectedShelf?.isArchive) {
     return null;
   }

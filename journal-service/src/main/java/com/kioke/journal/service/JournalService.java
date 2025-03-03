@@ -7,19 +7,17 @@ import com.kioke.journal.model.User;
 import com.kioke.journal.repository.JournalRepository;
 import com.kioke.journal.repository.ShelfRepository;
 import java.util.ArrayList;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 @Service
-@Slf4j
 public class JournalService {
   @Autowired @Lazy JournalRepository journalRepository;
   @Autowired @Lazy ShelfRepository shelfRepository;
 
   public Journal getJournalById(String jid) throws JournalNotFoundException {
-    return journalRepository.findById(jid).orElseThrow(() -> new JournalNotFoundException(jid));
+    return journalRepository.findById(jid).orElseThrow(() -> new JournalNotFoundException());
   }
 
   public Journal createJournal(User user, Shelf shelf, String title) {
@@ -43,7 +41,7 @@ public class JournalService {
 
     Shelf archive =
         shelfRepository
-            .findArchive(user)
+            .findByOwnerAndIsArchiveTrue(user)
             .orElseThrow(() -> new IllegalStateException("User does not have archive shelf."));
 
     journal.setDeleted(true);

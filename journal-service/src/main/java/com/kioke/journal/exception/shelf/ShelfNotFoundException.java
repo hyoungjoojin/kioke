@@ -1,8 +1,17 @@
 package com.kioke.journal.exception.shelf;
 
-public class ShelfNotFoundException extends Exception {
+import com.kioke.journal.exception.KiokeException;
+import org.springframework.http.HttpStatus;
 
-  public ShelfNotFoundException(String shelfId) {
-    super("Shelf with ID " + shelfId + " could not be found.");
+public class ShelfNotFoundException extends KiokeException {
+
+  @Override
+  protected HttpStatus getStatus() {
+    return HttpStatus.NOT_FOUND;
+  }
+
+  @Override
+  protected String getTitle() {
+    return "Shelf not found.";
   }
 }
