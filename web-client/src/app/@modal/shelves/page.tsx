@@ -11,6 +11,8 @@ import {
 import { useShelvesQuery } from "@/hooks/query";
 import { useSelectedShelfIndex } from "@/hooks/store";
 import { cn } from "@/lib/utils";
+import { CommandSeparator } from "cmdk";
+import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -56,17 +58,47 @@ export default function ShelvesModal() {
         <CommandGroup heading="Shelves">
           <CommandEmpty>No results found.</CommandEmpty>
           {shelves &&
-            shelves.map((shelf, index) => (
-              <CommandItem
-                key={index}
-                onSelect={() => {
-                  setSelectedShelfIndex(shelves, index);
-                  router.back();
-                }}
-              >
-                {shelf.name}
-              </CommandItem>
-            ))}
+            shelves.map((shelf, index) => {
+              if (shelf.isArchive) {
+                return null;
+              }
+
+              return (
+                <CommandItem
+                  key={index}
+                  onSelect={() => {
+                    setSelectedShelfIndex(shelves, index);
+                    router.back();
+                  }}
+                >
+                  {shelf.name}
+                </CommandItem>
+              );
+            })}
+        </CommandGroup>
+
+        <CommandSeparator />
+
+        <CommandGroup heading="">
+          {shelves &&
+            shelves.map((shelf, index) => {
+              if (!shelf.isArchive) {
+                return null;
+              }
+
+              return (
+                <CommandItem
+                  key={index}
+                  onSelect={() => {
+                    setSelectedShelfIndex(shelves, index);
+                    router.back();
+                  }}
+                >
+                  <Trash2 />
+                  Archive
+                </CommandItem>
+              );
+            })}
         </CommandGroup>
       </CommandList>
     </Command>

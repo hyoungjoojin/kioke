@@ -40,6 +40,9 @@ const JournalListItemMenu = ({
 }) => {
   const queryClient = getQueryClient();
 
+  const { data } = useShelvesQuery();
+  const selectedShelf = useSelectedShelf(data?.shelves);
+
   enum JournalListItemMenuModal {
     DELETE_JOURNAL = "delete",
   }
@@ -65,10 +68,17 @@ const JournalListItemMenu = ({
       <DialogContent onEscapeKeyDown={closeModal} hideCloseButton>
         <DialogHeader>
           <DialogTitle>Delete journal?</DialogTitle>
-          <DialogDescription>
-            Journal <span className="italic">{title}</span> and its pages will
-            be permanently deleted.
-          </DialogDescription>
+          {selectedShelf?.isArchive ? (
+            <DialogDescription>
+              Journal <span className="italic">{title}</span> and its pages will
+              be permanently deleted.{" "}
+            </DialogDescription>
+          ) : (
+            <DialogDescription>
+              Journal <span className="italic">{title}</span> and its pages will
+              be moved to the archive.
+            </DialogDescription>
+          )}
         </DialogHeader>
 
         <DialogFooter>

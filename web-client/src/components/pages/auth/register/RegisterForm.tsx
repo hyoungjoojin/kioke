@@ -23,7 +23,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { redirect } from "next/navigation";
 import { useState } from "react";
-import { registerWithCredentials } from "@/utils/server/auth";
+import { registerWithCredentials } from "@/app/api/auth";
 
 export const RegisterFormSchema = z
   .object({
