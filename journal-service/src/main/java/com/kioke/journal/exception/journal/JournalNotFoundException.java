@@ -12,6 +12,6 @@ public class JournalNotFoundException extends KiokeException {
 
   @Override
   protected String getTitle() {
-    return "Journal not founc.";
+    return "Journal not found.";
   }
 }
