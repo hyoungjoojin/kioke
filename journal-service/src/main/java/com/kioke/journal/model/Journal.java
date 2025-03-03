@@ -36,4 +36,6 @@ public class Journal {
   private Shelf shelf;
 
   @NotNull private String title;
+
+  @NotNull private boolean isDeleted;
 }

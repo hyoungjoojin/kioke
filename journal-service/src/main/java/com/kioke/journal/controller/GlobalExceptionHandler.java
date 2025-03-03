@@ -1,5 +1,6 @@
 package com.kioke.journal.controller;
 
+import com.kioke.journal.exception.journal.CannotCreateJournalInArchiveException;
 import com.kioke.journal.exception.journal.JournalNotFoundException;
 import com.kioke.journal.exception.permission.AccessDeniedException;
 import com.kioke.journal.exception.shelf.ShelfNotFoundException;
@@ -46,7 +47,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return problemDetail;
   }
 
-  @ExceptionHandler(Exception.class)
+  @ExceptionHandler(CannotCreateJournalInArchiveException.class)
+  public ProblemDetail cannotCreateJournalInTrashShelfExceptionHandler(
+      Exception e, HttpServletRequest request) {
+    log.error(e.toString());
+    log.debug(e.getMessage());
+
+    ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "");
+    problemDetail.setType(URI.create("about:blank"));
+    problemDetail.setTitle("");
+    problemDetail.setInstance(URI.create(request.getRequestURI()));
+    return problemDetail;
+  }
+
+  @ExceptionHandler({IllegalStateException.class, Exception.class})
   public ProblemDetail globalExceptionHandler(Exception e, HttpServletRequest request) {
     log.error(e.toString());
     log.debug(e.getMessage());

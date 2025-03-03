@@ -14,7 +14,13 @@ public class ShelfService {
   @Autowired @Lazy private ShelfRepository shelfRepository;
 
   public Shelf createShelf(User user, String name) {
-    Shelf shelf = Shelf.builder().name(name).owner(user).build();
+    Shelf shelf = Shelf.builder().name(name).owner(user).isArchive(false).build();
+    shelf = shelfRepository.save(shelf);
+    return shelf;
+  }
+
+  public Shelf createArchive(User user) {
+    Shelf shelf = Shelf.builder().name("Archive").owner(user).isArchive(true).build();
     shelf = shelfRepository.save(shelf);
     return shelf;
   }
