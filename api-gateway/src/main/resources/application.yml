@@ -86,19 +86,11 @@ spring:
           filters:
             - TokenAuthenticationFilter
 
-        - id: Kioke Journal Service Read Journal
+        - id: Kioke Journal Service Journal Operations
           uri: lb://journal
           predicates:
-            - Path=/journals/{jid}
-            - Method=GET
-          filters:
-            - TokenAuthenticationFilter
-
-        - id: Kioke Journal Service Delete Journal
-          uri: lb://journal
-          predicates:
-            - Path=/journals/{jid}
-            - Method=DELETE
+            - Path=/journals/{jid}/**
+            - Method=GET,POST,PUT,PATCH,DELETE
           filters:
             - TokenAuthenticationFilter
 
