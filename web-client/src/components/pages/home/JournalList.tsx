@@ -10,13 +10,27 @@ import {
 } from "@/components/ui/table";
 import { useRouter } from "next/navigation";
 import { useSelectedShelf } from "@/hooks/store";
-import { Ellipsis, Trash2 } from "lucide-react";
+import { Ellipsis, Trash2, SquareArrowRight } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuGroup,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuPortal,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import {
   Dialog,
   DialogContent,
@@ -26,8 +40,15 @@ import {
 import { DialogFooter, DialogHeader } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { JSX, useState } from "react";
-import { useDeleteJournalMutation } from "@/hooks/query/journal";
+import {
+  useMoveJournalMutation,
+  useDeleteJournalMutation,
+} from "@/hooks/query/journal";
 import { useShelvesQuery } from "@/hooks/query/shelf";
+
+enum ModalType {
+  DELETE_JOURNAL = "delete",
+}
 
 interface JournalListItemProps {
   jid: string;
@@ -37,15 +58,14 @@ interface JournalListItemProps {
 const JournalListItem = ({ jid, title }: JournalListItemProps) => {
   const router = useRouter();
 
+  const { mutate: moveJournal } = useMoveJournalMutation(jid);
   const { mutate: deleteJournal } = useDeleteJournalMutation(jid);
   const { data } = useShelvesQuery();
-  const selectedShelf = useSelectedShelf(data?.shelves);
+
+  const shelves = data?.shelves;
+  const selectedShelf = useSelectedShelf(shelves);
 
   const JournalListItemMenu = () => {
-    enum ModalType {
-      DELETE_JOURNAL = "delete",
-    }
-
     const [modalState, setModalState] = useState<{
       open: boolean;
       modal: ModalType | null;
@@ -107,6 +127,55 @@ const JournalListItem = ({ jid, title }: JournalListItemProps) => {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="center">
+            <DropdownMenuGroup>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger onSelect={() => {}}>
+                  <div className="flex items-center">
+                    <SquareArrowRight size={16} className="mx-1" />
+                    Move to
+                  </div>
+                </DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent>
+                    <Command
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
+                      <CommandInput
+                        autoFocus
+                        placeholder="Enter a shelf to move to"
+                      />
+                      <CommandList>
+                        <CommandGroup>
+                          <CommandEmpty>No results found.</CommandEmpty>
+                          {shelves &&
+                            shelves.map((shelf, index) => {
+                              if (shelf.isArchive) {
+                                return null;
+                              }
+
+                              return (
+                                <CommandItem
+                                  key={index}
+                                  onSelect={() => {
+                                    moveJournal({ shelfId: shelf.id });
+                                  }}
+                                >
+                                  {shelf.name}
+                                </CommandItem>
+                              );
+                            })}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
+            </DropdownMenuGroup>
+
+            <DropdownMenuSeparator />
+
             <DropdownMenuItem
               onSelect={() => openModal(ModalType.DELETE_JOURNAL)}
             >
