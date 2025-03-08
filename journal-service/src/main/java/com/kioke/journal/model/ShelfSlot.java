@@ -8,34 +8,32 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "SHELF_TABLE")
+@Table(name = "JOURNAL_SHELF_TABLE")
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class Shelf {
+public class ShelfSlot {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   private String id;
 
   @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
-  @JoinColumn(name = "USER_ID", nullable = false)
-  private User owner;
+  @JoinColumn(name = "USER_ID")
+  private User user;
 
-  @OneToMany(mappedBy = "shelf", orphanRemoval = true)
-  private List<ShelfSlot> shelfSlots;
+  @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+  @JoinColumn(name = "SHELF_ID")
+  private Shelf shelf;
 
-  private String name;
-
-  @NotNull private boolean isArchive;
+  @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+  @JoinColumn(name = "JOURNAL_ID")
+  private Journal journal;
 }

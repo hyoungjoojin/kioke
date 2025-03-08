@@ -36,7 +36,10 @@ public class GetShelvesResponseBodyDto {
       return ShelfDto.builder()
           .id(shelf.getId())
           .name(shelf.getName())
-          .journals(shelf.getJournals().stream().map(journal -> JournalDto.from(journal)).toList())
+          .journals(
+              shelf.getShelfSlots().stream()
+                  .map(shelfSlot -> JournalDto.from(shelfSlot.getJournal()))
+                  .toList())
           .isArchive(shelf.isArchive())
           .build();
     }

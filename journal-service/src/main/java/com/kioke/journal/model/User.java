@@ -23,5 +23,8 @@ public class User {
   private List<Shelf> shelves;
 
   @OneToMany(mappedBy = "user")
+  private List<ShelfSlot> shelfSlots;
+
+  @OneToMany(mappedBy = "user")
   private List<JournalPermission> journals;
 }
