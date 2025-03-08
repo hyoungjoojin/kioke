@@ -16,6 +16,7 @@ import com.kioke.journal.service.JournalService;
 import com.kioke.journal.service.ShelfService;
 import com.kioke.journal.service.UserService;
 import jakarta.validation.Valid;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
@@ -44,7 +45,8 @@ public class JournalController {
       throw new CannotCreateJournalInArchiveException();
     }
 
-    Journal journal = journalService.createJournal(user, shelf, title);
+    Journal journal = journalService.createJournal(user, title);
+    shelfService.putJournalInShelf(journal, shelf);
 
     journalPermissionService.grantAuthorPermissionsToUser(user, journal);
 
@@ -76,7 +78,12 @@ public class JournalController {
 
     journalPermissionService.checkDeletePermissions(user, journal);
 
-    journalService.deleteJournal(user, journal);
+    Optional<Journal> deletedJournal = journalService.deleteJournal(user, journal);
+
+    if (deletedJournal.isPresent()) {
+      Shelf archive = shelfService.getArchive(user);
+      shelfService.putJournalInShelf(journal, archive);
+    }
 
     return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
   }
