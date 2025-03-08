@@ -1,6 +1,7 @@
 package com.kioke.journal.controller;
 
 import com.kioke.journal.dto.request.journal.CreateJournalRequestBodyDto;
+import com.kioke.journal.dto.request.journal.MoveJournalRequestBodyDto;
 import com.kioke.journal.dto.response.journal.CreateJournalResponseBodyDto;
 import com.kioke.journal.dto.response.journal.GetJournalResponseBodyDto;
 import com.kioke.journal.exception.journal.CannotCreateJournalInArchiveException;
@@ -67,6 +68,30 @@ public class JournalController {
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)
         .body(GetJournalResponseBodyDto.from(journal));
+  }
+
+  @PutMapping("/{jid}/shelf")
+  public ResponseEntity<Void> moveJournal(
+      @RequestAttribute(required = true, name = "uid") String uid,
+      @PathVariable String jid,
+      @RequestBody @Valid MoveJournalRequestBodyDto requestBodyDto)
+      throws AccessDeniedException,
+          UserNotFoundException,
+          JournalNotFoundException,
+          ShelfNotFoundException {
+    User user = userService.getUserById(uid);
+
+    Journal journal = journalService.getJournalById(jid);
+    journalPermissionService.checkReadPermissions(user, journal);
+
+    Shelf shelf = shelfService.getShelfById(requestBodyDto.getShelfId());
+    if (!shelf.getOwner().equals(user)) {
+      throw new AccessDeniedException();
+    }
+
+    shelfService.putJournalInShelf(journal, shelf);
+
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
   }
 
   @DeleteMapping("/{jid}")

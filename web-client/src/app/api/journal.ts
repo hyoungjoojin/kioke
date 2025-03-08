@@ -27,6 +27,16 @@ export const getJournal = async (jid: string) => {
   return response;
 };
 
+export const moveJournal = async (jid: string, shelfId: string) => {
+  await protectedKioke
+    .put(`journals/${jid}/shelf`, {
+      json: {
+        shelfId,
+      },
+    })
+    .json();
+};
+
 export const deleteJournal = async (jid: string) => {
   await protectedKioke.delete(`journals/${jid}`).json();
 };
