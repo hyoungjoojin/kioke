@@ -10,6 +10,7 @@ type ModalVariantType = "sm" | "lg";
 
 interface ModalProps {
   children: React.ReactNode;
+  controls?: React.ReactNode;
   title: string;
   variant?: ModalVariantType;
 }
@@ -26,7 +27,12 @@ const CloseButton = ({ onClick }: { onClick?: () => void }) => {
   );
 };
 
-export default function Modal({ children, title, variant = "lg" }: ModalProps) {
+export default function Modal({
+  children,
+  title,
+  controls = <></>,
+  variant = "lg",
+}: ModalProps) {
   const router = useRouter();
 
   useEffect(() => {
@@ -54,11 +60,14 @@ export default function Modal({ children, title, variant = "lg" }: ModalProps) {
       >
         <div className="flex w-full justify-between items-center h-12 mb-5">
           <h1 className="text-2xl">{title}</h1>
-          <CloseButton
-            onClick={() => {
-              router.back();
-            }}
-          />
+          <div className="flex justify-center items-center">
+            {controls}
+            <CloseButton
+              onClick={() => {
+                router.back();
+              }}
+            />
+          </div>
         </div>
         <div>{children}</div>
       </div>

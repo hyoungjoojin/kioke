@@ -1,5 +1,5 @@
 import { useBoundStore } from "@/components/providers/StoreProvider";
-import { Shelf } from "@/types/shelf";
+import { Shelf } from "@/types/primitives/shelf";
 
 export const useSelectedShelf = (shelves: Shelf[] | undefined) => {
   const selectedShelf = useBoundStore((state) =>

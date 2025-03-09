@@ -6,12 +6,17 @@ import {
 } from "@/types/server/journal";
 import { protectedKioke } from "@/utils/server";
 
-export const createJournal = async (title: string, shelfId: string) => {
+export const createJournal = async (
+  shelfId: string,
+  title: string,
+  description: string,
+) => {
   const response = await protectedKioke
     .post<CreateJournalResponseBody>("journals", {
       json: {
-        title,
         shelfId,
+        title,
+        description,
       },
     })
     .json();

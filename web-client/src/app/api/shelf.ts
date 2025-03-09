@@ -16,5 +16,5 @@ export const getShelves = async () => {
     }
   });
 
-  return response;
+  return response.shelves;
 };

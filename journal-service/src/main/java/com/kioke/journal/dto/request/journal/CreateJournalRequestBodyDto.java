@@ -9,4 +9,5 @@ import lombok.Data;
 public class CreateJournalRequestBodyDto {
   @NotNull private final String shelfId;
   @NotNull private final String title;
+  @NotNull private final String description;
 }

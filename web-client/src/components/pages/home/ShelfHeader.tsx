@@ -9,8 +9,8 @@ const ShelfHeaderSkeleton = () => {
 };
 
 export default function ShelfHeader() {
-  const { data, isLoading, isError } = useShelvesQuery();
-  const selectedShelf = useSelectedShelf(data?.shelves);
+  const { data: shelves, isLoading, isError } = useShelvesQuery();
+  const selectedShelf = useSelectedShelf(shelves);
 
   if (isLoading || isError) {
     return <ShelfHeaderSkeleton />;
