@@ -13,45 +13,43 @@ import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { createJournal } from "@/app/api/journal";
 import { useRouter } from "next/navigation";
 import { useShelvesQuery } from "@/hooks/query/shelf";
-import { getQueryClient } from "@/components/providers/QueryProvider";
-import { getShelves } from "@/app/api/shelf";
 import { useSelectedShelf } from "@/hooks/store";
+import { useCreateJournalMutation } from "@/hooks/query/journal";
 
 const CreateJournalFormSchema = z.object({
   title: z.string().nonempty(),
+  description: z.string().nonempty(),
 });
 
 export default function CreateJournalModal() {
   const router = useRouter();
 
-  const queryClient = getQueryClient();
-
-  const { data } = useShelvesQuery();
-  const selectedShelf = useSelectedShelf(data?.shelves);
+  const { data: shelves } = useShelvesQuery();
+  const selectedShelf = useSelectedShelf(shelves);
+  const { mutate: createJournal } = useCreateJournalMutation();
 
   const createJournalForm = useForm<z.infer<typeof CreateJournalFormSchema>>({
     resolver: zodResolver(CreateJournalFormSchema),
     defaultValues: {
       title: "",
+      description: "",
     },
   });
 
   const formSubmitHandler = async (
     values: z.infer<typeof CreateJournalFormSchema>,
   ) => {
-    const { title } = values;
+    const { title, description } = values;
 
     if (selectedShelf) {
-      await createJournal(title, selectedShelf.id);
+      createJournal({
+        shelfId: selectedShelf.id,
+        title,
+        description,
+      });
     }
-
-    queryClient.invalidateQueries({
-      queryKey: ["shelves"],
-      queryFn: getShelves,
-    });
 
     router.back();
   };
@@ -66,6 +64,19 @@ export default function CreateJournalModal() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Title</FormLabel>
+                <FormControl>
+                  <Input placeholder="" {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            name="description"
+            control={createJournalForm.control}
+            render={({ field }) => (
+              <FormItem className="my-5">
+                <FormLabel>Description</FormLabel>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>

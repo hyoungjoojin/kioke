@@ -24,14 +24,6 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -45,25 +37,27 @@ import {
   useDeleteJournalMutation,
 } from "@/hooks/query/journal";
 import { useShelvesQuery } from "@/hooks/query/shelf";
+import SelectShelfCommand from "@/components/features/shelf/SelectShelfCommand";
+import { JournalPreview } from "@/types/primitives/journal";
 
 enum ModalType {
   DELETE_JOURNAL = "delete",
 }
 
-interface JournalListItemProps {
-  jid: string;
-  title: string;
-}
+type JournalListItemProps = JournalPreview & {
+  isArchived: boolean;
+};
 
-const JournalListItem = ({ jid, title }: JournalListItemProps) => {
+const JournalListItem = ({
+  id,
+  title,
+  createdAt,
+  isArchived,
+}: JournalListItemProps) => {
   const router = useRouter();
 
-  const { mutate: moveJournal } = useMoveJournalMutation(jid);
-  const { mutate: deleteJournal } = useDeleteJournalMutation(jid);
-  const { data } = useShelvesQuery();
-
-  const shelves = data?.shelves;
-  const selectedShelf = useSelectedShelf(shelves);
+  const { mutate: moveJournal } = useMoveJournalMutation(id);
+  const { mutate: deleteJournal } = useDeleteJournalMutation(id);
 
   const JournalListItemMenu = () => {
     const [modalState, setModalState] = useState<{
@@ -87,7 +81,7 @@ const JournalListItem = ({ jid, title }: JournalListItemProps) => {
         <DialogContent onEscapeKeyDown={closeModal} hideCloseButton>
           <DialogHeader>
             <DialogTitle>Delete journal?</DialogTitle>
-            {selectedShelf?.isArchive ? (
+            {isArchived ? (
               <DialogDescription>
                 Journal <span className="italic">{title}</span> and its pages
                 will be permanently deleted.
@@ -137,38 +131,11 @@ const JournalListItem = ({ jid, title }: JournalListItemProps) => {
                 </DropdownMenuSubTrigger>
                 <DropdownMenuPortal>
                   <DropdownMenuSubContent>
-                    <Command
-                      onClick={(e) => {
-                        e.stopPropagation();
+                    <SelectShelfCommand
+                      onSelect={(shelf) => {
+                        moveJournal({ shelfId: shelf.id });
                       }}
-                    >
-                      <CommandInput
-                        autoFocus
-                        placeholder="Enter a shelf to move to"
-                      />
-                      <CommandList>
-                        <CommandGroup>
-                          <CommandEmpty>No results found.</CommandEmpty>
-                          {shelves &&
-                            shelves.map((shelf, index) => {
-                              if (shelf.isArchive) {
-                                return null;
-                              }
-
-                              return (
-                                <CommandItem
-                                  key={index}
-                                  onSelect={() => {
-                                    moveJournal({ shelfId: shelf.id });
-                                  }}
-                                >
-                                  {shelf.name}
-                                </CommandItem>
-                              );
-                            })}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
+                    />
                   </DropdownMenuSubContent>
                 </DropdownMenuPortal>
               </DropdownMenuSub>
@@ -196,7 +163,7 @@ const JournalListItem = ({ jid, title }: JournalListItemProps) => {
     <TableRow
       changeOnHover
       onClick={() => {
-        router.push(`/journal/${jid}/preview`);
+        router.push(`/journal/${id}/preview`);
       }}
     >
       <TableCell>
@@ -204,7 +171,7 @@ const JournalListItem = ({ jid, title }: JournalListItemProps) => {
       </TableCell>
 
       <TableCell>
-        <p className="select-none">{jid}</p>
+        <p className="select-none">{createdAt}</p>
       </TableCell>
 
       <TableCell
@@ -219,15 +186,15 @@ const JournalListItem = ({ jid, title }: JournalListItemProps) => {
 };
 
 export default function JournalList() {
-  const { data, isLoading, isError } = useShelvesQuery();
-  const selectedShelf = useSelectedShelf(data?.shelves);
+  const { data: shelves, isLoading, isError } = useShelvesQuery();
+  const selectedShelf = useSelectedShelf(shelves);
 
   return (
     <Table>
       <TableHeader>
         <TableRow>
           <TableHead className="select-none">Title</TableHead>
-          <TableHead className="select-none">Description</TableHead>
+          <TableHead className="select-none">Created At</TableHead>
           <TableHead></TableHead>
         </TableRow>
       </TableHeader>
@@ -238,8 +205,10 @@ export default function JournalList() {
               return (
                 <JournalListItem
                   key={index}
-                  jid={journal.id}
+                  id={journal.id}
                   title={journal.title}
+                  createdAt={journal.createdAt}
+                  isArchived={selectedShelf.isArchive}
                 />
               );
             })

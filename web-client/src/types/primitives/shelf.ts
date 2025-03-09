@@ -1,9 +1,8 @@
+import { JournalPreview } from "./journal";
+
 export interface Shelf {
   id: string;
   name: string;
-  journals: {
-    id: string;
-    title: string;
-  }[];
+  journals: JournalPreview[];
   isArchive: boolean;
 }

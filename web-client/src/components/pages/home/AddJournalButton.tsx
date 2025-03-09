@@ -7,8 +7,8 @@ import { SquarePen } from "lucide-react";
 import Link from "next/link";
 
 export default function AddJournalButton() {
-  const { data } = useShelvesQuery();
-  const selectedShelf = useSelectedShelf(data?.shelves);
+  const { data: shelves } = useShelvesQuery();
+  const selectedShelf = useSelectedShelf(shelves);
 
   if (selectedShelf?.isArchive) {
     return null;

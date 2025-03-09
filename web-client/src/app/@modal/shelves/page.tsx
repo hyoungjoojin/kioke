@@ -1,25 +1,16 @@
 "use client";
 
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
+import SelectShelfCommand from "@/components/features/shelf/SelectShelfCommand";
 import { useShelvesQuery } from "@/hooks/query/shelf";
 import { useSelectedShelfIndex } from "@/hooks/store";
 import { cn } from "@/lib/utils";
-import { CommandSeparator } from "cmdk";
-import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function ShelvesModal() {
   const router = useRouter();
 
-  const { data } = useShelvesQuery();
+  const { data: shelves } = useShelvesQuery();
   const { setSelectedShelfIndex } = useSelectedShelfIndex();
 
   useEffect(() => {
@@ -40,60 +31,18 @@ export default function ShelvesModal() {
     };
   });
 
-  const shelves = data?.shelves;
-  const archiveIndex = shelves?.findIndex((shelf) => shelf.isArchive);
-
   return (
-    <Command
-      onClick={(e) => {
-        e.stopPropagation();
+    <SelectShelfCommand
+      showArchive
+      onSelect={(_, index) => {
+        setSelectedShelfIndex(shelves, index);
+        router.back();
       }}
       className={cn(
         "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2",
         "w-2/5 h-1/2",
         "bg-white shadow-lg dark:bg-gray-700 border",
       )}
-    >
-      <CommandInput placeholder="Enter a shelf to move to" />
-      <CommandList>
-        <CommandGroup heading="Shelves">
-          <CommandEmpty>No results found.</CommandEmpty>
-          {shelves &&
-            shelves.map((shelf, index) => {
-              if (shelf.isArchive) {
-                return null;
-              }
-
-              return (
-                <CommandItem
-                  key={index}
-                  onSelect={() => {
-                    setSelectedShelfIndex(shelves, index);
-                    router.back();
-                  }}
-                >
-                  {shelf.name}
-                </CommandItem>
-              );
-            })}
-        </CommandGroup>
-
-        <CommandSeparator />
-
-        <CommandGroup heading="">
-          {archiveIndex && archiveIndex !== -1 && (
-            <CommandItem
-              onSelect={() => {
-                setSelectedShelfIndex(shelves, archiveIndex);
-                router.back();
-              }}
-            >
-              <Trash2 />
-              Archive
-            </CommandItem>
-          )}
-        </CommandGroup>
-      </CommandList>
-    </Command>
+    />
   );
 }

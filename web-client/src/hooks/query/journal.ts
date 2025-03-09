@@ -1,4 +1,9 @@
-import { getJournal, moveJournal, deleteJournal } from "@/app/api/journal";
+import {
+  getJournal,
+  moveJournal,
+  deleteJournal,
+  createJournal,
+} from "@/app/api/journal";
 import { getQueryClient } from "@/components/providers/QueryProvider";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -9,6 +14,23 @@ export const useJournalQuery = (jid: string) => {
       return getJournal(jid);
     },
     staleTime: 60 * 1000,
+  });
+};
+
+export const useCreateJournalMutation = () => {
+  const queryClient = getQueryClient();
+
+  return useMutation({
+    mutationFn: (data: {
+      shelfId: string;
+      title: string;
+      description: string;
+    }) => createJournal(data.shelfId, data.title, data.description),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["shelves"],
+      });
+    },
   });
 };
 

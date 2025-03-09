@@ -1,6 +1,6 @@
 import { StateCreator } from "zustand";
 import { produce } from "immer";
-import { Shelf } from "@/types/shelf";
+import { Shelf } from "@/types/primitives/shelf";
 
 interface ShelfState {
   selectedShelfIndex: number;
