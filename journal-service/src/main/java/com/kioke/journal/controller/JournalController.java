@@ -38,15 +38,15 @@ public class JournalController {
       @RequestAttribute(required = true, name = "uid") String uid,
       @RequestBody @Valid CreateJournalRequestBodyDto requestBodyDto)
       throws UserNotFoundException, ShelfNotFoundException, CannotCreateJournalInArchiveException {
-    String shelfId = requestBodyDto.getShelfId(), title = requestBodyDto.getTitle();
-
     User user = userService.getUserById(uid);
-    Shelf shelf = shelfService.getShelfById(shelfId);
+    Shelf shelf = shelfService.getShelfById(requestBodyDto.getShelfId());
     if (shelf.isArchive()) {
       throw new CannotCreateJournalInArchiveException();
     }
 
-    Journal journal = journalService.createJournal(user, title);
+    Journal journal =
+        journalService.createJournal(
+            user, requestBodyDto.getTitle(), requestBodyDto.getDescription());
     shelfService.putJournalInShelf(journal, shelf);
 
     journalPermissionService.grantAuthorPermissionsToUser(user, journal);

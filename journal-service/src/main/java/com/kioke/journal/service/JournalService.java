@@ -18,10 +18,11 @@ public class JournalService {
     return journalRepository.findById(jid).orElseThrow(() -> new JournalNotFoundException());
   }
 
-  public Journal createJournal(User user, String title) {
+  public Journal createJournal(User user, String title, String description) {
     Journal journal =
         Journal.builder()
             .title(title)
+            .description(description)
             .users(new ArrayList<>())
             .shelves(new ArrayList<>())
             .isDeleted(false)
