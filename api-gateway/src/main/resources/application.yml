@@ -89,7 +89,23 @@ spring:
         - id: Kioke Journal Service Journal Operations
           uri: lb://journal
           predicates:
-            - Path=/journals/{jid}/**
+            - Path=/journals/{journalId}/**
+            - Method=GET,POST,PUT,PATCH,DELETE
+          filters:
+            - TokenAuthenticationFilter
+
+        - id: Kioke Journal Service Create Page 
+          uri: lb://journal
+          predicates:
+            - Path=/pages
+            - Method=POST
+          filters:
+            - TokenAuthenticationFilter
+
+        - id: Kioke Journal Service Page Operations
+          uri: lb://journal
+          predicates:
+            - Path=/pages/{pageId}/**
             - Method=GET,POST,PUT,PATCH,DELETE
           filters:
             - TokenAuthenticationFilter
