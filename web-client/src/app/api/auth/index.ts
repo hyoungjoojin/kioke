@@ -29,7 +29,7 @@ export const registerWithCredentials = async (
         lastName,
       },
     })
-    .then((_) => {
+    .then(() => {
       return true;
     })
     .catch((error) => {
