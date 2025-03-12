@@ -1,9 +1,12 @@
+import { Page } from "./page";
+
 export interface Journal {
   id: string;
   title: string;
   description: string;
   createdAt: string;
   lastModified: string;
+  pages: Page[];
 }
 
 export interface JournalPreview {
