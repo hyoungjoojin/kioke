@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -35,7 +36,7 @@ public class JournalController {
 
   @PostMapping
   public ResponseEntity<CreateJournalResponseBodyDto> createJournal(
-      @RequestAttribute(required = true, name = "uid") String uid,
+      @AuthenticationPrincipal String uid,
       @RequestBody @Valid CreateJournalRequestBodyDto requestBodyDto)
       throws UserNotFoundException, ShelfNotFoundException, CannotCreateJournalInArchiveException {
     User user = userService.getUserById(uid);
@@ -58,7 +59,7 @@ public class JournalController {
 
   @GetMapping("/{jid}")
   public ResponseEntity<GetJournalResponseBodyDto> getJournal(
-      @RequestAttribute(required = true, name = "uid") String uid, @PathVariable String jid)
+      @AuthenticationPrincipal String uid, @PathVariable String jid)
       throws UserNotFoundException, JournalNotFoundException, AccessDeniedException {
     User user = userService.getUserById(uid);
     Journal journal = journalService.getJournalById(jid);
@@ -72,7 +73,7 @@ public class JournalController {
 
   @PutMapping("/{jid}/shelf")
   public ResponseEntity<Void> moveJournal(
-      @RequestAttribute(required = true, name = "uid") String uid,
+      @AuthenticationPrincipal String uid,
       @PathVariable String jid,
       @RequestBody @Valid MoveJournalRequestBodyDto requestBodyDto)
       throws AccessDeniedException,
@@ -96,7 +97,7 @@ public class JournalController {
 
   @DeleteMapping("/{jid}")
   public ResponseEntity<Void> deleteJournal(
-      @RequestAttribute(required = true, name = "uid") String uid, @PathVariable String jid)
+      @AuthenticationPrincipal String uid, @PathVariable String jid)
       throws UserNotFoundException, JournalNotFoundException, AccessDeniedException {
     User user = userService.getUserById(uid);
     Journal journal = journalService.getJournalById(jid);

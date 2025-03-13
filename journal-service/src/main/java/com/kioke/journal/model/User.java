@@ -1,14 +1,19 @@
 package com.kioke.journal.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name = "USER_TABLE")
@@ -16,15 +21,30 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class User implements UserDetails {
   @Id private String uid;
 
-  @OneToMany(mappedBy = "owner")
+  @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
   private List<Shelf> shelves;
 
-  @OneToMany(mappedBy = "user")
+  @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
   private List<ShelfSlot> shelfSlots;
 
-  @OneToMany(mappedBy = "user")
+  @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
   private List<JournalPermission> journals;
+
+  @Override
+  public String getUsername() {
+    return uid;
+  }
+
+  @Override
+  public String getPassword() {
+    return null;
+  }
+
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return Collections.emptyList();
+  }
 }
