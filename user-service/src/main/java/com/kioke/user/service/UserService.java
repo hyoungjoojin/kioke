@@ -12,16 +12,26 @@ import com.kioke.user.service.DiscoveryClientService.KiokeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
   @Autowired @Lazy private DiscoveryClientService discoveryClientService;
 
   @Autowired @Lazy private UserRepository userRepository;
 
   private RestClient restClient = RestClient.create();
+
+  @Override
+  public UserDetails loadUserByUsername(String uid) throws UsernameNotFoundException {
+    return userRepository
+        .findById(uid)
+        .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+  }
 
   public void createUser(CreateUserDto data)
       throws ServiceNotFoundException, ServiceFailedException {
