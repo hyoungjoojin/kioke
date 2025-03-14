@@ -22,15 +22,22 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Slf4j
 public class AuthorizationFilter extends OncePerRequestFilter {
 
-  private static final String[] WHITELIST = {"/users"};
+  private static final String[] WHITELIST = {"POST /users"};
 
   @Autowired UserService userService;
   @Autowired JwtService jwtService;
 
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+    String method = request.getMethod();
     String path = request.getRequestURI();
-    return Arrays.stream(WHITELIST).anyMatch(path::equals);
+
+    return Arrays.stream(WHITELIST)
+        .anyMatch(
+            item -> {
+              var sub = item.split(" ");
+              return method.equals(sub[0]) && path.equals(sub[1]);
+            });
   }
 
   @Override

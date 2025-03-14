@@ -1,7 +1,6 @@
 package com.kioke.journal.model;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -24,13 +23,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class User implements UserDetails {
   @Id private String uid;
 
-  @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "owner")
   private List<Shelf> shelves;
 
-  @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "user")
   private List<ShelfSlot> shelfSlots;
 
-  @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "user")
   private List<JournalPermission> journals;
 
   @Override
