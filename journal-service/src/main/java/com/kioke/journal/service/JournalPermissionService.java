@@ -25,6 +25,17 @@ public class JournalPermissionService {
     throw new AccessDeniedException();
   }
 
+  public void checkEditPermissions(User user, Journal journal) throws AccessDeniedException {
+    JournalPermission permission =
+        journalPermissionRepository
+            .findByUserAndJournal(user, journal)
+            .orElseThrow(() -> new AccessDeniedException());
+
+    if (permission.getEditPermission().equals(Permission.PERMITTED)) return;
+
+    throw new AccessDeniedException();
+  }
+
   public void checkDeletePermissions(User user, Journal journal) throws AccessDeniedException {
     JournalPermission permission =
         journalPermissionRepository

@@ -30,7 +30,7 @@ const CloseButton = ({ onClick }: { onClick?: () => void }) => {
 export default function Modal({
   children,
   title,
-  controls = <></>,
+  controls = null,
   variant = "lg",
 }: ModalProps) {
   const router = useRouter();

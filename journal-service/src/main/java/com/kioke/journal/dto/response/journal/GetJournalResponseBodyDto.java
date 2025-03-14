@@ -1,7 +1,10 @@
 package com.kioke.journal.dto.response.journal;
 
 import com.kioke.journal.model.Journal;
+import com.kioke.journal.model.Page;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Builder;
 import lombok.Data;
 
@@ -11,6 +14,7 @@ public class GetJournalResponseBodyDto {
   private String jid;
   private String title;
   private String description;
+  private List<PageDto> pages;
   private LocalDateTime createdAt;
   private LocalDateTime lastModified;
 
@@ -19,8 +23,25 @@ public class GetJournalResponseBodyDto {
         .jid(journal.getJid())
         .title(journal.getTitle())
         .description(journal.getDescription())
+        .pages(PageDto.from(journal.getPages()))
         .createdAt(journal.getCreatedAt())
         .lastModified(journal.getLastModified())
         .build();
+  }
+
+  @Data
+  @Builder
+  private static class PageDto {
+    private String id;
+    private LocalDate date;
+
+    public static List<PageDto> from(List<Page> pages) {
+      return pages.stream()
+          .map(
+              page -> {
+                return PageDto.builder().id(page.getId()).date(page.getDate()).build();
+              })
+          .toList();
+    }
   }
 }

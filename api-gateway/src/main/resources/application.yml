@@ -64,16 +64,10 @@ spring:
             - Path=/shelves
             - Method=GET
 
-        - id: Kioke Journal Service Create Journal
+        - id: Journal Operations
           uri: lb://journal
           predicates:
-            - Path=/journals
-            - Method=POST
-
-        - id: Kioke Journal Service Journal Operations
-          uri: lb://journal
-          predicates:
-            - Path=/journals/{jid}/**
+            - Path=/journals/**
             - Method=GET,POST,PUT,PATCH,DELETE
 
 eureka:
