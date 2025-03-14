@@ -1,8 +1,8 @@
-package com.kioke.user.filter;
+package com.kioke.journal.filter;
 
-import com.kioke.user.exception.security.TokenNotFoundException;
-import com.kioke.user.service.JwtService;
-import com.kioke.user.service.UserService;
+import com.kioke.journal.exception.security.TokenNotFoundException;
+import com.kioke.journal.service.JwtService;
+import com.kioke.journal.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,6 +31,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
   protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
     String method = request.getMethod();
     String path = request.getRequestURI();
+
     return Arrays.stream(WHITELIST)
         .anyMatch(
             item -> {

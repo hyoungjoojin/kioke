@@ -1,6 +1,9 @@
 package com.kioke.journal.controller;
 
 import com.kioke.journal.exception.KiokeException;
+import com.kioke.journal.exception.security.ExpiredTokenException;
+import com.kioke.journal.exception.security.InvalidTokenException;
+import com.kioke.journal.exception.security.TokenNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +16,15 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
+  @ExceptionHandler({
+    TokenNotFoundException.class,
+    InvalidTokenException.class,
+    ExpiredTokenException.class
+  })
+  public ProblemDetail invalidTokenExceptionHandler(Exception e) {
+    return ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
+  }
 
   @ExceptionHandler(KiokeException.class)
   public ProblemDetail kiokeExceptionHandler(KiokeException e, HttpServletRequest request) {
