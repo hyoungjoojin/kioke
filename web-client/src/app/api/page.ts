@@ -8,9 +8,9 @@ import { protectedKioke } from "@/utils/server";
 
 const createPage = async (journalId: string) => {
   await protectedKioke
-    .post<CreatePageResponseBody>("pages", {
+    .post<CreatePageResponseBody>(`/journals/${journalId}/pages`, {
       json: {
-        journalId,
+        title: "",
       },
     })
     .json();
@@ -18,11 +18,7 @@ const createPage = async (journalId: string) => {
 
 const getPage = async (journalId: string, pageId: string) => {
   const response = await protectedKioke
-    .get<GetPageResponseBody>(`pages/${pageId}`, {
-      searchParams: {
-        journalId,
-      },
-    })
+    .get<GetPageResponseBody>(`/journals/${journalId}/pages/${pageId}`)
     .json();
 
   return response;

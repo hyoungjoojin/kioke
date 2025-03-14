@@ -6,7 +6,7 @@ export interface Journal {
   description: string;
   createdAt: string;
   lastModified: string;
-  pages: Page[];
+  pages: PagePreview[];
 }
 
 export interface JournalPreview {

@@ -24,11 +24,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/pages")
+@RequestMapping("/journals/{journalId}/pages")
 public class PageController {
   @Autowired @Lazy private UserService userService;
   @Autowired @Lazy private JournalService journalService;
@@ -38,10 +37,11 @@ public class PageController {
   @PostMapping
   public ResponseEntity<CreatePageResponseBodyDto> createPage(
       @AuthenticationPrincipal String uid,
+      @PathVariable String journalId,
       @Valid @RequestBody CreatePageRequestBodyDto requestBodyDto)
       throws UserNotFoundException, JournalNotFoundException, AccessDeniedException {
     User user = userService.getUserById(uid);
-    Journal journal = journalService.getJournalById(requestBodyDto.getJournalId());
+    Journal journal = journalService.getJournalById(journalId);
 
     journalPermissionService.checkEditPermissions(user, journal);
 
@@ -53,8 +53,8 @@ public class PageController {
   @GetMapping("/{pageId}")
   public ResponseEntity<GetPageResponseBodyDto> getPage(
       @AuthenticationPrincipal String uid,
-      @PathVariable String pageId,
-      @RequestParam(required = true) String journalId)
+      @PathVariable String journalId,
+      @PathVariable String pageId)
       throws UserNotFoundException, JournalNotFoundException, AccessDeniedException {
     User user = userService.getUserById(uid);
     Journal journal = journalService.getJournalById(journalId);
@@ -63,6 +63,6 @@ public class PageController {
 
     Page page = pageService.getPage(pageId);
 
-    return ResponseEntity.status(HttpStatus.CREATED).body(GetPageResponseBodyDto.from(page));
+    return ResponseEntity.status(HttpStatus.OK).body(GetPageResponseBodyDto.from(page));
   }
 }

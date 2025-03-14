@@ -9,6 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreatePageRequestBodyDto {
-  @NotNull private String journalId;
   private String title = "";
 }
