@@ -18,10 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,7 +37,7 @@ public class PageController {
 
   @PostMapping
   public ResponseEntity<CreatePageResponseBodyDto> createPage(
-      @RequestAttribute(required = true, name = "uid") String uid,
+      @AuthenticationPrincipal String uid,
       @Valid @RequestBody CreatePageRequestBodyDto requestBodyDto)
       throws UserNotFoundException, JournalNotFoundException, AccessDeniedException {
     User user = userService.getUserById(uid);
@@ -52,7 +52,7 @@ public class PageController {
 
   @GetMapping("/{pageId}")
   public ResponseEntity<GetPageResponseBodyDto> getPage(
-      @RequestAttribute(required = true, name = "uid") String uid,
+      @AuthenticationPrincipal String uid,
       @PathVariable String pageId,
       @RequestParam(required = true) String journalId)
       throws UserNotFoundException, JournalNotFoundException, AccessDeniedException {
