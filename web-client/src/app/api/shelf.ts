@@ -1,3 +1,4 @@
+import { Shelf } from "@/types/primitives/shelf";
 import { GetShelvesResponseBody } from "@/types/server/shelf";
 import { protectedKioke } from "@/utils/server";
 
@@ -17,4 +18,14 @@ export const getShelves = async () => {
   });
 
   return response.shelves;
+};
+
+export const updateShelf = async (shelf: Shelf, name: string) => {
+  await protectedKioke
+    .patch(`shelves/${shelf.id}`, {
+      json: {
+        name,
+      },
+    })
+    .json();
 };

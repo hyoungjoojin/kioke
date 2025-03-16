@@ -11,7 +11,7 @@ type ModalVariantType = "sm" | "lg";
 interface ModalProps {
   children: React.ReactNode;
   controls?: React.ReactNode;
-  title: string;
+  title: string | React.ReactNode;
   variant?: ModalVariantType;
 }
 

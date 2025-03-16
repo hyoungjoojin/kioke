@@ -1,5 +1,6 @@
 "use server";
 
+import { Journal } from "@/types/primitives/journal";
 import {
   CreateJournalResponseBody,
   GetJournalResponseBody,
@@ -30,6 +31,16 @@ export const getJournal = async (jid: string) => {
     .json();
 
   return response;
+};
+
+export const updateJournal = async (journalId: string, title: string) => {
+  await protectedKioke
+    .patch(`journals/${journalId}`, {
+      json: {
+        title,
+      },
+    })
+    .json();
 };
 
 export const moveJournal = async (jid: string, shelfId: string) => {

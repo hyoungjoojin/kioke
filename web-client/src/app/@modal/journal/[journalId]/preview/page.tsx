@@ -1,8 +1,12 @@
 "use client";
 
+import EditableTitle from "@/components/features/editor/EditableTitle";
 import { Button } from "@/components/ui/button";
 import Modal from "@/components/ui/modal";
-import { useJournalQuery } from "@/hooks/query/journal";
+import {
+  useJournalQuery,
+  useUpdateJournalMutation,
+} from "@/hooks/query/journal";
 import { useCreatePageMutation } from "@/hooks/query/page";
 import { Text, Clock, SquarePen } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -11,8 +15,13 @@ export default function JournalPreview() {
   const router = useRouter();
   const { journalId } = useParams<{ journalId: string }>();
 
-  const { data: journal } = useJournalQuery(journalId);
+  const { data: journal, isLoading, isError } = useJournalQuery(journalId);
   const { mutate: createPage } = useCreatePageMutation(journalId);
+  const { mutate: updateJournal } = useUpdateJournalMutation(journalId);
+
+  if (isLoading || isError || !journal) {
+    return null;
+  }
 
   const controls = (
     <>
@@ -27,7 +36,20 @@ export default function JournalPreview() {
   );
 
   return (
-    <Modal title={journal ? journal.title : "Loading..."} controls={controls}>
+    <Modal
+      title={
+        <EditableTitle
+          content={journal.title}
+          onUpdate={(title) => {
+            if (journal.title !== title) {
+              updateJournal({ title });
+            }
+          }}
+          className="text-2xl"
+        />
+      }
+      controls={controls}
+    >
       <div className="flex items-center">
         <Text size={14} color="gray" />
         <span className="text-sm text-gray-500 mx-1">Description</span>
