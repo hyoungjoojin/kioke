@@ -47,10 +47,17 @@ public class ShelfService {
     return archive;
   }
 
+  public void updateShelf(Shelf shelf, String name) {
+    if (name != null && !shelf.isArchive()) {
+      shelf.setName(name);
+    }
+
+    shelf = shelfRepository.save(shelf);
+  }
+
   public void putJournalInShelf(Journal journal, Shelf shelf) {
     User user = shelf.getOwner();
-    Optional<ShelfSlot> existingShelfSlot =
-        shelfSlotRepository.findByUserAndJournal(user, journal);
+    Optional<ShelfSlot> existingShelfSlot = shelfSlotRepository.findByUserAndJournal(user, journal);
 
     ShelfSlot shelfSlot;
     if (existingShelfSlot.isPresent()) {
