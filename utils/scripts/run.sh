@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-source .envrc
 cd "$PROJECT_DIRECTORY"
 
 info() {

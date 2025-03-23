@@ -1,0 +1,64 @@
+package kioke.journal.dto.response.shelf;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.LocalDateTime;
+import java.util.List;
+import kioke.journal.model.Journal;
+import kioke.journal.model.Shelf;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class GetShelvesResponseBodyDto {
+  private List<ShelfDto> shelves;
+
+  public static GetShelvesResponseBodyDto from(List<Shelf> shelves) {
+    return GetShelvesResponseBodyDto.builder()
+        .shelves(shelves.stream().map(shelf -> ShelfDto.from(shelf)).toList())
+        .build();
+  }
+
+  @Data
+  @Builder
+  private static class ShelfDto {
+    private String id;
+    private String name;
+    private List<JournalDto> journals;
+
+    @JsonProperty("isArchive")
+    private boolean isArchive;
+
+    public static ShelfDto from(Shelf shelf) {
+      return ShelfDto.builder()
+          .id(shelf.getId())
+          .name(shelf.getName())
+          .journals(
+              shelf.getShelfSlots().stream()
+                  .map(shelfSlot -> JournalDto.from(shelfSlot.getJournal()))
+                  .toList())
+          .isArchive(shelf.isArchive())
+          .build();
+    }
+  }
+
+  @Data
+  @Builder
+  private static class JournalDto {
+    private String id;
+    private String title;
+    private LocalDateTime createdAt;
+
+    public static JournalDto from(Journal journal) {
+      return JournalDto.builder()
+          .id(journal.getJid())
+          .title(journal.getTitle())
+          .createdAt(journal.getCreatedAt())
+          .build();
+    }
+  }
+}
