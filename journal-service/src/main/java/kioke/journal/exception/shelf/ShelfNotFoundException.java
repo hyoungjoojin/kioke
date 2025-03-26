@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 public class ShelfNotFoundException extends KiokeException {
 
   @Override
-  protected HttpStatus getStatus() {
+  public HttpStatus getStatus() {
     return HttpStatus.NOT_FOUND;
   }
 

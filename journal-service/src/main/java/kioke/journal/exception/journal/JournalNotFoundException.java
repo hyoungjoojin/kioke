@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 public class JournalNotFoundException extends KiokeException {
 
   @Override
-  protected HttpStatus getStatus() {
+  public HttpStatus getStatus() {
     return HttpStatus.NOT_FOUND;
   }
 
