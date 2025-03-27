@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 public class AccessDeniedException extends KiokeException {
 
   @Override
-  protected HttpStatus getStatus() {
+  public HttpStatus getStatus() {
     return HttpStatus.FORBIDDEN;
   }
 

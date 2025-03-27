@@ -40,7 +40,7 @@ public class PageController {
       @PathVariable String journalId,
       @Valid @RequestBody CreatePageRequestBodyDto requestBodyDto)
       throws UserNotFoundException, JournalNotFoundException, AccessDeniedException {
-    User user = userService.getUserById(uid);
+    User user = userService.getUserById(uid).orElseThrow(() -> new UserNotFoundException());
     Journal journal = journalService.getJournalById(journalId);
 
     journalPermissionService.checkEditPermissions(user, journal);
@@ -56,7 +56,7 @@ public class PageController {
       @PathVariable String journalId,
       @PathVariable String pageId)
       throws UserNotFoundException, JournalNotFoundException, AccessDeniedException {
-    User user = userService.getUserById(uid);
+    User user = userService.getUserById(uid).orElseThrow(() -> new UserNotFoundException());
     Journal journal = journalService.getJournalById(journalId);
 
     journalPermissionService.checkEditPermissions(user, journal);

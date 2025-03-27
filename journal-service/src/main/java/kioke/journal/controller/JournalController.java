@@ -40,7 +40,7 @@ public class JournalController {
       @AuthenticationPrincipal String uid,
       @RequestBody @Valid CreateJournalRequestBodyDto requestBodyDto)
       throws UserNotFoundException, ShelfNotFoundException, CannotCreateJournalInArchiveException {
-    User user = userService.getUserById(uid);
+    User user = userService.getUserById(uid).orElseThrow(() -> new UserNotFoundException());
     Shelf shelf = shelfService.getShelfById(requestBodyDto.getShelfId());
     if (shelf.isArchive()) {
       throw new CannotCreateJournalInArchiveException();
@@ -64,7 +64,7 @@ public class JournalController {
       @RequestAttribute String requestId,
       @PathVariable String jid)
       throws UserNotFoundException, JournalNotFoundException, AccessDeniedException {
-    User user = userService.getUserById(uid);
+    User user = userService.getUserById(uid).orElseThrow(() -> new UserNotFoundException());
     Journal journal = journalService.getJournalById(jid);
 
     journalPermissionService.checkReadPermissions(user, journal);
@@ -84,7 +84,7 @@ public class JournalController {
           UserNotFoundException,
           JournalNotFoundException,
           ShelfNotFoundException {
-    User user = userService.getUserById(uid);
+    User user = userService.getUserById(uid).orElseThrow(() -> new UserNotFoundException());
 
     Journal journal = journalService.getJournalById(jid);
     journalPermissionService.checkReadPermissions(user, journal);
@@ -103,7 +103,7 @@ public class JournalController {
   public ResponseEntity<Void> deleteJournal(
       @AuthenticationPrincipal String uid, @PathVariable String jid)
       throws UserNotFoundException, JournalNotFoundException, AccessDeniedException {
-    User user = userService.getUserById(uid);
+    User user = userService.getUserById(uid).orElseThrow(() -> new UserNotFoundException());
     Journal journal = journalService.getJournalById(jid);
 
     journalPermissionService.checkDeletePermissions(user, journal);

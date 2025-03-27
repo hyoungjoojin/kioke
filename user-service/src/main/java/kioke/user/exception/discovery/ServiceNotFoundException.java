@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 public class ServiceNotFoundException extends KiokeException {
 
   @Override
-  protected HttpStatus getStatus() {
+  public HttpStatus getStatus() {
     return HttpStatus.NOT_FOUND;
   }
 

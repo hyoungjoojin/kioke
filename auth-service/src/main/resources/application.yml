@@ -12,3 +12,14 @@ eureka:
   client:
     register-with-eureka: true
     fetch-registry: true
+
+rabbitmq:
+  exchange:
+    user-registration:
+      name: user.registration
+  queue:
+    user-registration:
+      name: user.registration
+  routing:
+    user-registration:
+      name: user.registration

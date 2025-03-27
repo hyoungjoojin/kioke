@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 public class CannotAddSelfAsFriendException extends KiokeException {
 
   @Override
-  protected HttpStatus getStatus() {
+  public HttpStatus getStatus() {
     return HttpStatus.BAD_REQUEST;
   }
 

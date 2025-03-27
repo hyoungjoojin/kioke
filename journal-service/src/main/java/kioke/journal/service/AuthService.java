@@ -22,7 +22,6 @@ public class AuthService extends AbstractAuthService {
 
   @Override
   protected PublicKey getPublicKey() {
-    log.info("am i being called??");
     Resource resource = resourceLoader.getResource("classpath:/certs/public.pem");
 
     String key = "";

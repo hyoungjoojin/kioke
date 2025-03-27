@@ -11,11 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-@RestControllerAdvice
-public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+public abstract class AbstractGlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
   @ExceptionHandler(KiokeException.class)
   public ResponseEntity<HttpResponseBody<Void>> kiokeExceptionHandler(
@@ -40,6 +38,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, "");
     problemDetail.setType(URI.create("about:blank"));
     problemDetail.setTitle("Access denied.");
+    problemDetail.setInstance(URI.create(request.getRequestURI()));
+
+    return ResponseEntity.status(status)
+        .body(
+            HttpResponseBody.error(
+                (String) request.getAttribute("requestId"), status, problemDetail));
+  }
+
+  @ExceptionHandler({Exception.class})
+  public ResponseEntity<HttpResponseBody<Void>> exceptionHandler(
+      Exception e, HttpServletRequest request) {
+    HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+
+    ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, "");
+    problemDetail.setType(URI.create("about:blank"));
+    problemDetail.setTitle("Internal server error.");
     problemDetail.setInstance(URI.create(request.getRequestURI()));
 
     return ResponseEntity.status(status)
