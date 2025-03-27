@@ -1,11 +1,8 @@
 package com.kioke.auth.service;
 
 import com.kioke.auth.dto.data.auth.RegisterUserDto;
-import com.kioke.auth.exception.ServiceFailedException;
-import com.kioke.auth.exception.ServiceNotFoundException;
 import com.kioke.auth.exception.UserAlreadyExistsException;
 import com.kioke.auth.exception.UserDoesNotExistException;
-import com.kioke.auth.exception.UserDoesNotExistException.UserIdentifierType;
 import com.kioke.auth.model.User;
 import com.kioke.auth.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +20,9 @@ public class AuthService {
   @Autowired @Lazy private AuthenticationManager authenticationManager;
   @Autowired @Lazy private PasswordEncoder passwordEncoder;
 
-  public User registerUser(RegisterUserDto data)
-      throws UserAlreadyExistsException, ServiceNotFoundException, ServiceFailedException {
+  public User registerUser(RegisterUserDto data) throws UserAlreadyExistsException {
     if (userRepository.findUserByEmail(data.getEmail()).isPresent()) {
-      throw new UserAlreadyExistsException(data.getEmail());
+      throw new UserAlreadyExistsException();
     }
 
     String encodedPassword = passwordEncoder.encode(data.getPassword());
@@ -38,9 +34,7 @@ public class AuthService {
   public User loginUser(String email, String password)
       throws UserDoesNotExistException, BadCredentialsException {
     User user =
-        userRepository
-            .findUserByEmail(email)
-            .orElseThrow(() -> new UserDoesNotExistException(UserIdentifierType.EMAIL, email));
+        userRepository.findUserByEmail(email).orElseThrow(() -> new UserDoesNotExistException());
 
     authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(user.getUid(), password));

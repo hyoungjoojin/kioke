@@ -1,7 +1,7 @@
 package kioke.journal.service;
 
 import jakarta.transaction.Transactional;
-import kioke.journal.exception.user.UserNotFoundException;
+import java.util.Optional;
 import kioke.journal.model.User;
 import kioke.journal.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class UserService implements UserDetailsService {
         .orElseThrow(() -> new UsernameNotFoundException("User not found."));
   }
 
-  public User getUserById(String uid) throws UserNotFoundException {
-    return userRepository.findById(uid).orElseThrow(() -> new UserNotFoundException());
+  public Optional<User> getUserById(String userId) {
+    return userRepository.findById(userId);
   }
 }

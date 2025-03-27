@@ -1,8 +1,6 @@
 package kioke.user;
 
-import kioke.commons.configuration.FilterConfiguration;
 import kioke.commons.configuration.SecurityConfiguration;
-import kioke.commons.controller.GlobalExceptionHandler;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -11,11 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 @ComponentScan(
     basePackages = {"kioke.user"},
-    basePackageClasses = {
-      SecurityConfiguration.class,
-      FilterConfiguration.class,
-      GlobalExceptionHandler.class
-    })
+    basePackageClasses = {SecurityConfiguration.class})
 @EnableDiscoveryClient
 public class KiokeUserServiceApplication {
 

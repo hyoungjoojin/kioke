@@ -21,6 +21,7 @@ public class UserRegistrationMessageConsumerService
     extends AbstractMessageConsumerService<UserRegistrationMessageDto> {
 
   @Autowired private ShelfService shelfService;
+
   @Autowired private UserRepository userRepository;
 
   @Autowired private MessageBrokerConfiguration messageBrokerConfiguration;
@@ -28,11 +29,16 @@ public class UserRegistrationMessageConsumerService
   @Autowired public Queue userRegistrationQueue;
 
   @Override
-  @RabbitListener(queues = "#{userRegistrationQueue.getName()}")
+  @RabbitListener(queues = "#{userRegistrationQueue.getName()}", autoStartup = "true")
   public void receive(Message message) {
     UserRegistrationMessageDto messageDto = deserialize(message);
 
-    User user = User.builder().uid(messageDto.userId()).journals(new ArrayList<>()).build();
+    String userId = messageDto.userId();
+    if (userRepository.findById(userId).isPresent()) {
+      return;
+    }
+
+    User user = User.builder().uid(userId).journals(new ArrayList<>()).build();
     user = userRepository.save(user);
 
     shelfService.createArchive(user);

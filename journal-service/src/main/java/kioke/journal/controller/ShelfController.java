@@ -37,7 +37,7 @@ public class ShelfController {
       throws UserNotFoundException {
     String name = requestBodyDto.getName();
 
-    User user = userService.getUserById(uid);
+    User user = userService.getUserById(uid).orElseThrow(() -> new UserNotFoundException());
 
     Shelf shelf = shelfService.createShelf(user, name);
 
@@ -49,7 +49,7 @@ public class ShelfController {
   @GetMapping
   public ResponseEntity<GetShelvesResponseBodyDto> getShelves(@AuthenticationPrincipal String uid)
       throws UserNotFoundException {
-    User user = userService.getUserById(uid);
+    User user = userService.getUserById(uid).orElseThrow(() -> new UserNotFoundException());
 
     List<Shelf> shelves = shelfService.getShelves(user);
 

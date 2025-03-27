@@ -5,7 +5,6 @@ import kioke.commons.service.message.AbstractMessageConsumerService;
 import kioke.user.configuration.MessageBrokerConfiguration;
 import kioke.user.model.User;
 import kioke.user.repository.UserRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-@Slf4j
 public class UserRegistrationMessageConsumerService
     extends AbstractMessageConsumerService<UserRegistrationMessageDto> {
 
@@ -25,7 +23,7 @@ public class UserRegistrationMessageConsumerService
   @Autowired public Queue userRegistrationQueue;
 
   @Override
-  @RabbitListener(queues = "#{userRegistrationQueue.getName()}")
+  @RabbitListener(queues = "#{userRegistrationQueue.getName()}", autoStartup = "true")
   public void receive(Message message) {
     UserRegistrationMessageDto messageDto = deserialize(message);
 
