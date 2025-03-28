@@ -3,8 +3,8 @@ package com.kioke.auth.service.message.producer;
 import kioke.commons.dto.message.UserRegistrationMessageDto;
 import kioke.commons.service.message.AbstractMessageProducerService;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.amqp.core.Exchange;
+import org.springframework.amqp.core.MessageDeliveryMode;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.MessageConverter;
@@ -22,11 +22,12 @@ public class UserRegistrationMessageProducerService
 
   @Override
   public void send(UserRegistrationMessageDto object) {
-log.info("sending");
+    MessageProperties messageProperties = new MessageProperties();
+    messageProperties.setDeliveryMode(MessageDeliveryMode.PERSISTENT);
+
     rabbitTemplate.convertAndSend(
         userRegistrationExchange.getName(),
         "",
-        userRegistrationMessageConverter.toMessage(object, new MessageProperties()));
-log.info("sent");
+        userRegistrationMessageConverter.toMessage(object, messageProperties));
   }
 }

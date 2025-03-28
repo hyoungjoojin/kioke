@@ -16,16 +16,11 @@ public class MessageBrokerConfiguration {
   @Value("${rabbitmq.exchange.user-registration.name}")
   private String userRegistrationExchangeName;
 
-  @Value("${rabbitmq.queue.user-registration.name}")
-  private String userRegistrationQueueName;
+  @Value("${rabbitmq.queue.user-registration.journal.name}")
+  private String userRegistrationJournalQueueName;
 
-  @Value("${rabbitmq.routing.user-registration.name}")
-  private String userRegistrationRoutingKeyName;
-
-  @Bean
-  public Queue userRegistrationQueue() {
-    return new Queue(userRegistrationQueueName);
-  }
+  @Value("${rabbitmq.queue.user-registration.user.name}")
+  private String userRegistrationUserQueueName;
 
   @Bean
   public FanoutExchange userRegistrationExchange() {
@@ -33,8 +28,23 @@ public class MessageBrokerConfiguration {
   }
 
   @Bean
-  public Binding userRegistrationBinding() {
-    return BindingBuilder.bind(userRegistrationQueue()).to(userRegistrationExchange());
+  public Queue userRegistrationJournalQueue() {
+    return new Queue(userRegistrationJournalQueueName);
+  }
+
+  @Bean
+  public Queue userRegistrationUserQueue() {
+    return new Queue(userRegistrationUserQueueName);
+  }
+
+  @Bean
+  public Binding userRegistrationJournalBinding() {
+    return BindingBuilder.bind(userRegistrationJournalQueue()).to(userRegistrationExchange());
+  }
+
+  @Bean
+  public Binding userRegistrationUserBinding() {
+    return BindingBuilder.bind(userRegistrationUserQueue()).to(userRegistrationExchange());
   }
 
   @Bean
