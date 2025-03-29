@@ -11,6 +11,7 @@ import com.kioke.auth.model.User;
 import com.kioke.auth.service.AuthService;
 import com.kioke.auth.service.JwtService;
 import com.kioke.auth.service.message.producer.UserRegistrationMessageProducerService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import kioke.commons.dto.message.UserRegistrationMessageDto;
 import kioke.commons.http.HttpResponseBody;
@@ -20,7 +21,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,8 +34,7 @@ public class AuthController {
 
   @PostMapping("/register")
   public ResponseEntity<HttpResponseBody<RegisterUserResponseBodyDto>> registerUser(
-      @RequestAttribute String requestId,
-      @RequestBody @Valid RegisterUserRequestBodyDto requestBodyDto)
+      @RequestBody @Valid RegisterUserRequestBodyDto requestBodyDto, HttpServletRequest request)
       throws UserAlreadyExistsException {
     User user = authService.registerUser(RegisterUserDto.from(requestBodyDto));
     userRegistrationMessageProducerService.send(
@@ -47,27 +46,26 @@ public class AuthController {
 
     String accessToken = jwtService.buildToken(user.getUid());
 
-    return ResponseEntity.status(HttpStatus.CREATED)
-        .body(
-            HttpResponseBody.success(
-                requestId,
-                HttpStatus.CREATED,
-                RegisterUserResponseBodyDto.builder()
-                    .uid(user.getUid())
-                    .accessToken(accessToken)
-                    .build()));
+    HttpStatus status = HttpStatus.CREATED;
+    RegisterUserResponseBodyDto data =
+        RegisterUserResponseBodyDto.builder().uid(user.getUid()).accessToken(accessToken).build();
+
+    return ResponseEntity.status(status).body(HttpResponseBody.success(request, status, data));
   }
 
   @PostMapping("/login")
-  public ResponseEntity<LoginUserResponseBodyDto> loginUser(
-      @RequestBody @Valid LoginUserRequestBodyDto requestBodyDto)
+  public ResponseEntity<HttpResponseBody<LoginUserResponseBodyDto>> loginUser(
+      @RequestBody @Valid LoginUserRequestBodyDto requestBodyDto, HttpServletRequest request)
       throws UserDoesNotExistException, BadCredentialsException {
     String email = requestBodyDto.getEmail(), password = requestBodyDto.getPassword();
     String uid = authService.loginUser(email, password).getUid();
 
     String accessToken = jwtService.buildToken(uid);
 
-    return ResponseEntity.status(HttpStatus.CREATED)
-        .body(LoginUserResponseBodyDto.builder().uid(uid).accessToken(accessToken).build());
+    HttpStatus status = HttpStatus.CREATED;
+    LoginUserResponseBodyDto data =
+        LoginUserResponseBodyDto.builder().uid(uid).accessToken(accessToken).build();
+
+    return ResponseEntity.status(status).body(HttpResponseBody.success(request, status, data));
   }
 }

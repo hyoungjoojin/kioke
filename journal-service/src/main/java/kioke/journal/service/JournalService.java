@@ -14,8 +14,10 @@ import org.springframework.stereotype.Service;
 public class JournalService {
   @Autowired @Lazy JournalRepository journalRepository;
 
-  public Journal getJournalById(String jid) throws JournalNotFoundException {
-    return journalRepository.findById(jid).orElseThrow(() -> new JournalNotFoundException());
+  public Journal getJournalById(String journalId) throws JournalNotFoundException {
+    return journalRepository
+        .findById(journalId)
+        .orElseThrow(() -> new JournalNotFoundException(journalId));
   }
 
   public Journal createJournal(User user, String title, String description) {

@@ -1,17 +1,16 @@
 package kioke.journal.exception.journal;
 
+import kioke.commons.constant.ErrorCode;
 import kioke.commons.exception.KiokeException;
-import org.springframework.http.HttpStatus;
 
 public class JournalNotFoundException extends KiokeException {
 
-  @Override
-  public HttpStatus getStatus() {
-    return HttpStatus.NOT_FOUND;
+  public JournalNotFoundException(String journalId) {
+    super("Journal with ID " + journalId + " cannot be found.");
   }
 
   @Override
-  protected String getTitle() {
-    return "Journal not found.";
+  public ErrorCode getErrorCode() {
+    return ErrorCode.JOURNAL_NOT_FOUND;
   }
 }

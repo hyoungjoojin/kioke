@@ -1,64 +1,68 @@
 package kioke.commons.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.net.URI;
+import kioke.commons.constant.ErrorCode;
 import kioke.commons.exception.KiokeException;
 import kioke.commons.exception.security.TokenExpiredException;
 import kioke.commons.exception.security.TokenInvalidException;
 import kioke.commons.exception.security.TokenNotFoundException;
 import kioke.commons.http.HttpResponseBody;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ProblemDetail;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+@Slf4j
 public abstract class AbstractGlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
   @ExceptionHandler(KiokeException.class)
   public ResponseEntity<HttpResponseBody<Void>> kiokeExceptionHandler(
       KiokeException e, HttpServletRequest request) {
-    ProblemDetail problemDetail = e.intoProblemDetail(URI.create(request.getRequestURI()));
+    ErrorCode errorCode = e.getErrorCode();
 
-    return ResponseEntity.status(e.getStatus())
-        .body(
-            HttpResponseBody.error(
-                (String) request.getAttribute("requestId"), e.getStatus(), problemDetail));
+    return ResponseEntity.status(errorCode.getStatus())
+        .body(HttpResponseBody.error(request, errorCode));
+  }
+
+  @ExceptionHandler({TokenNotFoundException.class})
+  public ResponseEntity<HttpResponseBody<Void>> tokenNotFoundExceptionHandler(
+      Exception e, HttpServletRequest request) {
+    ErrorCode errorCode = ErrorCode.NO_ACCESS_TOKEN;
+
+    return ResponseEntity.status(errorCode.getStatus())
+        .body(HttpResponseBody.error(request, errorCode));
   }
 
   @ExceptionHandler({
-    TokenNotFoundException.class,
     TokenInvalidException.class,
     TokenExpiredException.class,
   })
-  public ResponseEntity<HttpResponseBody<Void>> securityExceptionHandler(
+  public ResponseEntity<HttpResponseBody<Void>> invalidTokenExceptionHandler(
       Exception e, HttpServletRequest request) {
-    HttpStatus status = HttpStatus.FORBIDDEN;
+    ErrorCode errorCode = ErrorCode.INVALID_ACCESS_TOKEN;
 
-    ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, "");
-    problemDetail.setType(URI.create("about:blank"));
-    problemDetail.setTitle("Access denied.");
-    problemDetail.setInstance(URI.create(request.getRequestURI()));
+    return ResponseEntity.status(errorCode.getStatus())
+        .body(HttpResponseBody.error(request, errorCode));
+  }
 
-    return ResponseEntity.status(status)
-        .body(
-            HttpResponseBody.error(
-                (String) request.getAttribute("requestId"), status, problemDetail));
+  @ExceptionHandler({UsernameNotFoundException.class})
+  public ResponseEntity<HttpResponseBody<Void>> usernameNotFoundExceptionHandler(
+      Exception e, HttpServletRequest request) {
+    ErrorCode errorCode = ErrorCode.USER_NOT_FOUND;
+
+    return ResponseEntity.status(errorCode.getStatus())
+        .body(HttpResponseBody.error(request, errorCode, e.getMessage()));
   }
 
   @ExceptionHandler({Exception.class})
   public ResponseEntity<HttpResponseBody<Void>> exceptionHandler(
       Exception e, HttpServletRequest request) {
-    HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+    ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
 
-    ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, "");
-    problemDetail.setType(URI.create("about:blank"));
-    problemDetail.setTitle("Internal server error.");
-    problemDetail.setInstance(URI.create(request.getRequestURI()));
+    log.error("An unknown error has occurred.", e);
 
-    return ResponseEntity.status(status)
-        .body(
-            HttpResponseBody.error(
-                (String) request.getAttribute("requestId"), status, problemDetail));
+    return ResponseEntity.status(errorCode.getStatus())
+        .body(HttpResponseBody.error(request, errorCode));
   }
 }

@@ -21,12 +21,14 @@ public class AuthService {
   @Autowired @Lazy private PasswordEncoder passwordEncoder;
 
   public User registerUser(RegisterUserDto data) throws UserAlreadyExistsException {
-    if (userRepository.findUserByEmail(data.getEmail()).isPresent()) {
-      throw new UserAlreadyExistsException();
+    String email = data.getEmail(), password = data.getPassword();
+
+    if (userRepository.findUserByEmail(email).isPresent()) {
+      throw new UserAlreadyExistsException(email);
     }
 
-    String encodedPassword = passwordEncoder.encode(data.getPassword());
-    User user = User.builder().email(data.getEmail()).password(encodedPassword).build();
+    String encodedPassword = passwordEncoder.encode(password);
+    User user = User.builder().email(email).password(encodedPassword).build();
 
     return userRepository.save(user);
   }

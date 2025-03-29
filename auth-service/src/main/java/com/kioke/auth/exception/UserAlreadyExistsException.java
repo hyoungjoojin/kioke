@@ -1,17 +1,16 @@
 package com.kioke.auth.exception;
 
+import kioke.commons.constant.ErrorCode;
 import kioke.commons.exception.KiokeException;
-import org.springframework.http.HttpStatus;
 
 public class UserAlreadyExistsException extends KiokeException {
 
-  @Override
-  public HttpStatus getStatus() {
-    return HttpStatus.CONFLICT;
+  public UserAlreadyExistsException(String email) {
+    super("User with email " + email + " already exists.");
   }
 
   @Override
-  protected String getTitle() {
-    return "User already exists.";
+  public ErrorCode getErrorCode() {
+    return ErrorCode.USER_ALREADY_EXISTS;
   }
 }
