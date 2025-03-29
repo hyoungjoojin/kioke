@@ -1,12 +1,7 @@
 "use server";
 
-import { ErrorCode } from "@/constants/errors";
-import { signIn } from "./";
-import {
-  AuthLoginInvalidCredentialsError,
-  AuthServiceInternalServerError,
-  AuthServiceNotAvailableError,
-} from "./errors";
+import KiokeError, { ErrorCode } from "@/constants/errors";
+import { KiokeAuthError, signIn } from "./";
 
 export async function signInWithCredentials(
   email: string,
@@ -21,31 +16,21 @@ export async function signInWithCredentials(
       password,
       redirect: false,
     });
+
+    return {
+      success: true,
+    };
   } catch (error) {
-    console.log(error);
-    let code: ErrorCode = ErrorCode.UNKNOWN_ERROR;
-
-    switch (true) {
-      case error instanceof AuthServiceNotAvailableError:
-        code = ErrorCode.AUTH_SERVICE_NOT_AVAILABLE;
-        break;
-
-      case error instanceof AuthServiceInternalServerError:
-        code = ErrorCode.AUTH_SERVICE_INTERNAL_SERVER_ERROR;
-        break;
-
-      case error instanceof AuthLoginInvalidCredentialsError:
-        code = ErrorCode.AUTH_LOGIN_INVALID_CREDENTIALS;
-        break;
+    if (error instanceof KiokeAuthError && error.error instanceof KiokeError) {
+      return {
+        success: false,
+        code: error.error.code(),
+      };
     }
 
     return {
       success: false,
-      code,
+      code: ErrorCode.INTERNAL_SERVER_ERROR,
     };
   }
-
-  return {
-    success: true,
-  };
 }

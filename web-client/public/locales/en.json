@@ -16,13 +16,6 @@
     "login-button": "Login",
     "register": "Not a member? Sign up now."
   },
-  "error": {
-    "internal-server-error": "Internal server error.",
-    "login": {
-      "invalid-credentials": "Invalid credentials."
-    },
-    "unknown-error": "Internal server error."
-  },
   "register": {
     "title": "Embark on a whole new journey with kioke.",
     "description": "Create a new kioke account to start journaling.",
@@ -59,10 +52,9 @@
     }
   },
   "error": {
-    "internal-server-error": "Internal server error.",
-    "login": {
-      "invalid-credentials": "Invalid credentials."
-    },
-    "unknown-error": "Internal server error."
+    "user-not-found": "User not found.",
+    "user-already-exists": "User already exists.",
+    "invalid-credentials": "Invalid credentials.",
+    "internal-server-error": "Internal server error."
   }
 }

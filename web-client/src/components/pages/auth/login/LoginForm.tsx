@@ -23,9 +23,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signInWithCredentials } from "@/lib/auth/actions";
 import { useState } from "react";
-import { getErrorMessage } from "@/constants/errors";
 import { redirect } from "next/navigation";
 import { LoginFormSchema } from "@/lib/auth";
+import KiokeError, { ErrorCode } from "@/constants/errors";
 
 export default function LoginForm() {
   const t = useTranslations("");
@@ -42,7 +42,6 @@ export default function LoginForm() {
   });
 
   const formSubmitHandler = async (values: z.infer<typeof LoginFormSchema>) => {
-    setIsError(false);
     const { success, code } = await signInWithCredentials(
       values.email,
       values.password,
@@ -50,12 +49,13 @@ export default function LoginForm() {
 
     if (success) {
       redirect("/");
+    } else {
+      setIsError(true);
     }
 
-    if (!success && code) {
-      setIsError(true);
-      setErrorMessage(getErrorMessage(code));
-    }
+    setErrorMessage(
+      KiokeError.getErrorMessage(code ?? ErrorCode.INTERNAL_SERVER_ERROR),
+    );
   };
 
   return (
@@ -72,7 +72,12 @@ export default function LoginForm() {
           </p>
         )}
         <Form {...loginForm}>
-          <form onSubmit={loginForm.handleSubmit(formSubmitHandler)}>
+          <form
+            onFocus={() => {
+              setIsError(false);
+            }}
+            onSubmit={loginForm.handleSubmit(formSubmitHandler)}
+          >
             <div className="my-3">
               <FormField
                 name="email"
