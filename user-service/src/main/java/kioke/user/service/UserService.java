@@ -1,7 +1,5 @@
 package kioke.user.service;
 
-import kioke.user.exception.user.UserDoesNotExistException;
-import kioke.user.exception.user.UserDoesNotExistException.UserIdentifierType;
 import kioke.user.model.User;
 import kioke.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,15 +15,14 @@ public class UserService implements UserDetailsService {
   @Autowired @Lazy private UserRepository userRepository;
 
   @Override
-  public UserDetails loadUserByUsername(String uid) throws UsernameNotFoundException {
-    return userRepository
-        .findById(uid)
-        .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+  public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
+    return getUserById(userId);
   }
 
-  public User getUserById(String uid) throws UserDoesNotExistException {
+  public User getUserById(String userId) throws UsernameNotFoundException {
     return userRepository
-        .findById(uid)
-        .orElseThrow(() -> new UserDoesNotExistException(UserIdentifierType.UID, uid));
+        .findById(userId)
+        .orElseThrow(
+            () -> new UsernameNotFoundException("User with ID " + userId + " could not be found."));
   }
 }

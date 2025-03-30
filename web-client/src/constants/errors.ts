@@ -1,24 +1,96 @@
-export const enum ErrorCode {
-  AUTH_SERVICE_NOT_AVAILABLE = "A0",
-  AUTH_SERVICE_INTERNAL_SERVER_ERROR = "A1",
-  AUTH_LOGIN_INVALID_CREDENTIALS = "A2",
+export enum ErrorCode {
+  USER_NOT_FOUND = "U-0001",
+  USER_ALREADY_EXISTS = "U-0002",
+  INVALID_CREDENTIALS = "U-0003",
+  NO_ACCESS_TOKEN = "U-0004",
+  INVALID_ACCESS_TOKEN = "U-0005",
+  FRIEND_REQUEST_ALREADY_SENT = "U-0006",
+  INVALID_FRIEND_REQUEST = "U-0007",
 
-  UNKNOWN_ERROR = "Z1",
+  JOURNAL_NOT_FOUND = "J-0001",
+  SHELF_NOT_FOUND = "J-0002",
+  CANNOT_CREATE_JOURNAL = "J-0003",
+  NO_EDIT_PERMISSIONS = "J-0004",
+  NO_DELETE_PERMISSIONS = "J-0005",
+
+  INTERNAL_SERVER_ERROR = "E-0000",
+
+  SHOULD_NOT_HAPPEN = "!",
+  INVALID_ERROR_CODE = "?",
 }
 
-export function getErrorMessage(code: ErrorCode): string {
-  switch (code) {
-    case ErrorCode.AUTH_SERVICE_NOT_AVAILABLE:
-      return "error.internal-server-error";
+export default class KiokeError {
+  private code_: ErrorCode;
+  private title_: string = "";
+  private message_: string = "";
+  private details_: string = "";
 
-    case ErrorCode.AUTH_SERVICE_INTERNAL_SERVER_ERROR:
-      return "error.internal-server-error";
+  private static reverseCodeMapping = new Map(
+    Object.entries(ErrorCode).map(([key, value]) => [value, key]),
+  );
 
-    case ErrorCode.AUTH_LOGIN_INVALID_CREDENTIALS:
-      return "error.login.invalid-credentials";
+  constructor(
+    code: string | undefined,
+    title?: string,
+    message?: string,
+    details?: string | undefined,
+  ) {
+    if (
+      code === undefined ||
+      KiokeError.reverseCodeMapping.get(code as ErrorCode) === undefined
+    ) {
+      this.code_ = ErrorCode.INVALID_ERROR_CODE;
+    } else {
+      this.code_ = code as ErrorCode;
+    }
 
-    case ErrorCode.UNKNOWN_ERROR:
-    default:
-      return "error.unknown-error";
+    if (title) {
+      this.title_ = title;
+    }
+
+    if (message) {
+      this.message_ = message;
+    }
+
+    if (details) {
+      this.details_ = details;
+    }
+  }
+
+  public static getErrorMessage = (code: ErrorCode) => {
+    switch (code) {
+      case ErrorCode.USER_NOT_FOUND: {
+        return "error.user-not-found";
+      }
+
+      case ErrorCode.USER_ALREADY_EXISTS: {
+        return "error.user-already-exists";
+      }
+
+      case ErrorCode.INVALID_CREDENTIALS: {
+        return "error.invalid-credentials";
+      }
+
+      case ErrorCode.INTERNAL_SERVER_ERROR:
+      default: {
+        return "error.internal-server-error";
+      }
+    }
+  };
+
+  public code() {
+    return this.code_;
+  }
+
+  public title() {
+    return this.title_;
+  }
+
+  public message() {
+    return this.message_;
+  }
+
+  public details() {
+    return this.details_;
   }
 }

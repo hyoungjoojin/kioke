@@ -29,7 +29,7 @@ public class RequestLoggingFilter
       log.info("[{}] HTTP {} {} recieved.", requestId, requestMethod, requestUri);
 
       exchange =
-          exchange.mutate().request(r -> r.header("Kioke-Request-Id", requestId).build()).build();
+          exchange.mutate().request(r -> r.header("X-Correlation-ID", requestId).build()).build();
 
       return chain
           .filter(exchange)

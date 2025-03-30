@@ -1,5 +1,6 @@
+import { HttpResponseBody } from "@/types/server";
 import { GetMyInformationResponseBody } from "@/types/server/user";
-import { kioke } from "@/utils/server";
+import { kioke, processResponse } from "@/utils/server";
 
 export const getMyInformation = async (accessToken: string) => {
   const response = kioke
@@ -8,7 +9,7 @@ export const getMyInformation = async (accessToken: string) => {
         Authorization: `Bearer ${accessToken}`,
       },
     })
-    .get<GetMyInformationResponseBody>("users");
+    .get<HttpResponseBody<GetMyInformationResponseBody>>("users");
 
-  return response;
+  return processResponse(response);
 };

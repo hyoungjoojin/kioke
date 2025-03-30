@@ -1,7 +1,9 @@
 package kioke.journal.service;
 
 import kioke.journal.constant.Permission;
-import kioke.journal.exception.permission.AccessDeniedException;
+import kioke.journal.exception.journal.JournalNotFoundException;
+import kioke.journal.exception.permission.NoDeletePermissionsException;
+import kioke.journal.exception.permission.NoEditPermissionsException;
 import kioke.journal.model.Journal;
 import kioke.journal.model.JournalPermission;
 import kioke.journal.model.User;
@@ -14,37 +16,38 @@ import org.springframework.stereotype.Service;
 public class JournalPermissionService {
   @Autowired @Lazy JournalPermissionRepository journalPermissionRepository;
 
-  public void checkReadPermissions(User user, Journal journal) throws AccessDeniedException {
+  public void checkReadPermissions(User user, Journal journal) throws JournalNotFoundException {
     JournalPermission permission =
         journalPermissionRepository
             .findByUserAndJournal(user, journal)
-            .orElseThrow(() -> new AccessDeniedException());
+            .orElseThrow(() -> new JournalNotFoundException(journal.getJid()));
 
     if (permission.getReadPermission().equals(Permission.PERMITTED)) return;
 
-    throw new AccessDeniedException();
+    throw new JournalNotFoundException(journal.getJid());
   }
 
-  public void checkEditPermissions(User user, Journal journal) throws AccessDeniedException {
+  public void checkEditPermissions(User user, Journal journal) throws NoEditPermissionsException {
     JournalPermission permission =
         journalPermissionRepository
             .findByUserAndJournal(user, journal)
-            .orElseThrow(() -> new AccessDeniedException());
+            .orElseThrow(() -> new NoEditPermissionsException());
 
     if (permission.getEditPermission().equals(Permission.PERMITTED)) return;
 
-    throw new AccessDeniedException();
+    throw new NoEditPermissionsException();
   }
 
-  public void checkDeletePermissions(User user, Journal journal) throws AccessDeniedException {
+  public void checkDeletePermissions(User user, Journal journal)
+      throws NoDeletePermissionsException {
     JournalPermission permission =
         journalPermissionRepository
             .findByUserAndJournal(user, journal)
-            .orElseThrow(() -> new AccessDeniedException());
+            .orElseThrow(() -> new NoDeletePermissionsException());
 
     if (permission.getDeletePermission().equals(Permission.PERMITTED)) return;
 
-    throw new AccessDeniedException();
+    throw new NoDeletePermissionsException();
   }
 
   public void grantAuthorPermissionsToUser(User user, Journal journal) {

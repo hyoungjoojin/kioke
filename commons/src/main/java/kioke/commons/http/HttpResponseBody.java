@@ -1,30 +1,63 @@
 package kioke.commons.http;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.OffsetDateTime;
-import java.util.Optional;
+import kioke.commons.constant.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ProblemDetail;
+import org.springframework.http.HttpStatusCode;
 
 @Data
 @AllArgsConstructor
 public class HttpResponseBody<T> {
-  private String requestId;
-  private boolean success;
-  private HttpStatus status;
-  private OffsetDateTime timestamp;
-  private Optional<T> data;
-  private Optional<ProblemDetail> error;
 
-  public static <T> HttpResponseBody<T> success(String requestId, HttpStatus status, T data) {
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  private String requestId;
+
+  private boolean success;
+  private String path;
+  private HttpStatusCode status;
+  private OffsetDateTime timestamp;
+
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  private T data;
+
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  private ErrorDetail error;
+
+  public static <T> HttpResponseBody<T> success(
+      HttpServletRequest request, HttpStatusCode status, T data) {
     return new HttpResponseBody<T>(
-        requestId, true, status, OffsetDateTime.now(), Optional.of(data), Optional.empty());
+        (String) request.getAttribute("requestId"),
+        true,
+        request.getRequestURI(),
+        status,
+        OffsetDateTime.now(),
+        data,
+        null);
+  }
+
+  public static <T> HttpResponseBody<T> error(HttpServletRequest request, ErrorCode errorCode) {
+    return new HttpResponseBody<T>(
+        (String) request.getAttribute("requestId"),
+        false,
+        request.getRequestURI(),
+        errorCode.getStatus(),
+        OffsetDateTime.now(),
+        null,
+        new ErrorDetail(errorCode));
   }
 
   public static <T> HttpResponseBody<T> error(
-      String requestId, HttpStatus status, ProblemDetail error) {
+      HttpServletRequest request, ErrorCode errorCode, String details) {
     return new HttpResponseBody<T>(
-        requestId, false, status, OffsetDateTime.now(), Optional.empty(), Optional.of(error));
+        (String) request.getAttribute("requestId"),
+        false,
+        request.getRequestURI(),
+        errorCode.getStatus(),
+        OffsetDateTime.now(),
+        null,
+        new ErrorDetail(errorCode, details));
   }
 }

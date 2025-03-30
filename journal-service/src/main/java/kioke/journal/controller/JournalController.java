@@ -1,5 +1,6 @@
 package kioke.journal.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.Optional;
 import kioke.commons.http.HttpResponseBody;
@@ -9,9 +10,8 @@ import kioke.journal.dto.response.journal.CreateJournalResponseBodyDto;
 import kioke.journal.dto.response.journal.GetJournalResponseBodyDto;
 import kioke.journal.exception.journal.CannotCreateJournalInArchiveException;
 import kioke.journal.exception.journal.JournalNotFoundException;
-import kioke.journal.exception.permission.AccessDeniedException;
+import kioke.journal.exception.permission.NoDeletePermissionsException;
 import kioke.journal.exception.shelf.ShelfNotFoundException;
-import kioke.journal.exception.user.UserNotFoundException;
 import kioke.journal.model.Journal;
 import kioke.journal.model.Shelf;
 import kioke.journal.model.User;
@@ -25,6 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -36,11 +37,14 @@ public class JournalController {
   @Autowired @Lazy private ShelfService shelfService;
 
   @PostMapping
-  public ResponseEntity<CreateJournalResponseBodyDto> createJournal(
+  public ResponseEntity<HttpResponseBody<CreateJournalResponseBodyDto>> createJournal(
       @AuthenticationPrincipal String uid,
-      @RequestBody @Valid CreateJournalRequestBodyDto requestBodyDto)
-      throws UserNotFoundException, ShelfNotFoundException, CannotCreateJournalInArchiveException {
-    User user = userService.getUserById(uid).orElseThrow(() -> new UserNotFoundException());
+      @RequestBody @Valid CreateJournalRequestBodyDto requestBodyDto,
+      HttpServletRequest request)
+      throws UsernameNotFoundException,
+          ShelfNotFoundException,
+          CannotCreateJournalInArchiveException {
+    User user = userService.getUserById(uid);
     Shelf shelf = shelfService.getShelfById(requestBodyDto.getShelfId());
     if (shelf.isArchive()) {
       throw new CannotCreateJournalInArchiveException();
@@ -53,57 +57,60 @@ public class JournalController {
 
     journalPermissionService.grantAuthorPermissionsToUser(user, journal);
 
-    return ResponseEntity.status(HttpStatus.CREATED)
+    HttpStatus status = HttpStatus.CREATED;
+    CreateJournalResponseBodyDto data = CreateJournalResponseBodyDto.from(journal);
+
+    return ResponseEntity.status(status)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(CreateJournalResponseBodyDto.from(journal));
+        .body(HttpResponseBody.success(request, status, data));
   }
 
   @GetMapping("/{jid}")
   public ResponseEntity<HttpResponseBody<GetJournalResponseBodyDto>> getJournal(
       @AuthenticationPrincipal String uid,
       @RequestAttribute String requestId,
-      @PathVariable String jid)
-      throws UserNotFoundException, JournalNotFoundException, AccessDeniedException {
-    User user = userService.getUserById(uid).orElseThrow(() -> new UserNotFoundException());
+      @PathVariable String jid,
+      HttpServletRequest request)
+      throws UsernameNotFoundException, JournalNotFoundException {
+    User user = userService.getUserById(uid);
     Journal journal = journalService.getJournalById(jid);
 
     journalPermissionService.checkReadPermissions(user, journal);
 
-    return ResponseEntity.status(HttpStatus.OK)
-        .body(
-            HttpResponseBody.success(
-                requestId, HttpStatus.OK, GetJournalResponseBodyDto.from(journal)));
+    HttpStatus status = HttpStatus.OK;
+    GetJournalResponseBodyDto data = GetJournalResponseBodyDto.from(journal);
+
+    return ResponseEntity.status(status).body(HttpResponseBody.success(request, status, data));
   }
 
   @PutMapping("/{jid}/shelf")
-  public ResponseEntity<Void> moveJournal(
+  public ResponseEntity<HttpResponseBody<Void>> moveJournal(
       @AuthenticationPrincipal String uid,
       @PathVariable String jid,
-      @RequestBody @Valid MoveJournalRequestBodyDto requestBodyDto)
-      throws AccessDeniedException,
-          UserNotFoundException,
-          JournalNotFoundException,
-          ShelfNotFoundException {
-    User user = userService.getUserById(uid).orElseThrow(() -> new UserNotFoundException());
+      @RequestBody @Valid MoveJournalRequestBodyDto requestBodyDto,
+      HttpServletRequest request)
+      throws UsernameNotFoundException, JournalNotFoundException, ShelfNotFoundException {
+    User user = userService.getUserById(uid);
 
     Journal journal = journalService.getJournalById(jid);
     journalPermissionService.checkReadPermissions(user, journal);
 
     Shelf shelf = shelfService.getShelfById(requestBodyDto.getShelfId());
     if (!shelf.getOwner().equals(user)) {
-      throw new AccessDeniedException();
+      throw new ShelfNotFoundException(shelf.getId());
     }
 
     shelfService.putJournalInShelf(journal, shelf);
 
-    return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+    HttpStatus status = HttpStatus.NO_CONTENT;
+    return ResponseEntity.status(status).body(HttpResponseBody.success(request, status, null));
   }
 
   @DeleteMapping("/{jid}")
-  public ResponseEntity<Void> deleteJournal(
-      @AuthenticationPrincipal String uid, @PathVariable String jid)
-      throws UserNotFoundException, JournalNotFoundException, AccessDeniedException {
-    User user = userService.getUserById(uid).orElseThrow(() -> new UserNotFoundException());
+  public ResponseEntity<HttpResponseBody<Void>> deleteJournal(
+      @AuthenticationPrincipal String uid, @PathVariable String jid, HttpServletRequest request)
+      throws UsernameNotFoundException, JournalNotFoundException, NoDeletePermissionsException {
+    User user = userService.getUserById(uid);
     Journal journal = journalService.getJournalById(jid);
 
     journalPermissionService.checkDeletePermissions(user, journal);
@@ -115,6 +122,7 @@ public class JournalController {
       shelfService.putJournalInShelf(journal, archive);
     }
 
-    return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+    HttpStatus status = HttpStatus.NO_CONTENT;
+    return ResponseEntity.status(status).body(HttpResponseBody.success(request, status, null));
   }
 }

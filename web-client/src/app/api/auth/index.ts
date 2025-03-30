@@ -1,17 +1,21 @@
 "use server";
 
+import { HttpResponseBody } from "@/types/server";
 import { CredentialsLoginResponseBody } from "@/types/server/auth";
-import { kioke } from "@/utils/server";
+import { kioke, processResponse } from "@/utils/server";
 
 export const loginWithCredentials = async (email: string, password: string) => {
-  const response = kioke.post<CredentialsLoginResponseBody>("auth/login", {
-    json: {
-      email,
-      password,
+  const response = kioke.post<HttpResponseBody<CredentialsLoginResponseBody>>(
+    "auth/login",
+    {
+      json: {
+        email,
+        password,
+      },
     },
-  });
+  );
 
-  return response;
+  return processResponse(response);
 };
 
 export const registerWithCredentials = async (
@@ -32,8 +36,7 @@ export const registerWithCredentials = async (
     .then(() => {
       return true;
     })
-    .catch((error) => {
-      console.log(error);
+    .catch((_) => {
       return false;
     });
 

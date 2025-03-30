@@ -1,7 +1,5 @@
 package kioke.journal.service;
 
-import jakarta.transaction.Transactional;
-import java.util.Optional;
 import kioke.journal.model.User;
 import kioke.journal.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +14,14 @@ public class UserService implements UserDetailsService {
   @Autowired @Lazy private UserRepository userRepository;
 
   @Override
-  @Transactional
-  public UserDetails loadUserByUsername(String uid) throws UsernameNotFoundException {
-    return userRepository
-        .findById(uid)
-        .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+  public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
+    return getUserById(userId);
   }
 
-  public Optional<User> getUserById(String userId) {
-    return userRepository.findById(userId);
+  public User getUserById(String userId) throws UsernameNotFoundException {
+    return userRepository
+        .findById(userId)
+        .orElseThrow(
+            () -> new UsernameNotFoundException("User with ID " + userId + " cannot be found."));
   }
 }

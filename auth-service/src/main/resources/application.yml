@@ -19,7 +19,7 @@ rabbitmq:
       name: user.registration
   queue:
     user-registration:
-      name: user.registration
-  routing:
-    user-registration:
-      name: user.registration
+      journal:
+        name: user.registration.journal
+      user:
+        name: user.registration.user

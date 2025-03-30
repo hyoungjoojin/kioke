@@ -1,17 +1,16 @@
 package kioke.journal.exception.shelf;
 
+import kioke.commons.constant.ErrorCode;
 import kioke.commons.exception.KiokeException;
-import org.springframework.http.HttpStatus;
 
 public class ShelfNotFoundException extends KiokeException {
 
-  @Override
-  public HttpStatus getStatus() {
-    return HttpStatus.NOT_FOUND;
+  public ShelfNotFoundException(String shelfId) {
+    super("Shelf with ID " + shelfId + " cannot be found.");
   }
 
   @Override
-  protected String getTitle() {
-    return "Shelf not found.";
+  public ErrorCode getErrorCode() {
+    return ErrorCode.SHELF_NOT_FOUND;
   }
 }

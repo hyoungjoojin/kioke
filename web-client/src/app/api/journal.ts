@@ -1,10 +1,11 @@
 "use server";
 
+import { HttpResponseBody } from "@/types/server";
 import {
   CreateJournalResponseBody,
   GetJournalResponseBody,
 } from "@/types/server/journal";
-import { protectedKioke } from "@/utils/server";
+import { processResponse, protectedKioke } from "@/utils/server";
 
 export const createJournal = async (
   shelfId: string,
@@ -25,11 +26,11 @@ export const createJournal = async (
 };
 
 export const getJournal = async (jid: string) => {
-  const response = await protectedKioke
-    .get<GetJournalResponseBody>(`journals/${jid}`)
-    .json();
+  const response = protectedKioke.get<HttpResponseBody<GetJournalResponseBody>>(
+    `journals/${jid}`,
+  );
 
-  return response;
+  return processResponse(response);
 };
 
 export const moveJournal = async (jid: string, shelfId: string) => {

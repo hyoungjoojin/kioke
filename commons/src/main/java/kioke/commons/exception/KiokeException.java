@@ -1,34 +1,23 @@
 package kioke.commons.exception;
 
-import java.net.URI;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ProblemDetail;
+import kioke.commons.constant.ErrorCode;
 
 public abstract class KiokeException extends Exception {
 
-  public KiokeException() {}
+  protected String detail;
 
-  public KiokeException(String message) {
-    super(message);
+  public KiokeException() {
+    this.detail = "";
   }
 
-  public abstract HttpStatus getStatus();
-
-  protected URI getType() {
-    return URI.create("about:blank");
+  public KiokeException(String detail) {
+    super(detail);
+    this.detail = detail;
   }
 
-  protected abstract String getTitle();
+  public abstract ErrorCode getErrorCode();
 
-  protected String getDetail() {
-    return "";
-  }
-
-  public ProblemDetail intoProblemDetail(URI instance) {
-    ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(getStatus(), getDetail());
-    problemDetail.setType(getType());
-    problemDetail.setTitle(getTitle());
-    problemDetail.setInstance(instance);
-    return problemDetail;
+  public String getDetail() {
+    return detail;
   }
 }

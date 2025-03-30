@@ -1,17 +1,16 @@
 package kioke.user.exception.friend;
 
+import kioke.commons.constant.ErrorCode;
 import kioke.commons.exception.KiokeException;
-import org.springframework.http.HttpStatus;
 
 public class CannotAddSelfAsFriendException extends KiokeException {
 
-  @Override
-  public HttpStatus getStatus() {
-    return HttpStatus.BAD_REQUEST;
+  public CannotAddSelfAsFriendException() {
+    super("Cannot add self as friend.");
   }
 
   @Override
-  protected String getTitle() {
-    return "Cannot add self as friend.";
+  public ErrorCode getErrorCode() {
+    return ErrorCode.INVALID_FRIEND_REQUEST;
   }
 }

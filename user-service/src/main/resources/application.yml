@@ -16,4 +16,4 @@ eureka:
 rabbitmq:
   queue:
     user-registration:
-      name: user.registration
+      name: user.registration.user
