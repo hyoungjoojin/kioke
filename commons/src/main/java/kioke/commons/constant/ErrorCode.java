@@ -70,11 +70,11 @@ public enum ErrorCode {
   private String title;
   private String message;
 
-  private ErrorCode(HttpStatus status, String code, String title, String description) {
+  private ErrorCode(HttpStatus status, String code, String title, String message) {
     this.status = status;
     this.code = code;
     this.title = title;
-    this.message = description;
+    this.message = message;
   }
 
   public HttpStatus getStatus() {

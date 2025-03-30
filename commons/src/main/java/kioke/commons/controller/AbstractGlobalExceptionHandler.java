@@ -22,7 +22,7 @@ public abstract class AbstractGlobalExceptionHandler extends ResponseEntityExcep
     ErrorCode errorCode = e.getErrorCode();
 
     return ResponseEntity.status(errorCode.getStatus())
-        .body(HttpResponseBody.error(request, errorCode));
+        .body(HttpResponseBody.error(request, errorCode, e.getDetail()));
   }
 
   @ExceptionHandler({TokenNotFoundException.class})

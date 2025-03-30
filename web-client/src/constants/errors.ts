@@ -21,12 +21,20 @@ export enum ErrorCode {
 
 export default class KiokeError {
   private code_: ErrorCode;
+  private title_: string = "";
+  private message_: string = "";
+  private details_: string = "";
 
   private static reverseCodeMapping = new Map(
     Object.entries(ErrorCode).map(([key, value]) => [value, key]),
   );
 
-  constructor(code: string | undefined) {
+  constructor(
+    code: string | undefined,
+    title?: string,
+    message?: string,
+    details?: string | undefined,
+  ) {
     if (
       code === undefined ||
       KiokeError.reverseCodeMapping.get(code as ErrorCode) === undefined
@@ -34,6 +42,18 @@ export default class KiokeError {
       this.code_ = ErrorCode.INVALID_ERROR_CODE;
     } else {
       this.code_ = code as ErrorCode;
+    }
+
+    if (title) {
+      this.title_ = title;
+    }
+
+    if (message) {
+      this.message_ = message;
+    }
+
+    if (details) {
+      this.details_ = details;
     }
   }
 
@@ -60,5 +80,17 @@ export default class KiokeError {
 
   public code() {
     return this.code_;
+  }
+
+  public title() {
+    return this.title_;
+  }
+
+  public message() {
+    return this.message_;
+  }
+
+  public details() {
+    return this.details_;
   }
 }

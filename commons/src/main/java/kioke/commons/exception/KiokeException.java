@@ -17,7 +17,7 @@ public abstract class KiokeException extends Exception {
 
   public abstract ErrorCode getErrorCode();
 
-  protected String getDetail() {
+  public String getDetail() {
     return detail;
   }
 }

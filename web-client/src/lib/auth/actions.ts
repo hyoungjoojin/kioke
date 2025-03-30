@@ -8,7 +8,7 @@ export async function signInWithCredentials(
   password: string,
 ): Promise<{
   success: boolean;
-  code?: ErrorCode;
+  code: ErrorCode | null;
 }> {
   try {
     await signIn("credentials", {
@@ -19,6 +19,7 @@ export async function signInWithCredentials(
 
     return {
       success: true,
+      code: null,
     };
   } catch (error) {
     if (error instanceof KiokeAuthError && error.error instanceof KiokeError) {
@@ -30,7 +31,7 @@ export async function signInWithCredentials(
 
     return {
       success: false,
-      code: ErrorCode.INTERNAL_SERVER_ERROR,
+      code: null,
     };
   }
 }
