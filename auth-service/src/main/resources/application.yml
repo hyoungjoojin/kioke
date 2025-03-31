@@ -23,3 +23,5 @@ rabbitmq:
         name: user.registration.journal
       user:
         name: user.registration.user
+      notification:
+        name: user.registration.notification
