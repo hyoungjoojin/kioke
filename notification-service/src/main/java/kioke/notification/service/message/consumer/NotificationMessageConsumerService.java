@@ -1,15 +1,17 @@
 package kioke.notification.service.message.consumer;
 
-import com.rabbitmq.client.AMQP.Queue;
 import kioke.commons.dto.message.notification.NotificationMessageDto;
-import kioke.commons.dto.message.notification.NotificationMessagePayload;
+import kioke.commons.dto.message.notification.payload.NotificationMessagePayloadDto;
 import kioke.commons.service.message.AbstractMessageConsumerService;
 import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-public class NotificationMessageConsumerService<T extends NotificationMessagePayload>
+@Service
+public class NotificationMessageConsumerService<T extends NotificationMessagePayloadDto>
     extends AbstractMessageConsumerService<NotificationMessageDto<T>> {
 
   @Autowired

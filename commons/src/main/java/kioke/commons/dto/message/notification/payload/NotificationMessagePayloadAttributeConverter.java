@@ -1,16 +1,16 @@
-package kioke.commons.dto.message.notification;
+package kioke.commons.dto.message.notification.payload;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;
 
 public class NotificationMessagePayloadAttributeConverter
-    implements AttributeConverter<NotificationMessagePayload, String> {
+    implements AttributeConverter<NotificationMessagePayloadDto, String> {
 
   private static final ObjectMapper objectMapper = new ObjectMapper();
 
   @Override
-  public String convertToDatabaseColumn(NotificationMessagePayload payload) {
+  public String convertToDatabaseColumn(NotificationMessagePayloadDto payload) {
     try {
       return objectMapper.writeValueAsString(payload);
     } catch (JsonProcessingException e) {
@@ -19,9 +19,9 @@ public class NotificationMessagePayloadAttributeConverter
   }
 
   @Override
-  public NotificationMessagePayload convertToEntityAttribute(String string) {
+  public NotificationMessagePayloadDto convertToEntityAttribute(String string) {
     try {
-      return objectMapper.readValue(string, NotificationMessagePayload.class);
+      return objectMapper.readValue(string, NotificationMessagePayloadDto.class);
     } catch (JsonProcessingException e) {
       throw new IllegalArgumentException();
     }

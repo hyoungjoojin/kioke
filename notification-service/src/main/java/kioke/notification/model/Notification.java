@@ -11,9 +11,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
-import kioke.commons.dto.message.notification.NotificationMessagePayload;
-import kioke.commons.dto.message.notification.NotificationMessagePayloadAttributeConverter;
 import kioke.commons.dto.message.notification.NotificationMessageType;
+import kioke.commons.dto.message.notification.payload.NotificationMessagePayloadAttributeConverter;
+import kioke.commons.dto.message.notification.payload.NotificationMessagePayloadDto;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -34,7 +34,7 @@ public class Notification {
   private NotificationMessageType type;
 
   @Convert(converter = NotificationMessagePayloadAttributeConverter.class)
-  private NotificationMessagePayload payload;
+  private NotificationMessagePayloadDto payload;
 
   private boolean read;
 

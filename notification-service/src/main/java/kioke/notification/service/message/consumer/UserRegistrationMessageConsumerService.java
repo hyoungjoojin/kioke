@@ -11,7 +11,9 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class UserRegistrationMessageConsumerService
     extends AbstractMessageConsumerService<UserRegistrationMessageDto> {
 

@@ -1,17 +1,22 @@
 package kioke.commons.dto.message.notification;
 
 import java.util.List;
+import kioke.commons.dto.message.notification.payload.NotificationMessagePayloadDto;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConversionException;
 import org.springframework.amqp.support.converter.MessageConverter;
 
-public record NotificationMessageDto<T extends NotificationMessagePayload>(
+public record NotificationMessageDto<T extends NotificationMessagePayloadDto>(
     NotificationMessageType type, List<NotificationMessageTarget> targets, T payload) {
 
   public NotificationMessageDto(
       NotificationMessageType type, List<NotificationMessageTarget> targets, T payload) {
+    if (!payload.getClass().equals(type.getClazz())) {
+      throw new IllegalArgumentException();
+    }
+
     this.type = type;
     this.targets = targets;
     this.payload = payload;
