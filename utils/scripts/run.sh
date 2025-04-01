@@ -20,7 +20,7 @@ error() {
   echo "[ERROR] $MESSAGE" >&2
 }
 
-SERVICES=(service-discovery api-gateway auth-service user-service journal-service)
+SERVICES=(service-discovery api-gateway auth-service user-service journal-service notification-service)
 
 if [ "$STAGE" = "dev" ]; then
   docker-compose -f "docker-compose.dev.yml" up -d
@@ -54,6 +54,9 @@ if [ "$STAGE" = "dev" ]; then
       ;;
     journal-service)
       kill -9 $(sudo lsof -t -i :$JOURNAL_SERVICE_PORT)
+      ;;
+    notification-service)
+      kill -9 $(sudo lsof -t -i :$NOTIFICATION_SERVICE_PORT)
       ;;
     all)
       for service in "${SERVICES[@]}"; do

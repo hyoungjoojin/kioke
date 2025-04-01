@@ -22,6 +22,9 @@ public class MessageBrokerConfiguration {
   @Value("${rabbitmq.queue.user-registration.user.name}")
   private String userRegistrationUserQueueName;
 
+  @Value("${rabbitmq.queue.user-registration.notification.name}")
+  private String userRegistrationNotificationQueueName;
+
   @Bean
   public FanoutExchange userRegistrationExchange() {
     return new FanoutExchange(userRegistrationExchangeName);
@@ -38,6 +41,11 @@ public class MessageBrokerConfiguration {
   }
 
   @Bean
+  public Queue userRegistrationNotificationQueue() {
+    return new Queue(userRegistrationNotificationQueueName);
+  }
+
+  @Bean
   public Binding userRegistrationJournalBinding() {
     return BindingBuilder.bind(userRegistrationJournalQueue()).to(userRegistrationExchange());
   }
@@ -45,6 +53,11 @@ public class MessageBrokerConfiguration {
   @Bean
   public Binding userRegistrationUserBinding() {
     return BindingBuilder.bind(userRegistrationUserQueue()).to(userRegistrationExchange());
+  }
+
+  @Bean
+  public Binding userRegistrationNotificationBinding() {
+    return BindingBuilder.bind(userRegistrationNotificationQueue()).to(userRegistrationExchange());
   }
 
   @Bean
