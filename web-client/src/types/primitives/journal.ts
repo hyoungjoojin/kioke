@@ -1,16 +1,18 @@
-import { Page } from "./page";
+import { PagePreview } from "./page";
 
 export interface Journal {
   id: string;
   title: string;
   description: string;
+  bookmarked: boolean;
   createdAt: string;
   lastModified: string;
   pages: PagePreview[];
 }
 
 export interface JournalPreview {
-  id: string;
+  journalId: string;
   title: string;
+  bookmarked: boolean;
   createdAt: string;
 }

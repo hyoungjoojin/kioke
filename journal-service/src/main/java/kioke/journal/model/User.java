@@ -32,6 +32,9 @@ public class User implements UserDetails {
   @OneToMany(mappedBy = "user")
   private List<JournalPermission> journals;
 
+  @OneToMany(mappedBy = "user")
+  private List<Bookmark> bookmarks;
+
   @Override
   public String getUsername() {
     return uid;

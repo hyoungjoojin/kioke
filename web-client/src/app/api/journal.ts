@@ -33,6 +33,10 @@ export const getJournal = async (jid: string) => {
   return processResponse(response);
 };
 
+export const bookmarkJournal = async (journalId: string) => {
+  await protectedKioke.post(`journals/${journalId}/bookmark`).json();
+};
+
 export const moveJournal = async (jid: string, shelfId: string) => {
   await protectedKioke
     .put(`journals/${jid}/shelf`, {
@@ -45,4 +49,8 @@ export const moveJournal = async (jid: string, shelfId: string) => {
 
 export const deleteJournal = async (jid: string) => {
   await protectedKioke.delete(`journals/${jid}`).json();
+};
+
+export const deleteBookmark = async (journalId: string) => {
+  await protectedKioke.delete(`journals/${journalId}/bookmark`).json();
 };

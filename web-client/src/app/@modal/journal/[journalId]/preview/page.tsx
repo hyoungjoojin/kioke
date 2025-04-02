@@ -2,9 +2,12 @@
 
 import { Button } from "@/components/ui/button";
 import Modal from "@/components/ui/modal";
-import { useJournalQuery } from "@/hooks/query/journal";
+import {
+  useJournalQuery,
+  useToggleJournalBookmarkMutation,
+} from "@/hooks/query/journal";
 import { useCreatePageMutation } from "@/hooks/query/page";
-import { Text, Clock, SquarePen } from "lucide-react";
+import { Text, Clock, SquarePen, Heart } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 
 export default function JournalPreview() {
@@ -13,6 +16,8 @@ export default function JournalPreview() {
 
   const { data: journal } = useJournalQuery(journalId);
   const { mutate: createPage } = useCreatePageMutation(journalId);
+  const { mutate: toggleJournalBookmark } =
+    useToggleJournalBookmarkMutation(journalId);
 
   const controls = (
     <>
@@ -23,6 +28,19 @@ export default function JournalPreview() {
           createPage();
         }}
       />
+
+      <div
+        onClick={(e) => {
+          toggleJournalBookmark(!journal?.bookmarked);
+          e.stopPropagation();
+        }}
+      >
+        {journal?.bookmarked ? (
+          <Heart size={20} fill="black" />
+        ) : (
+          <Heart size={20} />
+        )}
+      </div>
     </>
   );
 
@@ -47,7 +65,7 @@ export default function JournalPreview() {
                 <div key={index}>
                   <Button
                     onClick={() => {
-                      router.push(`/journal/${journalId}/${page.id}`);
+                      router.push(`/journal/${journalId}/${page.pageId}`);
                     }}
                     className="m-2"
                     variant="outline"

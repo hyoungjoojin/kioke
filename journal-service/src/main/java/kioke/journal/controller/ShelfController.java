@@ -7,8 +7,10 @@ import kioke.commons.http.HttpResponseBody;
 import kioke.journal.dto.request.shelf.CreateShelfRequestBodyDto;
 import kioke.journal.dto.response.shelf.CreateShelfResponseBodyDto;
 import kioke.journal.dto.response.shelf.GetShelvesResponseBodyDto;
+import kioke.journal.model.Journal;
 import kioke.journal.model.Shelf;
 import kioke.journal.model.User;
+import kioke.journal.service.BookmarkService;
 import kioke.journal.service.ShelfService;
 import kioke.journal.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ShelfController {
   @Autowired @Lazy private ShelfService shelfService;
   @Autowired @Lazy private UserService userService;
+  @Autowired private BookmarkService bookmarkService;
 
   @PostMapping
   public ResponseEntity<HttpResponseBody<CreateShelfResponseBodyDto>> createShelf(
@@ -59,9 +62,10 @@ public class ShelfController {
     User user = userService.getUserById(uid);
 
     List<Shelf> shelves = shelfService.getShelves(user);
+    List<Journal> bookmarks = bookmarkService.getBookmarks(user);
 
     HttpStatus status = HttpStatus.OK;
-    GetShelvesResponseBodyDto data = GetShelvesResponseBodyDto.from(shelves);
+    GetShelvesResponseBodyDto data = GetShelvesResponseBodyDto.from(shelves, bookmarks);
 
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)
