@@ -1,6 +1,7 @@
 import { HttpResponseBody } from "@/types/server";
 import {
   GetMyInformationResponseBody,
+  GetUserResponseBody,
   SearchUserResponseBody,
 } from "@/types/server/user";
 import { kioke, processResponse, protectedKioke } from "@/utils/server";
@@ -13,6 +14,14 @@ export const getMyInformation = async (accessToken: string) => {
       },
     })
     .get<HttpResponseBody<GetMyInformationResponseBody>>("users");
+
+  return processResponse(response);
+};
+
+export const getUser = async (userId: string) => {
+  const response = protectedKioke.get<HttpResponseBody<GetUserResponseBody>>(
+    `users/${userId}`,
+  );
 
   return processResponse(response);
 };

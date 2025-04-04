@@ -1,6 +1,7 @@
 package kioke.journal.service;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import kioke.journal.constant.Permission;
 import kioke.journal.constant.Role;
 import kioke.journal.model.Journal;
@@ -39,5 +40,13 @@ public class JournalRoleService {
 
     journalRole.setRole(role);
     journalRoleRepository.save(journalRole);
+  }
+
+  public void deleteRole(User user, Journal journal) {
+    Optional<JournalRole> journalRole = journalRoleRepository.findByUserAndJournal(user, journal);
+
+    if (journalRole.isPresent()) {
+      journalRoleRepository.deleteById(journalRole.get().getId());
+    }
   }
 }

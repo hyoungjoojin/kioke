@@ -18,17 +18,29 @@ import {
   Plus,
   List,
   CalendarRange,
+  TextIcon,
 } from "lucide-react";
+import Calendar from "react-calendar";
 import { useParams, useRouter } from "next/navigation";
 import { useCreatePageMutation } from "@/hooks/query/page";
 import { Input } from "@/components/ui/input";
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useMemo, useRef, useState } from "react";
 import { emailSchema } from "@/utils/schema";
 import { searchUser } from "@/app/api/user";
 import { SearchUserResponseBody } from "@/types/server/user";
 import debounce from "lodash/debounce";
 import { RingSpinner } from "@/components/ui/spinner";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Role, Roles } from "@/constants/role";
+import { shareJournal } from "@/app/api/journal";
+import { getQueryClient } from "@/components/providers/QueryProvider";
 
 enum JOURNAL_PREVIEW_OPTION {
   LIST = "list",
@@ -61,29 +73,17 @@ export default function JournalPreview() {
   const { data: journal, isLoading } = useJournalQuery(journalId);
   const { mutate: createPage } = useCreatePageMutation(journalId);
 
+  const queryClient = getQueryClient();
+
+  const userSearchInputRef = useRef<HTMLInputElement | null>(null);
+  const [userSearchQuery, setUserSearchQuery] = useState("");
+  const [inviteeRole, setInviteeRole] = useState<Role | null>(null);
   const [userSearchState, setUserSearchState] = useState<UserSearchState>({
     isFocused: false,
     isValidEmail: false,
     isLoading: false,
     user: null,
   });
-
-  useEffect(() => {
-    const keydownEventHandler = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        if (userSearchState.isFocused) {
-          setUserSearchState((state) => ({ ...state, on: false }));
-          // TODO: Stop propagation - don't close dropdown
-        }
-      }
-    };
-
-    window.addEventListener("keydown", keydownEventHandler);
-
-    return () => {
-      window.removeEventListener("keydown", keydownEventHandler);
-    };
-  }, [userSearchState]);
 
   const searchUserInputChangeHandler = useMemo(
     () =>
@@ -127,12 +127,32 @@ export default function JournalPreview() {
     [],
   );
 
-  const searchUserInputSubmitHandler = () => {
-    if (!userSearchState.isValidEmail) {
+  const searchUserInputSubmitHandler = async () => {
+    setUserSearchState((state) => ({
+      ...state,
+      isFocused: false,
+    }));
+
+    if (userSearchInputRef.current) {
+      userSearchInputRef.current.blur();
+    }
+
+    const queryParseResult = emailSchema.safeParse(userSearchQuery);
+    if (!queryParseResult.success || !inviteeRole) {
       return;
     }
 
-    // TODO: Actually send the request for sharing
+    const email = queryParseResult.data;
+    const user = await searchUser(email);
+
+    try {
+      if (user.userId) {
+        await shareJournal(user.userId, journalId, inviteeRole);
+        queryClient.invalidateQueries({ queryKey: ["journals", journalId] });
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   if (isLoading || !journal) {
@@ -162,24 +182,72 @@ export default function JournalPreview() {
               </Button>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent
+              onEscapeKeyDown={(e) => {
+                if (userSearchState.isFocused) {
+                  if (userSearchInputRef.current) {
+                    userSearchInputRef.current.blur();
+                  }
+
+                  setUserSearchState((state) => ({
+                    ...state,
+                    isFocused: false,
+                  }));
+                  e.preventDefault();
+                }
+              }}
+              align="end"
+            >
               <div className="rounded-xl w-[28rem]">
                 <div className="relative">
-                  <Input
-                    placeholder="Invite people by email"
-                    onChange={searchUserInputChangeHandler}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter") {
-                        searchUserInputSubmitHandler();
-                      }
-                    }}
-                    onFocus={() => {
-                      setUserSearchState((state) => ({
-                        ...state,
-                        isFocused: true,
-                      }));
-                    }}
-                  />
+                  <div className="flex">
+                    <Input
+                      ref={userSearchInputRef}
+                      placeholder="Invite people by email"
+                      value={userSearchQuery}
+                      onChange={(event) => {
+                        setUserSearchQuery(event.target.value);
+                        searchUserInputChangeHandler(event);
+                      }}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                          searchUserInputSubmitHandler();
+                        }
+                      }}
+                      onFocus={() => {
+                        setUserSearchState((state) => ({
+                          ...state,
+                          isFocused: true,
+                        }));
+                      }}
+                    />
+
+                    <Select
+                      value={inviteeRole?.toString() ?? ""}
+                      onValueChange={(role) => {
+                        setInviteeRole(Role[role as keyof typeof Role]);
+                      }}
+                    >
+                      <SelectTrigger className="ml-1 text-xs w-28">
+                        <SelectValue placeholder="Select Role" />
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        {Object.values(Role).map((role, index) => (
+                          <SelectItem key={index} value={role}>
+                            <p>{Roles[role].title}</p>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    <Button
+                      className="ml-1"
+                      onClick={searchUserInputSubmitHandler}
+                    >
+                      Invite
+                    </Button>
+                  </div>
 
                   {userSearchState.isFocused && (
                     <div className="absolute w-full mt-2 px-2">
@@ -220,13 +288,40 @@ export default function JournalPreview() {
 
                 <div className="h-[32rem] flex items-center justify-center">
                   {!userSearchState.isFocused && (
-                    <div className="w-ful">
-                      <p className="font-bold text-center">
-                        Share this moment.
-                      </p>
-                      <p className="text-sm text-center">
-                        Invite your friends and family to your journey.
-                      </p>
+                    <div className="w-full self-start">
+                      {journal.users.length ? (
+                        journal.users.map((user, index) => {
+                          return (
+                            <div
+                              key={index}
+                              className="w-4/5 mx-auto flex justify-between items-center py-2"
+                            >
+                              <div className="flex">
+                                <Avatar className="mr-2 h-8 w-8">
+                                  <AvatarFallback>{`${user.firstName[0]}${user.lastName[0]}`}</AvatarFallback>
+                                </Avatar>
+                                <div>
+                                  <p className="text-sm">
+                                    {user.firstName} {user.lastName}
+                                  </p>
+                                  <p className="text-xs">{user.email}</p>
+                                </div>
+                              </div>
+
+                              <p>{Roles[user.role].title}</p>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <>
+                          <p className="font-bold text-center">
+                            Share this moment.
+                          </p>
+                          <p className="text-sm text-center">
+                            Invite your friends and family to your journey.
+                          </p>
+                        </>
+                      )}
                     </div>
                   )}
                 </div>
@@ -263,11 +358,15 @@ export default function JournalPreview() {
 
         <Tabs defaultValue={JOURNAL_PREVIEW_OPTION.LIST} className="mt-2">
           <div className="flex justify-between items-center">
-            <TabsList className="grid grid-cols-2 w-[220px]">
+            <TabsList className="grid grid-cols-2">
               {Object.entries(JournalPreviewOptionValues).map(
                 ([key, value]) => {
                   return (
-                    <TabsTrigger key={key} value={key}>
+                    <TabsTrigger
+                      key={key}
+                      value={key}
+                      className="w-full flex justify-center px-4"
+                    >
                       {value.icon}
                       <p className="ml-1">{value.title}</p>
                     </TabsTrigger>
@@ -290,12 +389,28 @@ export default function JournalPreview() {
 
           <TabsContent value={JOURNAL_PREVIEW_OPTION.LIST}>
             {journal.pages.map((page, index) => {
-              return <div key={index}>{page.date}</div>;
+              return (
+                <div
+                  key={index}
+                  className="flex justify-between items-center my-2"
+                >
+                  <p
+                    onClick={() => {
+                      router.push(`/journal/${journalId}/${page.pageId}`);
+                    }}
+                    className="flex items-center border-b border-b-transparent hover:border-b-black hover:cursor-pointer"
+                  >
+                    <TextIcon size={16} className="mr-1" />
+                    {page.title === "" ? "Untitled" : page.title}
+                  </p>
+                  <p>{page.date.toDateString()}</p>
+                </div>
+              );
             })}
           </TabsContent>
 
           <TabsContent value={JOURNAL_PREVIEW_OPTION.CALENDAR}>
-            NOT IMPLEMENTED YET
+            <Calendar locale="en" />
           </TabsContent>
         </Tabs>
       </main>

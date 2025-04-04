@@ -8,6 +8,8 @@ import kioke.journal.constant.Permission;
 import kioke.journal.constant.Role;
 import kioke.journal.dto.request.journal.CreateJournalRequestBodyDto;
 import kioke.journal.dto.request.journal.MoveJournalRequestBodyDto;
+import kioke.journal.dto.request.journal.ShareJournalRequestBodyDto;
+import kioke.journal.dto.request.journal.UnshareJournalRequestBodyDto;
 import kioke.journal.dto.response.journal.CreateJournalResponseBodyDto;
 import kioke.journal.dto.response.journal.GetJournalResponseBodyDto;
 import kioke.journal.exception.journal.CannotCreateJournalInArchiveException;
@@ -69,10 +71,7 @@ public class JournalController {
 
   @GetMapping("/{jid}")
   public ResponseEntity<HttpResponseBody<GetJournalResponseBodyDto>> getJournal(
-      @AuthenticationPrincipal String uid,
-      @RequestAttribute String requestId,
-      @PathVariable String jid,
-      HttpServletRequest request)
+      @AuthenticationPrincipal String uid, @PathVariable String jid, HttpServletRequest request)
       throws UsernameNotFoundException, JournalNotFoundException {
     User user = userService.getUserById(uid);
     Journal journal = journalService.getJournalById(jid);
@@ -86,7 +85,23 @@ public class JournalController {
   }
 
   @PostMapping("/{journalId}/share")
-  public void shareJournal(@AuthenticationPrincipal String userId, HttpServletRequest request) {}
+  public ResponseEntity<HttpResponseBody<Void>> shareJournal(
+      @AuthenticationPrincipal String userId,
+      @PathVariable String journalId,
+      @RequestBody @Valid ShareJournalRequestBodyDto requestBodyDto,
+      HttpServletRequest request)
+      throws UsernameNotFoundException, JournalNotFoundException {
+    User user = userService.getUserById(userId);
+    Journal journal = journalService.getJournalById(journalId);
+
+    journalRoleService.hasPermission(user, journal, Permission.SHARE);
+
+    User invitee = userService.getUserById(requestBodyDto.userId());
+    journalRoleService.setRole(invitee, journal, requestBodyDto.role());
+
+    HttpStatus status = HttpStatus.CREATED;
+    return ResponseEntity.status(status).body(HttpResponseBody.success(request, status, null));
+  }
 
   @PutMapping("/{jid}/shelf")
   public ResponseEntity<HttpResponseBody<Void>> moveJournal(
@@ -128,6 +143,25 @@ public class JournalController {
     }
 
     HttpStatus status = HttpStatus.NO_CONTENT;
+    return ResponseEntity.status(status).body(HttpResponseBody.success(request, status, null));
+  }
+
+  @DeleteMapping("/{journalId}/share")
+  public ResponseEntity<HttpResponseBody<Void>> unshareJournal(
+      @AuthenticationPrincipal String userId,
+      @PathVariable String journalId,
+      @RequestBody @Valid UnshareJournalRequestBodyDto requestBodyDto,
+      HttpServletRequest request)
+      throws UsernameNotFoundException, JournalNotFoundException {
+    User user = userService.getUserById(userId);
+    Journal journal = journalService.getJournalById(journalId);
+
+    journalRoleService.hasPermission(user, journal, Permission.SHARE);
+
+    User invitee = userService.getUserById(requestBodyDto.userId());
+    journalRoleService.deleteRole(invitee, journal);
+
+    HttpStatus status = HttpStatus.CREATED;
     return ResponseEntity.status(status).body(HttpResponseBody.success(request, status, null));
   }
 }

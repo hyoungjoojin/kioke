@@ -54,14 +54,19 @@ public class GetJournalResponseBodyDto {
   @Data
   @Builder
   private static class PageDto {
-    private String id;
+    private String pageId;
+    private String title;
     private LocalDate date;
 
     public static List<PageDto> from(List<Page> pages) {
       return pages.stream()
           .map(
               page -> {
-                return PageDto.builder().id(page.getId()).date(page.getDate()).build();
+                return PageDto.builder()
+                    .pageId(page.getId())
+                    .title(page.getTitle())
+                    .date(page.getDate())
+                    .build();
               })
           .toList();
     }

@@ -5,6 +5,13 @@ export interface GetMyInformationResponseBody {
   lastName: string;
 }
 
+export interface GetUserResponseBody {
+  userId: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+}
+
 export interface SearchUserResponseBody {
   userId: string;
   email: string;
