@@ -3,6 +3,7 @@ package kioke.journal.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import kioke.commons.http.HttpResponseBody;
+import kioke.journal.constant.Permission;
 import kioke.journal.dto.request.page.CreatePageRequestBodyDto;
 import kioke.journal.dto.response.page.CreatePageResponseBodyDto;
 import kioke.journal.dto.response.page.GetPageResponseBodyDto;
@@ -11,7 +12,7 @@ import kioke.journal.exception.permission.NoEditPermissionsException;
 import kioke.journal.model.Journal;
 import kioke.journal.model.Page;
 import kioke.journal.model.User;
-import kioke.journal.service.JournalPermissionService;
+import kioke.journal.service.JournalRoleService;
 import kioke.journal.service.JournalService;
 import kioke.journal.service.PageService;
 import kioke.journal.service.UserService;
@@ -33,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PageController {
   @Autowired @Lazy private UserService userService;
   @Autowired @Lazy private JournalService journalService;
-  @Autowired @Lazy private JournalPermissionService journalPermissionService;
+  @Autowired private JournalRoleService journalRoleService;
   @Autowired @Lazy private PageService pageService;
 
   @PostMapping
@@ -46,7 +47,7 @@ public class PageController {
     User user = userService.getUserById(uid);
     Journal journal = journalService.getJournalById(journalId);
 
-    journalPermissionService.checkEditPermissions(user, journal);
+    journalRoleService.hasPermission(user, journal, Permission.WRITE);
 
     Page page = pageService.createPage(journal, requestBodyDto.getTitle());
 
@@ -65,7 +66,7 @@ public class PageController {
     User user = userService.getUserById(uid);
     Journal journal = journalService.getJournalById(journalId);
 
-    journalPermissionService.checkReadPermissions(user, journal);
+    journalRoleService.hasPermission(user, journal, Permission.READ);
 
     Page page = pageService.getPage(pageId);
 

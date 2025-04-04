@@ -3,7 +3,9 @@ package kioke.journal.dto.response.journal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import kioke.journal.constant.Role;
 import kioke.journal.model.Journal;
+import kioke.journal.model.JournalRole;
 import kioke.journal.model.Page;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +16,7 @@ public class GetJournalResponseBodyDto {
   private String jid;
   private String title;
   private String description;
+  private List<UserDto> users;
   private List<PageDto> pages;
   private LocalDateTime createdAt;
   private LocalDateTime lastModified;
@@ -23,10 +26,29 @@ public class GetJournalResponseBodyDto {
         .jid(journal.getJid())
         .title(journal.getTitle())
         .description(journal.getDescription())
+        .users(UserDto.from(journal.getUsers()))
         .pages(PageDto.from(journal.getPages()))
         .createdAt(journal.getCreatedAt())
         .lastModified(journal.getLastModified())
         .build();
+  }
+
+  @Data
+  @Builder
+  private static class UserDto {
+    private String userId;
+    private Role role;
+
+    public static List<UserDto> from(List<JournalRole> journalRoles) {
+      return journalRoles.stream()
+          .map(
+              journalRole ->
+                  UserDto.builder()
+                      .userId(journalRole.getUser().getUid())
+                      .role(journalRole.getRole())
+                      .build())
+          .toList();
+    }
   }
 
   @Data
