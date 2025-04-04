@@ -1,4 +1,4 @@
-package kioke.user.dto.response.data.friend;
+package kioke.user.dto.response.friend;
 
 import java.util.List;
 import kioke.user.model.User;

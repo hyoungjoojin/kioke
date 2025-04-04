@@ -22,10 +22,24 @@ import {
 import { useParams, useRouter } from "next/navigation";
 import { useCreatePageMutation } from "@/hooks/query/page";
 import { Input } from "@/components/ui/input";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { emailSchema } from "@/utils/schema";
+import { searchUser } from "@/app/api/user";
+import { SearchUserResponseBody } from "@/types/server/user";
+import debounce from "lodash/debounce";
+import { RingSpinner } from "@/components/ui/spinner";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 enum JOURNAL_PREVIEW_OPTION {
   LIST = "list",
   CALENDAR = "calendar",
+}
+
+interface UserSearchState {
+  isFocused: boolean;
+  isValidEmail: boolean;
+  isLoading: boolean;
+  user: SearchUserResponseBody | null;
 }
 
 const JournalPreviewOptionValues: {
@@ -46,6 +60,80 @@ export default function JournalPreview() {
   const { journalId } = useParams<{ journalId: string }>();
   const { data: journal, isLoading } = useJournalQuery(journalId);
   const { mutate: createPage } = useCreatePageMutation(journalId);
+
+  const [userSearchState, setUserSearchState] = useState<UserSearchState>({
+    isFocused: false,
+    isValidEmail: false,
+    isLoading: false,
+    user: null,
+  });
+
+  useEffect(() => {
+    const keydownEventHandler = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        if (userSearchState.isFocused) {
+          setUserSearchState((state) => ({ ...state, on: false }));
+          // TODO: Stop propagation - don't close dropdown
+        }
+      }
+    };
+
+    window.addEventListener("keydown", keydownEventHandler);
+
+    return () => {
+      window.removeEventListener("keydown", keydownEventHandler);
+    };
+  }, [userSearchState]);
+
+  const searchUserInputChangeHandler = useMemo(
+    () =>
+      debounce(async (event: ChangeEvent<HTMLInputElement>) => {
+        const query = event.target.value;
+
+        if (userSearchState.isFocused && query === "") {
+          setUserSearchState((state) => ({
+            ...state,
+            isFocused: false,
+          }));
+          return;
+        }
+
+        const queryParseResult = emailSchema.safeParse(query);
+        if (!queryParseResult.success) {
+          setUserSearchState((state) => ({
+            ...state,
+            isFocused: true,
+            isValidEmail: false,
+          }));
+          return;
+        }
+
+        setUserSearchState((state) => ({
+          ...state,
+          isFocused: true,
+          isLoading: true,
+          isValidEmail: true,
+        }));
+
+        const email = queryParseResult.data;
+        const user = await searchUser(email);
+
+        setUserSearchState((state) => ({
+          ...state,
+          isLoading: false,
+          user: user.userId ? user : null,
+        }));
+      }, 250),
+    [],
+  );
+
+  const searchUserInputSubmitHandler = () => {
+    if (!userSearchState.isValidEmail) {
+      return;
+    }
+
+    // TODO: Actually send the request for sharing
+  };
 
   if (isLoading || !journal) {
     return "Loading...";
@@ -75,12 +163,72 @@ export default function JournalPreview() {
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end">
-              <div className="rounded-xl w-[30rem]">
-                <Input placeholder="Invite people by email" />
-                <div className="h-72 flex items-center justify-center">
-                  <div className="font-bold">
-                    Share your journey with your friends and family.
-                  </div>
+              <div className="rounded-xl w-[28rem]">
+                <div className="relative">
+                  <Input
+                    placeholder="Invite people by email"
+                    onChange={searchUserInputChangeHandler}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        searchUserInputSubmitHandler();
+                      }
+                    }}
+                    onFocus={() => {
+                      setUserSearchState((state) => ({
+                        ...state,
+                        isFocused: true,
+                      }));
+                    }}
+                  />
+
+                  {userSearchState.isFocused && (
+                    <div className="absolute w-full mt-2 px-2">
+                      <div className="flex justify-between items-center">
+                        <div className="text-sm">
+                          Invite someone to join your journey.
+                          {!userSearchState.isValidEmail && (
+                            <p className="text-xs">
+                              Enter an email address to invite someone new.
+                            </p>
+                          )}
+                        </div>
+
+                        <RingSpinner loading={userSearchState.isLoading} />
+                      </div>
+
+                      {!userSearchState.isLoading &&
+                        userSearchState.isValidEmail &&
+                        userSearchState.user && (
+                          <div className="mt-5 flex">
+                            <Avatar className="mr-2 h-8 w-8">
+                              <AvatarFallback>{`${userSearchState.user.firstName[0]}${userSearchState.user.lastName[0]}`}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className="text-sm">
+                                {userSearchState.user.firstName}{" "}
+                                {userSearchState.user.lastName}
+                              </p>
+                              <p className="text-xs">
+                                {userSearchState.user.email}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                    </div>
+                  )}
+                </div>
+
+                <div className="h-[32rem] flex items-center justify-center">
+                  {!userSearchState.isFocused && (
+                    <div className="w-ful">
+                      <p className="font-bold text-center">
+                        Share this moment.
+                      </p>
+                      <p className="text-sm text-center">
+                        Invite your friends and family to your journey.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </DropdownMenuContent>

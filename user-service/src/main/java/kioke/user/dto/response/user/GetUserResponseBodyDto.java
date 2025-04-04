@@ -1,4 +1,4 @@
-package kioke.user.dto.response.data.user;
+package kioke.user.dto.response.user;
 
 import kioke.user.constant.Locale;
 import kioke.user.constant.Theme;

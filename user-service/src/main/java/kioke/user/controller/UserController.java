@@ -1,9 +1,13 @@
 package kioke.user.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Optional;
 import kioke.commons.http.HttpResponseBody;
-import kioke.user.dto.response.data.user.GetUserResponseBodyDto;
-import kioke.user.dto.response.data.user.GetUserResponseBodyDto.*;
+import kioke.user.dto.request.user.SearchUserRequestBodyDto;
+import kioke.user.dto.response.user.GetUserResponseBodyDto;
+import kioke.user.dto.response.user.GetUserResponseBodyDto.GetAuthenticatedUserResponseBodyDto;
+import kioke.user.dto.response.user.GetUserResponseBodyDto.GetUserByIdResponseBodyDto;
+import kioke.user.dto.response.user.SearchUserResponseBodyDto;
 import kioke.user.model.User;
 import kioke.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,5 +48,15 @@ public class UserController {
     HttpStatus status = HttpStatus.OK;
     return ResponseEntity.status(status)
         .body(HttpResponseBody.success(request, status, GetUserByIdResponseBodyDto.from(user)));
+  }
+
+  @PostMapping("/search")
+  public ResponseEntity<HttpResponseBody<SearchUserResponseBodyDto>> searchUser(
+      @RequestBody SearchUserRequestBodyDto requestBodyDto, HttpServletRequest request) {
+    Optional<User> user = userService.searchUser(requestBodyDto.email());
+
+    HttpStatus status = HttpStatus.OK;
+    return ResponseEntity.status(status)
+        .body(HttpResponseBody.success(request, status, SearchUserResponseBodyDto.from(user)));
   }
 }

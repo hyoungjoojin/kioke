@@ -1,6 +1,9 @@
 import { HttpResponseBody } from "@/types/server";
-import { GetMyInformationResponseBody } from "@/types/server/user";
-import { kioke, processResponse } from "@/utils/server";
+import {
+  GetMyInformationResponseBody,
+  SearchUserResponseBody,
+} from "@/types/server/user";
+import { kioke, processResponse, protectedKioke } from "@/utils/server";
 
 export const getMyInformation = async (accessToken: string) => {
   const response = kioke
@@ -10,6 +13,18 @@ export const getMyInformation = async (accessToken: string) => {
       },
     })
     .get<HttpResponseBody<GetMyInformationResponseBody>>("users");
+
+  return processResponse(response);
+};
+
+export const searchUser = async (email: string) => {
+  const response = protectedKioke.post<
+    HttpResponseBody<SearchUserResponseBody>
+  >("users/search", {
+    json: {
+      email,
+    },
+  });
 
   return processResponse(response);
 };
