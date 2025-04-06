@@ -3,6 +3,27 @@ package kioke.commons.constant;
 import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
+  INTERNAL_SERVER_ERROR(
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      "E-0000",
+      "Internal Server Error",
+      "An unknown error occurred on the server."),
+  NO_ACCESS_TOKEN(
+      HttpStatus.BAD_REQUEST,
+      "E-0001",
+      "No Access Token",
+      "No access token is provided in the request."),
+  INVALID_ACCESS_TOKEN(
+      HttpStatus.UNAUTHORIZED,
+      "E-0002",
+      "Invalid Access Token",
+      "The provided access token is invalid or may be expired."),
+  ACCESS_DENIED(
+      HttpStatus.FORBIDDEN,
+      "E-0003",
+      "Access Denied",
+      "You do not have the necessary permissions to perform this action."),
+
   USER_NOT_FOUND(
       HttpStatus.NOT_FOUND, "U-0001", "User Not Found", "The requested user could not be found."),
   USER_ALREADY_EXISTS(
@@ -15,24 +36,14 @@ public enum ErrorCode {
       "U-0003",
       "Invalid Credentials",
       "The given credentials are incorrect."),
-  NO_ACCESS_TOKEN(
-      HttpStatus.BAD_REQUEST,
-      "U-0004",
-      "No Access Token",
-      "No access token is provided in the request."),
-  INVALID_ACCESS_TOKEN(
-      HttpStatus.UNAUTHORIZED,
-      "U-0005",
-      "Invalid Access Token",
-      "The provided access token is invalid or may be expired."),
   FRIEND_REQUEST_ALREADY_SENT(
       HttpStatus.CONFLICT,
-      "U-0006",
+      "U-0004",
       "Friend Request Already Sent",
       "Friend request is already sent."),
   INVALID_FRIEND_REQUEST(
       HttpStatus.BAD_REQUEST,
-      "U-0007",
+      "U-0005",
       "Invalid Friend Request",
       "The friend request cannot be processed since the request is invalid. "),
 
@@ -47,23 +58,7 @@ public enum ErrorCode {
       HttpStatus.BAD_REQUEST,
       "J-0003",
       "Cannot Create Journal In Archive",
-      "Journals cannot be created inside archive shelves."),
-  NO_EDIT_PERMISSIONS(
-      HttpStatus.FORBIDDEN,
-      "J-0004",
-      "No Edit Permissions",
-      "You do not have the necessary permissions to edit this resource."),
-  NO_DELETE_PERMISSIONS(
-      HttpStatus.FORBIDDEN,
-      "J-0005",
-      "No Delete Permissions",
-      "You do not have the necessary permissions to delete this resource."),
-
-  INTERNAL_SERVER_ERROR(
-      HttpStatus.INTERNAL_SERVER_ERROR,
-      "E-0000",
-      "Internal Server Error",
-      "An unknown error occurred on the server.");
+      "Journals cannot be created inside archive shelves.");
 
   private HttpStatus status;
   private String code;

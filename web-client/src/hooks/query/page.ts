@@ -1,4 +1,4 @@
-import { createPage, getPage, updatePage } from "@/app/api/page";
+import { createPage, getPage } from "@/app/api/page";
 import { getQueryClient } from "@/components/providers/QueryProvider";
 import { useMutation, useQuery } from "@tanstack/react-query";
 

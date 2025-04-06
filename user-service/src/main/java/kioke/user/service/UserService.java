@@ -1,5 +1,6 @@
 package kioke.user.service;
 
+import java.util.Optional;
 import kioke.user.model.User;
 import kioke.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,5 +25,9 @@ public class UserService implements UserDetailsService {
         .findById(userId)
         .orElseThrow(
             () -> new UsernameNotFoundException("User with ID " + userId + " could not be found."));
+  }
+
+  public Optional<User> searchUser(String email) {
+    return userRepository.findByEmail(email);
   }
 }

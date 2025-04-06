@@ -1,3 +1,4 @@
+import { Role } from "@/constants/role";
 import { PagePreview } from "./page";
 
 export interface Journal {
@@ -7,6 +8,13 @@ export interface Journal {
   bookmarked: boolean;
   createdAt: string;
   lastModified: string;
+  users: {
+    userId: string;
+    role: Role;
+    email: string;
+    firstName: string;
+    lastName: string;
+  }[];
   pages: PagePreview[];
 }
 

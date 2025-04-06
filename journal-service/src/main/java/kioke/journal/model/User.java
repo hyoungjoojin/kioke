@@ -30,7 +30,7 @@ public class User implements UserDetails {
   private List<ShelfSlot> shelfSlots;
 
   @OneToMany(mappedBy = "user")
-  private List<JournalPermission> journals;
+  private List<JournalRole> journals;
 
   @OneToMany(mappedBy = "user")
   private List<Bookmark> bookmarks;
