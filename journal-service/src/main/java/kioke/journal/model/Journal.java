@@ -43,6 +43,9 @@ public class Journal {
   @OneToMany(mappedBy = "journal", orphanRemoval = true)
   private List<Page> pages;
 
+  @OneToMany(mappedBy = "journal")
+  private List<Bookmark> bookmarks;
+
   @NotNull private boolean isDeleted;
 
   @CreatedDate @NotNull private LocalDateTime createdAt;

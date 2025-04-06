@@ -2,7 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useJournalQuery } from "@/hooks/query/journal";
+import {
+  useJournalQuery,
+  useToggleJournalBookmarkMutation,
+} from "@/hooks/query/journal";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -72,6 +75,8 @@ export default function JournalPreview() {
   const { journalId } = useParams<{ journalId: string }>();
   const { data: journal, isLoading } = useJournalQuery(journalId);
   const { mutate: createPage } = useCreatePageMutation(journalId);
+  const { mutate: toggleJournalBookmark } =
+    useToggleJournalBookmarkMutation(journalId);
 
   const queryClient = getQueryClient();
 
@@ -329,7 +334,18 @@ export default function JournalPreview() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Heart size={18} />
+          <div
+            onClick={(e) => {
+              toggleJournalBookmark(!journal.bookmarked);
+              e.stopPropagation();
+            }}
+          >
+            {journal.bookmarked ? (
+              <Heart size={20} fill="black" />
+            ) : (
+              <Heart size={20} />
+            )}
+          </div>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

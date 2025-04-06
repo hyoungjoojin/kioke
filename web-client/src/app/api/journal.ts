@@ -8,6 +8,7 @@ import {
 } from "@/types/server/journal";
 import { processResponse, protectedKioke } from "@/utils/server";
 import { getUser } from "./user";
+import { Journal } from "@/types/primitives/journal";
 
 export const createJournal = async (
   shelfId: string,
@@ -27,7 +28,7 @@ export const createJournal = async (
   return response;
 };
 
-export const getJournal = async (journalId: string) => {
+export const getJournal = async (journalId: string): Promise<Journal> => {
   const response = await processResponse(
     protectedKioke.get<HttpResponseBody<GetJournalResponseBody>>(
       `journals/${journalId}`,
@@ -72,6 +73,10 @@ export const shareJournal = async (
   return response;
 };
 
+export const bookmarkJournal = async (journalId: string) => {
+  await protectedKioke.post(`journals/${journalId}/bookmark`).json();
+};
+
 export const moveJournal = async (jid: string, shelfId: string) => {
   await protectedKioke
     .put(`journals/${jid}/shelf`, {
@@ -84,4 +89,8 @@ export const moveJournal = async (jid: string, shelfId: string) => {
 
 export const deleteJournal = async (jid: string) => {
   await protectedKioke.delete(`journals/${jid}`).json();
+};
+
+export const deleteBookmark = async (journalId: string) => {
+  await protectedKioke.delete(`journals/${journalId}/bookmark`).json();
 };

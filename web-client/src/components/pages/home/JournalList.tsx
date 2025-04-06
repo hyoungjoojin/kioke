@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/table";
 import { useRouter } from "next/navigation";
 import { useSelectedShelf } from "@/hooks/store";
-import { Ellipsis, Trash2, SquareArrowRight } from "lucide-react";
+import { Ellipsis, Trash2, SquareArrowRight, Heart } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,6 +35,7 @@ import { JSX, useState } from "react";
 import {
   useMoveJournalMutation,
   useDeleteJournalMutation,
+  useToggleJournalBookmarkMutation,
 } from "@/hooks/query/journal";
 import { useShelvesQuery } from "@/hooks/query/shelf";
 import SelectShelfCommand from "@/components/features/shelf/SelectShelfCommand";
@@ -49,15 +50,18 @@ type JournalListItemProps = JournalPreview & {
 };
 
 const JournalListItem = ({
-  id,
+  journalId,
   title,
   createdAt,
+  bookmarked,
   isArchived,
 }: JournalListItemProps) => {
   const router = useRouter();
 
-  const { mutate: moveJournal } = useMoveJournalMutation(id);
-  const { mutate: deleteJournal } = useDeleteJournalMutation(id);
+  const { mutate: moveJournal } = useMoveJournalMutation(journalId);
+  const { mutate: deleteJournal } = useDeleteJournalMutation(journalId);
+  const { mutate: toggleJournalBookmark } =
+    useToggleJournalBookmarkMutation(journalId);
 
   const JournalListItemMenu = () => {
     const [modalState, setModalState] = useState<{
@@ -163,7 +167,7 @@ const JournalListItem = ({
     <TableRow
       changeOnHover
       onClick={() => {
-        router.push(`/journal/${id}/preview`);
+        router.push(`/journal/${journalId}/preview`);
       }}
     >
       <TableCell>
@@ -172,6 +176,18 @@ const JournalListItem = ({
 
       <TableCell>
         <p className="select-none">{createdAt}</p>
+      </TableCell>
+
+      <TableCell>
+        <p
+          onClick={(e) => {
+            toggleJournalBookmark(!bookmarked);
+            e.stopPropagation();
+          }}
+          className="select-none"
+        >
+          {bookmarked ? <Heart size={20} fill="black" /> : <Heart size={20} />}
+        </p>
       </TableCell>
 
       <TableCell
@@ -196,6 +212,7 @@ export default function JournalList() {
           <TableHead className="select-none">Title</TableHead>
           <TableHead className="select-none">Created At</TableHead>
           <TableHead></TableHead>
+          <TableHead></TableHead>
         </TableRow>
       </TableHeader>
 
@@ -205,9 +222,7 @@ export default function JournalList() {
               return (
                 <JournalListItem
                   key={index}
-                  id={journal.id}
-                  title={journal.title}
-                  createdAt={journal.createdAt}
+                  {...journal}
                   isArchived={selectedShelf.isArchive}
                 />
               );

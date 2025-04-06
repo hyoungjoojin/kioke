@@ -1,5 +1,6 @@
 package kioke.journal.dto.response.journal;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,16 +19,21 @@ public class GetJournalResponseBodyDto {
   private String description;
   private List<UserDto> users;
   private List<PageDto> pages;
+
+  @JsonProperty("bookmarked")
+  boolean bookmarked;
+
   private LocalDateTime createdAt;
   private LocalDateTime lastModified;
 
-  public static GetJournalResponseBodyDto from(Journal journal) {
+  public static GetJournalResponseBodyDto from(Journal journal, boolean bookmarked) {
     return GetJournalResponseBodyDto.builder()
         .jid(journal.getJid())
         .title(journal.getTitle())
         .description(journal.getDescription())
         .users(UserDto.from(journal.getUsers()))
         .pages(PageDto.from(journal.getPages()))
+        .bookmarked(bookmarked)
         .createdAt(journal.getCreatedAt())
         .lastModified(journal.getLastModified())
         .build();

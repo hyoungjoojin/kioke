@@ -7,6 +7,7 @@ export interface GetJournalResponseBody {
   id: string;
   title: string;
   description: string;
+  bookmarked: boolean;
   createdAt: string;
   lastModified: string;
   users: { userId: string; role: string }[];
