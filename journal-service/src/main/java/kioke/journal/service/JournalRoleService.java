@@ -1,6 +1,5 @@
 package kioke.journal.service;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import kioke.journal.constant.Permission;
 import kioke.journal.constant.Role;
@@ -17,15 +16,10 @@ public class JournalRoleService {
   @Autowired private JournalRoleRepository journalRoleRepository;
 
   public boolean hasPermission(User user, Journal journal, Permission permission) {
-    try {
-      JournalRole journalRole =
-          journalRoleRepository.findByUserAndJournal(user, journal).orElseThrow();
-
-      return journalRole.getRole().hasPermission(permission);
-
-    } catch (NoSuchElementException e) {
-      return false;
-    }
+    return journalRoleRepository
+        .findByUserAndJournal(user, journal)
+        .map(journalRole -> journalRole.getRole().hasPermission(permission))
+        .orElse(false);
   }
 
   public void setRole(User user, Journal journal, Role role) {

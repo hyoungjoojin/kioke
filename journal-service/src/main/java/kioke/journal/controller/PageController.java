@@ -2,13 +2,13 @@ package kioke.journal.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import kioke.commons.exception.security.AccessDeniedException;
 import kioke.commons.http.HttpResponseBody;
 import kioke.journal.constant.Permission;
 import kioke.journal.dto.request.page.CreatePageRequestBodyDto;
 import kioke.journal.dto.response.page.CreatePageResponseBodyDto;
 import kioke.journal.dto.response.page.GetPageResponseBodyDto;
 import kioke.journal.exception.journal.JournalNotFoundException;
-import kioke.journal.exception.permission.NoEditPermissionsException;
 import kioke.journal.model.Journal;
 import kioke.journal.model.Page;
 import kioke.journal.model.User;
@@ -43,11 +43,13 @@ public class PageController {
       @PathVariable String journalId,
       @Valid @RequestBody CreatePageRequestBodyDto requestBodyDto,
       HttpServletRequest request)
-      throws UsernameNotFoundException, JournalNotFoundException, NoEditPermissionsException {
+      throws UsernameNotFoundException, JournalNotFoundException, AccessDeniedException {
     User user = userService.getUserById(uid);
     Journal journal = journalService.getJournalById(journalId);
 
-    journalRoleService.hasPermission(user, journal, Permission.WRITE);
+    if (!journalRoleService.hasPermission(user, journal, Permission.WRITE)) {
+      throw new AccessDeniedException();
+    }
 
     Page page = pageService.createPage(journal, requestBodyDto.getTitle());
 
@@ -66,7 +68,9 @@ public class PageController {
     User user = userService.getUserById(uid);
     Journal journal = journalService.getJournalById(journalId);
 
-    journalRoleService.hasPermission(user, journal, Permission.READ);
+    if (!journalRoleService.hasPermission(user, journal, Permission.READ)) {
+      throw new JournalNotFoundException(journalId);
+    }
 
     Page page = pageService.getPage(pageId);
 
