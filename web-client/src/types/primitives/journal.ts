@@ -1,4 +1,4 @@
-import { Page } from "./page";
+import { PagePreview } from "./page";
 
 export interface Journal {
   id: string;
@@ -6,6 +6,7 @@ export interface Journal {
   description: string;
   createdAt: string;
   lastModified: string;
+  users: { userId: string; role: string }[];
   pages: PagePreview[];
 }
 

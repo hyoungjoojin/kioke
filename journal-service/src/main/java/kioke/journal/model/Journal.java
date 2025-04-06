@@ -31,7 +31,7 @@ public class Journal {
   private String jid;
 
   @OneToMany(mappedBy = "journal", orphanRemoval = true)
-  private List<JournalPermission> users;
+  private List<JournalRole> users;
 
   @OneToMany(mappedBy = "journal", orphanRemoval = true)
   private List<ShelfSlot> shelves;

@@ -5,7 +5,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import kioke.commons.http.HttpResponseBody;
 import kioke.user.dto.request.friend.AddFriendRequestBodyDto;
-import kioke.user.dto.response.data.friend.GetFriendsResponseBodyDto;
+import kioke.user.dto.response.friend.GetFriendsResponseBodyDto;
 import kioke.user.exception.friend.CannotAddSelfAsFriendException;
 import kioke.user.exception.friend.FriendRelationAlreadyExistsException;
 import kioke.user.exception.friend.FriendRequestAlreadySentException;
