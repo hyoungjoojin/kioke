@@ -1,7 +1,8 @@
 package com.kioke.auth.model;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
@@ -22,8 +23,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 @NoArgsConstructor
 @Builder
 public class User implements UserDetails {
+
   @Id
-  @Column(name = "uid", unique = true, nullable = false)
+  @GeneratedValue(strategy = GenerationType.UUID)
   private String uid;
 
   private String email;

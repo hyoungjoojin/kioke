@@ -6,12 +6,23 @@ services:
     environment:
       POSTGRES_USER: kioke
       POSTGRES_PASSWORD: password
-      POSTGRES_MULTIPLE_DATABASES: authdb, userdb, journaldb
+      POSTGRES_MULTIPLE_DATABASES: authdb, userdb, journaldb, notificationdb
     volumes:
       - ./utils/scripts/docker-entrypoint-initdb.dev.sh:/docker-entrypoint-initdb.d/docker-entrypoint-initdb.dev.sh
       - kioke-data:/var/lib/postgresql/data
     ports:
       - 5432:5432
+
+  message-broker:
+    container_name: message-broker
+    restart: unless-stopped
+    image: rabbitmq:management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: kioke
+      RABBITMQ_DEFAULT_PASS: password
 
 volumes:
   kioke-data:

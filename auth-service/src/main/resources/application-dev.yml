@@ -7,6 +7,12 @@ spring:
     username: kioke
     password: password
 
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: kioke
+    password: password
+
   devtools:
     restart:
       enabled:
@@ -24,3 +30,7 @@ eureka:
 security:
   jwt:
     expiration: 1000000000
+
+logging:
+  level:
+    root: DEBUG

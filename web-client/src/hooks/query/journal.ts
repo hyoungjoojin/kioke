@@ -4,9 +4,10 @@ import {
   deleteJournal,
   createJournal,
   updateJournal,
+  bookmarkJournal,
+  deleteBookmark,
 } from "@/app/api/journal";
 import { getQueryClient } from "@/components/providers/QueryProvider";
-import { Journal } from "@/types/primitives/journal";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const useJournalQuery = (jid: string) => {
@@ -31,6 +32,25 @@ export const useCreateJournalMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["shelves"],
+      });
+    },
+  });
+};
+
+export const useToggleJournalBookmarkMutation = (journalId: string) => {
+  const queryClient = getQueryClient();
+
+  return useMutation({
+    mutationFn: (bookmark: boolean) => {
+      return bookmark ? bookmarkJournal(journalId) : deleteBookmark(journalId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["shelves"],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["journals", journalId],
       });
     },
   });

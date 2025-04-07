@@ -1,7 +1,6 @@
 package com.kioke.auth.service;
 
 import com.kioke.auth.exception.UserDoesNotExistException;
-import com.kioke.auth.exception.UserDoesNotExistException.UserIdentifierType;
 import com.kioke.auth.model.User;
 import com.kioke.auth.repository.UserRepository;
 import org.hibernate.validator.internal.util.stereotypes.Lazy;
@@ -26,14 +25,10 @@ public class UserService implements UserDetailsService {
   }
 
   public User getUserById(String uid) throws UserDoesNotExistException {
-    return userRepository
-        .findById(uid)
-        .orElseThrow(() -> new UserDoesNotExistException(UserIdentifierType.UID, uid));
+    return userRepository.findById(uid).orElseThrow(() -> new UserDoesNotExistException());
   }
 
   public User getUserByEmail(String email) throws UserDoesNotExistException {
-    return userRepository
-        .findUserByEmail(email)
-        .orElseThrow(() -> new UserDoesNotExistException(UserIdentifierType.EMAIL, email));
+    return userRepository.findUserByEmail(email).orElseThrow(() -> new UserDoesNotExistException());
   }
 }

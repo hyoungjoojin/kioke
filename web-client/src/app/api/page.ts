@@ -1,14 +1,15 @@
 "use server";
 
+import { HttpResponseBody } from "@/types/server";
 import {
   CreatePageResponseBody,
   GetPageResponseBody,
 } from "@/types/server/page";
-import { protectedKioke } from "@/utils/server";
+import { processResponse, protectedKioke } from "@/utils/server";
 
 const createPage = async (journalId: string) => {
   await protectedKioke
-    .post<CreatePageResponseBody>(`/journals/${journalId}/pages`, {
+    .post<CreatePageResponseBody>(`journals/${journalId}/pages`, {
       json: {
         title: "",
       },
@@ -17,11 +18,11 @@ const createPage = async (journalId: string) => {
 };
 
 const getPage = async (journalId: string, pageId: string) => {
-  const response = await protectedKioke
-    .get<GetPageResponseBody>(`/journals/${journalId}/pages/${pageId}`)
-    .json();
+  const response = protectedKioke.get<HttpResponseBody<GetPageResponseBody>>(
+    `journals/${journalId}/pages/${pageId}`,
+  );
 
-  return response;
+  return processResponse(response);
 };
 
 export { createPage, getPage };

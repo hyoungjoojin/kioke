@@ -28,17 +28,11 @@ spring:
             - Path=/auth/register
             - Method=POST
 
-        - id: Kioke User Service Get Authenticated User Information
+        - id: User Operations
           uri: lb://user
           predicates:
-            - Path=/users
-            - Method=GET
-
-        - id: Kioke User Service Get User Information
-          uri: lb://user
-          predicates:
-            - Path=/users/{uid}
-            - Method=GET
+            - Path=/users/**
+            - Method=GET,POST,PUT,PATCH,DELETE
 
         - id: Kioke User Service Get Friends
           uri: lb://user

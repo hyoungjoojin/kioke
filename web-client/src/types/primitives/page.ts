@@ -7,5 +7,6 @@ export interface Page {
 
 export interface PagePreview {
   pageId: string;
-  date: string;
+  title: string;
+  date: Date;
 }

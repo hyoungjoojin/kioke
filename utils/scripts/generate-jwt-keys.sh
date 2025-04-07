@@ -11,6 +11,7 @@ PUBLIC_KEY_FILE="public.pem"
 PUBLIC_KEY_FILE_LOCATIONS=(
   "$PROJECT_DIRECTORY/journal-service/src/main/resources/certs"
   "$PROJECT_DIRECTORY/user-service/src/main/resources/certs"
+  "$PROJECT_DIRECTORY/notification-service/src/main/resources/certs"
 )
 
 echo "Generating a new key pair with the ES256 algorithm."

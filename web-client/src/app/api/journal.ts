@@ -1,11 +1,14 @@
 "use server";
 
-import { Journal } from "@/types/primitives/journal";
+import { Role } from "@/constants/role";
+import { HttpResponseBody } from "@/types/server";
 import {
   CreateJournalResponseBody,
   GetJournalResponseBody,
 } from "@/types/server/journal";
-import { protectedKioke } from "@/utils/server";
+import { processResponse, protectedKioke } from "@/utils/server";
+import { getUser } from "./user";
+import { Journal } from "@/types/primitives/journal";
 
 export const createJournal = async (
   shelfId: string,
@@ -25,9 +28,46 @@ export const createJournal = async (
   return response;
 };
 
-export const getJournal = async (jid: string) => {
-  const response = await protectedKioke
-    .get<GetJournalResponseBody>(`journals/${jid}`)
+export const getJournal = async (journalId: string): Promise<Journal> => {
+  const response = await processResponse(
+    protectedKioke.get<HttpResponseBody<GetJournalResponseBody>>(
+      `journals/${journalId}`,
+    ),
+  );
+
+  const users = await Promise.all(
+    response.users.map(async (user) => {
+      const userInfo = await getUser(user.userId);
+
+      return {
+        role: Role[user.role as keyof typeof Role],
+        userId: userInfo.userId,
+        email: userInfo.email,
+        firstName: userInfo.firstName,
+        lastName: userInfo.lastName,
+      };
+    }),
+  );
+
+  const pages = response.pages.map((page) => {
+    return { ...page, date: new Date(page.date) };
+  });
+
+  return { ...response, users, pages };
+};
+
+export const shareJournal = async (
+  userId: string,
+  journalId: string,
+  role: Role,
+) => {
+  const response = protectedKioke
+    .post(`journals/${journalId}/share`, {
+      json: {
+        userId,
+        role,
+      },
+    })
     .json();
 
   return response;
@@ -43,6 +83,10 @@ export const updateJournal = async (journalId: string, title: string) => {
     .json();
 };
 
+export const bookmarkJournal = async (journalId: string) => {
+  await protectedKioke.post(`journals/${journalId}/bookmark`).json();
+};
+
 export const moveJournal = async (jid: string, shelfId: string) => {
   await protectedKioke
     .put(`journals/${jid}/shelf`, {
@@ -55,4 +99,8 @@ export const moveJournal = async (jid: string, shelfId: string) => {
 
 export const deleteJournal = async (jid: string) => {
   await protectedKioke.delete(`journals/${jid}`).json();
+};
+
+export const deleteBookmark = async (journalId: string) => {
+  await protectedKioke.delete(`journals/${journalId}/bookmark`).json();
 };

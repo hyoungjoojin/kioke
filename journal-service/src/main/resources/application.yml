@@ -13,3 +13,7 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
 
+rabbitmq:
+  queue:
+    user-registration:
+      name: user.registration.journal
