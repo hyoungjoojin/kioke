@@ -1,70 +1,50 @@
-import { EditorContent, useEditor } from "@tiptap/react";
-import Document from "@tiptap/extension-document";
-import Text from "@tiptap/extension-text";
-import { useEffect, useState } from "react";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
+
+interface EditableTitleProps {
+  content: string;
+  onSubmit: (content: string) => void;
+}
 
 export default function EditableTitle({
   content,
-  onUpdate = () => {},
-  className = "",
-}: {
-  content: string;
-  onUpdate?: (text: string) => void;
-  className?: string;
-}) {
-  const [editable, setEditable] = useState(false);
+  onSubmit,
+}: EditableTitleProps) {
+  const [focused, setFocused] = useState(false);
+  const [modifiedContent, setModifiedContent] = useState(content);
 
-  const editor = useEditor({
-    extensions: [
-      Document.extend({
-        content: "text*",
-        onBlur(this) {
-          this.editor.setOptions({ editable: false });
-          onUpdate(this.editor.getText());
-          setEditable(false);
-          return true;
-        },
-        addKeyboardShortcuts() {
-          return {
-            Enter: ({ editor }) => {
-              editor.setOptions({ editable: false });
-              onUpdate(editor.getText());
-              setEditable(false);
-              return true;
-            },
-          };
-        },
-      }),
-      Text,
-    ],
-    content: `<h1>${content}</h1>`,
-    immediatelyRender: false,
-    parseOptions: {
-      preserveWhitespace: false,
-    },
-  });
-
-  useEffect(() => {
-    if (editor) {
-      editor.commands.setContent(`<h1>${content}</h1>`);
-    }
-  }, [content]);
-
-  return editor ? (
+  return (
     <div
-      className={cn(
-        "text-3xl p-2 rounded-xl",
-        "hover:border",
-        editable ? "border border-black" : "hover:border-gray-300",
-        className,
-      )}
       onClick={() => {
-        setEditable(true);
-        editor.setOptions({ editable: true });
+        setFocused(true);
       }}
     >
-      <EditorContent editor={editor} />
+      {focused ? (
+        <Input
+          value={modifiedContent}
+          onChange={(e) => {
+            setModifiedContent(e.target.value);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              setFocused(false);
+              onSubmit(modifiedContent);
+            }
+          }}
+          autoFocus
+          className="h-full md:text-3xl"
+        />
+      ) : (
+        <h1
+          className={cn(
+            "hover:border hover:border-muted text-3xl",
+            content === "" ? "text-gray-700" : "",
+          )}
+        >
+          {content === "" ? "Untitled" : content}
+        </h1>
+      )}
     </div>
-  ) : null;
+  );
 }

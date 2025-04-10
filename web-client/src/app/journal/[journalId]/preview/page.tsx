@@ -372,12 +372,11 @@ export default function JournalPreview() {
       <main className="w-4/5 mx-auto">
         <EditableTitle
           content={journal.title}
-          onUpdate={(title) => {
+          onSubmit={(title) => {
             if (journal.title !== title) {
               updateJournal({ title });
             }
           }}
-          className="text-3xl font-semibold mt-8"
         />
         <p className="mt-5 italic">{journal.description}</p>
 

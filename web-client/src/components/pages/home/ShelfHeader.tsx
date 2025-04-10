@@ -23,10 +23,8 @@ export default function ShelfHeader() {
     <div className="h-16 my-10 flex justify-center items-center">
       <EditableTitle
         content={selectedShelf.name}
-        onUpdate={(shelfName) => {
-          if (shelfName !== selectedShelf.name) {
-            updateShelf({ name: shelfName });
-          }
+        onSubmit={(content) => {
+          updateShelf({ name: content });
         }}
       />
     </div>
