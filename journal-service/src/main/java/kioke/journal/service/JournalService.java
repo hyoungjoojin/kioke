@@ -34,6 +34,14 @@ public class JournalService {
     return journal;
   }
 
+  public void updateJournal(Journal journal, String title) {
+    if (title != null) {
+      journal.setTitle(title);
+    }
+
+    journalRepository.save(journal);
+  }
+
   public Optional<Journal> deleteJournal(User user, Journal journal) {
     if (journal.isDeleted()) {
       journalRepository.delete(journal);

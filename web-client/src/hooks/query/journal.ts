@@ -3,6 +3,7 @@ import {
   moveJournal,
   deleteJournal,
   createJournal,
+  updateJournal,
   bookmarkJournal,
   deleteBookmark,
 } from "@/app/api/journal";
@@ -61,6 +62,24 @@ export const useMoveJournalMutation = (jid: string) => {
   return useMutation({
     mutationFn: ({ shelfId }: { shelfId: string }) => moveJournal(jid, shelfId),
     onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["shelves"],
+      });
+    },
+  });
+};
+
+export const useUpdateJournalMutation = (journalId: string) => {
+  const queryClient = getQueryClient();
+
+  return useMutation({
+    mutationFn: (variables: { title: string }) =>
+      updateJournal(journalId, variables.title),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["journals", journalId],
+      });
+
       queryClient.invalidateQueries({
         queryKey: ["shelves"],
       });

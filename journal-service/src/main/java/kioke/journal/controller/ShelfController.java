@@ -3,10 +3,13 @@ package kioke.journal.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
+import kioke.commons.exception.security.AccessDeniedException;
 import kioke.commons.http.HttpResponseBody;
 import kioke.journal.dto.request.shelf.CreateShelfRequestBodyDto;
+import kioke.journal.dto.request.shelf.UpdateShelfRequestBodyDto;
 import kioke.journal.dto.response.shelf.CreateShelfResponseBodyDto;
 import kioke.journal.dto.response.shelf.GetShelvesResponseBodyDto;
+import kioke.journal.exception.shelf.ShelfNotFoundException;
 import kioke.journal.model.Journal;
 import kioke.journal.model.Shelf;
 import kioke.journal.model.User;
@@ -22,6 +25,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,6 +58,26 @@ public class ShelfController {
     return ResponseEntity.status(status)
         .contentType(MediaType.APPLICATION_JSON)
         .body(HttpResponseBody.success(request, status, data));
+  }
+
+  @PatchMapping("/{shelfId}")
+  public ResponseEntity<HttpResponseBody<Void>> updateShelf(
+      @AuthenticationPrincipal String userId,
+      @PathVariable String shelfId,
+      @RequestBody @Valid UpdateShelfRequestBodyDto requestBodyDto,
+      HttpServletRequest request)
+      throws UsernameNotFoundException, ShelfNotFoundException, AccessDeniedException {
+    User user = userService.getUserById(userId);
+    Shelf shelf = shelfService.getShelfById(shelfId);
+
+    if (!shelf.getOwner().equals(user)) {
+      throw new AccessDeniedException();
+    }
+
+    shelfService.updateShelf(shelf, requestBodyDto.getName());
+
+    HttpStatus status = HttpStatus.OK;
+    return ResponseEntity.status(status).body(HttpResponseBody.success(request, status, null));
   }
 
   @GetMapping

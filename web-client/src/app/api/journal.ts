@@ -73,6 +73,16 @@ export const shareJournal = async (
   return response;
 };
 
+export const updateJournal = async (journalId: string, title: string) => {
+  await protectedKioke
+    .patch(`journals/${journalId}`, {
+      json: {
+        title,
+      },
+    })
+    .json();
+};
+
 export const bookmarkJournal = async (journalId: string) => {
   await protectedKioke.post(`journals/${journalId}/bookmark`).json();
 };

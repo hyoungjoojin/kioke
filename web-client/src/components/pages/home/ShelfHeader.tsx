@@ -1,7 +1,8 @@
 "use client";
 
+import EditableTitle from "@/components/features/editor/EditableTitle";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useShelvesQuery } from "@/hooks/query/shelf";
+import { useShelvesQuery, useUpdateShelfMutation } from "@/hooks/query/shelf";
 import { useSelectedShelf } from "@/hooks/store";
 
 const ShelfHeaderSkeleton = () => {
@@ -12,13 +13,20 @@ export default function ShelfHeader() {
   const { data: shelves, isLoading, isError } = useShelvesQuery();
   const selectedShelf = useSelectedShelf(shelves);
 
-  if (isLoading || isError) {
+  if (isLoading || isError || !selectedShelf) {
     return <ShelfHeaderSkeleton />;
   }
 
+  const { mutate: updateShelf } = useUpdateShelfMutation(selectedShelf);
+
   return selectedShelf ? (
     <div className="h-16 my-10 flex justify-center items-center">
-      <h1 className="text-3xl">{selectedShelf.name}</h1>
+      <EditableTitle
+        content={selectedShelf.name}
+        onSubmit={(content) => {
+          updateShelf({ name: content });
+        }}
+      />
     </div>
   ) : (
     <ShelfHeaderSkeleton />

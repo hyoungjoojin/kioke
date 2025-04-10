@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   useJournalQuery,
   useToggleJournalBookmarkMutation,
+  useUpdateJournalMutation,
 } from "@/hooks/query/journal";
 import {
   DropdownMenu,
@@ -44,6 +45,7 @@ import {
 import { Role, Roles } from "@/constants/role";
 import { shareJournal } from "@/app/api/journal";
 import { getQueryClient } from "@/components/providers/QueryProvider";
+import EditableTitle from "@/components/features/editor/EditableTitle";
 
 enum JOURNAL_PREVIEW_OPTION {
   LIST = "list",
@@ -75,6 +77,7 @@ export default function JournalPreview() {
   const { journalId } = useParams<{ journalId: string }>();
   const { data: journal, isLoading } = useJournalQuery(journalId);
   const { mutate: createPage } = useCreatePageMutation(journalId);
+  const { mutate: updateJournal } = useUpdateJournalMutation(journalId);
   const { mutate: toggleJournalBookmark } =
     useToggleJournalBookmarkMutation(journalId);
 
@@ -367,7 +370,14 @@ export default function JournalPreview() {
       </header>
 
       <main className="w-4/5 mx-auto">
-        <h1 className="text-3xl font-semibold mt-8">{journal.title}</h1>
+        <EditableTitle
+          content={journal.title}
+          onSubmit={(title) => {
+            if (journal.title !== title) {
+              updateJournal({ title });
+            }
+          }}
+        />
         <p className="mt-5 italic">{journal.description}</p>
 
         <h2 className="text-xl mt-12">Pages</h2>

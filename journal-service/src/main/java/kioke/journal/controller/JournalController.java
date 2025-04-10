@@ -11,6 +11,7 @@ import kioke.journal.dto.request.journal.CreateJournalRequestBodyDto;
 import kioke.journal.dto.request.journal.MoveJournalRequestBodyDto;
 import kioke.journal.dto.request.journal.ShareJournalRequestBodyDto;
 import kioke.journal.dto.request.journal.UnshareJournalRequestBodyDto;
+import kioke.journal.dto.request.journal.UpdateJournalRequestBodyDto;
 import kioke.journal.dto.response.journal.CreateJournalResponseBodyDto;
 import kioke.journal.dto.response.journal.GetBookmarksResponseBodyDto;
 import kioke.journal.dto.response.journal.GetJournalResponseBodyDto;
@@ -48,7 +49,8 @@ public class JournalController {
   public ResponseEntity<HttpResponseBody<GetJournalResponseBodyDto>> getJournal(
       @AuthenticationPrincipal String userId,
       @PathVariable String journalId,
-      HttpServletRequest request) throws UsernameNotFoundException, JournalNotFoundException {
+      HttpServletRequest request)
+      throws UsernameNotFoundException, JournalNotFoundException {
     User user = userService.getUserById(userId);
     Journal journal = journalService.getJournalById(journalId);
 
@@ -57,7 +59,8 @@ public class JournalController {
     }
 
     HttpStatus status = HttpStatus.OK;
-    GetJournalResponseBodyDto data = GetJournalResponseBodyDto.from(journal, bookmarkService.isBookmarked(user, journal));
+    GetJournalResponseBodyDto data =
+        GetJournalResponseBodyDto.from(journal, bookmarkService.isBookmarked(user, journal));
 
     return ResponseEntity.status(status).body(HttpResponseBody.success(request, status, data));
   }
@@ -102,6 +105,26 @@ public class JournalController {
     return ResponseEntity.status(status)
         .contentType(MediaType.APPLICATION_JSON)
         .body(HttpResponseBody.success(request, status, data));
+  }
+
+  @PatchMapping("/{journalId}")
+  public ResponseEntity<HttpResponseBody<Void>> updateJournal(
+      @AuthenticationPrincipal String userId,
+      @PathVariable String journalId,
+      @RequestBody UpdateJournalRequestBodyDto requestBodyDto,
+      HttpServletRequest request)
+      throws UsernameNotFoundException, JournalNotFoundException, AccessDeniedException {
+    User user = userService.getUserById(userId);
+    Journal journal = journalService.getJournalById(journalId);
+
+    if (!journalRoleService.hasPermission(user, journal, Permission.WRITE)) {
+      throw new AccessDeniedException();
+    }
+
+    journalService.updateJournal(journal, requestBodyDto.getTitle());
+
+    HttpStatus status = HttpStatus.OK;
+    return ResponseEntity.status(status).body(HttpResponseBody.success(request, status, null));
   }
 
   @PostMapping("/{journalId}/bookmark")

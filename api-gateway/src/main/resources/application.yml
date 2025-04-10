@@ -46,17 +46,11 @@ spring:
             - Path=/friends
             - Method=POST
 
-        - id: Kioke Journal Service Create Shelf
+        - id: Shelf Operations
           uri: lb://journal
           predicates:
-            - Path=/shelves
-            - Method=POST
-
-        - id: Kioke Journal Service Get Shelves
-          uri: lb://journal
-          predicates:
-            - Path=/shelves
-            - Method=GET
+            - Path=/shelves/**
+            - Method=GET,POST,PUT,PATCH,DELETE
 
         - id: Journal Operations
           uri: lb://journal
