@@ -30,7 +30,3 @@ eureka:
 security:
   jwt:
     expiration: 1000000000
-
-logging:
-  level:
-    root: DEBUG

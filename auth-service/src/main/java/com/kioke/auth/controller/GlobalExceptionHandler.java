@@ -2,7 +2,7 @@ package com.kioke.auth.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kioke.commons.constant.ErrorCode;
-import kioke.commons.controller.AbstractGlobalExceptionHandler;
+import kioke.commons.aspect.AbstractGlobalExceptionHandler;
 import kioke.commons.http.HttpResponseBody;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
