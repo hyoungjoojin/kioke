@@ -1,18 +1,30 @@
 package kioke.user.filter;
 
-import java.util.List;
 import kioke.commons.filter.AbstractAuthorizationFilter;
-import lombok.extern.slf4j.Slf4j;
+import kioke.commons.service.AbstractAuthService;
+import kioke.user.service.AuthService;
+import kioke.user.service.UserService;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 @Component
-@Slf4j
 public class AuthorizationFilter extends AbstractAuthorizationFilter {
 
-  @Override
-  public List<HttpRequest> getWhitelist() {
-    HttpRequest[] whitelist = {};
+  private final AuthService authService;
+  private final UserService userService;
 
-    return List.of(whitelist);
+  public AuthorizationFilter(AuthService authService, UserService userService) {
+    this.authService = authService;
+    this.userService = userService;
+  }
+
+  @Override
+  protected AbstractAuthService getAuthService() {
+    return authService;
+  }
+
+  @Override
+  protected UserDetailsService getUserDetailsService() {
+    return userService;
   }
 }
