@@ -13,7 +13,7 @@ public record JournalPreviewDto(
 
   public static JournalPreviewDto from(Journal journal, boolean bookmarked) {
     return JournalPreviewDto.builder()
-        .journalId(journal.getJid())
+        .journalId(journal.getJournalId())
         .title(journal.getTitle())
         .createdAt(journal.getCreatedAt())
         .bookmarked(bookmarked)

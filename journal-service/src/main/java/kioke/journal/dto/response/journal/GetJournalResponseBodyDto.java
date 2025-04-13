@@ -1,80 +1,43 @@
 package kioke.journal.dto.response.journal;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import kioke.journal.constant.Role;
+import kioke.journal.dto.data.page.PagePreviewDto;
 import kioke.journal.model.Journal;
 import kioke.journal.model.JournalRole;
-import kioke.journal.model.Page;
+import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Data;
 
-@Data
-@Builder
-public class GetJournalResponseBodyDto {
-  private String jid;
-  private String title;
-  private String description;
-  private List<UserDto> users;
-  private List<PageDto> pages;
+@Builder(access = AccessLevel.PRIVATE)
+public record GetJournalResponseBodyDto(
+    String journalId,
+    String title,
+    String description,
+    List<UserDto> users,
+    List<PagePreviewDto> pages,
+    @JsonProperty("bookmarked") boolean bookmarked,
+    LocalDateTime createdAt,
+    LocalDateTime lastModified) {
 
-  @JsonProperty("bookmarked")
-  boolean bookmarked;
-
-  private LocalDateTime createdAt;
-  private LocalDateTime lastModified;
-
-  public static GetJournalResponseBodyDto from(Journal journal, boolean bookmarked) {
+  public static GetJournalResponseBodyDto from(Journal journal, boolean isJournalBookmarked) {
     return GetJournalResponseBodyDto.builder()
-        .jid(journal.getJid())
+        .journalId(journal.getJournalId())
         .title(journal.getTitle())
         .description(journal.getDescription())
-        .users(UserDto.from(journal.getUsers()))
-        .pages(PageDto.from(journal.getPages()))
-        .bookmarked(bookmarked)
+        .users(journal.getUsers().stream().map(role -> UserDto.from(role)).toList())
+        .pages(journal.getPages().stream().map(page -> PagePreviewDto.from(page)).toList())
+        .bookmarked(isJournalBookmarked)
         .createdAt(journal.getCreatedAt())
         .lastModified(journal.getLastModified())
         .build();
   }
 
-  @Data
-  @Builder
-  private static class UserDto {
-    private String userId;
-    private Role role;
+  private static record UserDto(String userId, Role role) {
 
-    public static List<UserDto> from(List<JournalRole> journalRoles) {
-      return journalRoles.stream()
-          .map(
-              journalRole ->
-                  UserDto.builder()
-                      .userId(journalRole.getUser().getUid())
-                      .role(journalRole.getRole())
-                      .build())
-          .toList();
-    }
-  }
-
-  @Data
-  @Builder
-  private static class PageDto {
-    private String pageId;
-    private String title;
-    private LocalDate date;
-
-    public static List<PageDto> from(List<Page> pages) {
-      return pages.stream()
-          .map(
-              page -> {
-                return PageDto.builder()
-                    .pageId(page.getId())
-                    .title(page.getTitle())
-                    .date(page.getDate())
-                    .build();
-              })
-          .toList();
+    public static UserDto from(JournalRole journalRole) {
+      return new UserDto(journalRole.getUser().getUserId(), journalRole.getRole());
     }
   }
 }

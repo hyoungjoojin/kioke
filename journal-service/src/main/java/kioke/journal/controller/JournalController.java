@@ -1,243 +1,139 @@
 package kioke.journal.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.Optional;
+import java.util.List;
+import kioke.commons.annotation.HttpResponse;
 import kioke.commons.exception.security.AccessDeniedException;
-import kioke.commons.http.HttpResponseBody;
-import kioke.journal.constant.Permission;
-import kioke.journal.constant.Role;
 import kioke.journal.dto.request.journal.CreateJournalRequestBodyDto;
-import kioke.journal.dto.request.journal.MoveJournalRequestBodyDto;
 import kioke.journal.dto.request.journal.ShareJournalRequestBodyDto;
 import kioke.journal.dto.request.journal.UnshareJournalRequestBodyDto;
 import kioke.journal.dto.request.journal.UpdateJournalRequestBodyDto;
 import kioke.journal.dto.response.journal.CreateJournalResponseBodyDto;
-import kioke.journal.dto.response.journal.GetBookmarksResponseBodyDto;
 import kioke.journal.dto.response.journal.GetJournalResponseBodyDto;
-import kioke.journal.exception.journal.CannotCreateJournalInArchiveException;
 import kioke.journal.exception.journal.JournalNotFoundException;
 import kioke.journal.exception.shelf.ShelfNotFoundException;
 import kioke.journal.model.Journal;
-import kioke.journal.model.Shelf;
-import kioke.journal.model.User;
 import kioke.journal.service.BookmarkService;
-import kioke.journal.service.JournalRoleService;
 import kioke.journal.service.JournalService;
-import kioke.journal.service.ShelfService;
-import kioke.journal.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/journals")
+@Tag(name = "Journal Operations API")
 public class JournalController {
 
-  @Autowired @Lazy private JournalService journalService;
-  @Autowired @Lazy private UserService userService;
-  @Autowired private JournalRoleService journalRoleService;
-  @Autowired @Lazy private ShelfService shelfService;
-  @Autowired private BookmarkService bookmarkService;
+  private final JournalService journalService;
+  private final BookmarkService bookmarkService;
 
-  @GetMapping("/{journalId}")
-  public ResponseEntity<HttpResponseBody<GetJournalResponseBodyDto>> getJournal(
-      @AuthenticationPrincipal String userId,
-      @PathVariable String journalId,
-      HttpServletRequest request)
-      throws UsernameNotFoundException, JournalNotFoundException {
-    User user = userService.getUserById(userId);
-    Journal journal = journalService.getJournalById(journalId);
-
-    if (!journalRoleService.hasPermission(user, journal, Permission.READ)) {
-      throw new JournalNotFoundException(journalId);
-    }
-
-    HttpStatus status = HttpStatus.OK;
-    GetJournalResponseBodyDto data =
-        GetJournalResponseBodyDto.from(journal, bookmarkService.isBookmarked(user, journal));
-
-    return ResponseEntity.status(status).body(HttpResponseBody.success(request, status, data));
+  public JournalController(JournalService journalService, BookmarkService bookmarkService) {
+    this.journalService = journalService;
+    this.bookmarkService = bookmarkService;
   }
 
-  @GetMapping("/bookmarks")
-  public ResponseEntity<HttpResponseBody<GetBookmarksResponseBodyDto>> getBookmarks(
-      @AuthenticationPrincipal String userId, HttpServletRequest request)
-      throws UsernameNotFoundException {
-    User user = userService.getUserById(userId);
+  @GetMapping
+  @Tag(name = "Get Journals")
+  @Operation(summary = "Get all journals for a given user.")
+  @HttpResponse(status = HttpStatus.OK)
+  @PreAuthorize("isAuthenticated()")
+  public List<GetJournalResponseBodyDto> getJournals(
+      @AuthenticationPrincipal String userId,
+      @RequestParam(name = "bookmarked", required = false) Boolean bookmarked) {
+    List<Journal> journals = journalService.getJournals(userId, bookmarked);
 
-    HttpStatus status = HttpStatus.OK;
-    return ResponseEntity.status(status)
-        .body(
-            HttpResponseBody.success(
-                request, status, GetBookmarksResponseBodyDto.from(user.getBookmarks())));
+    return journals.stream()
+        .map(journal -> GetJournalResponseBodyDto.from(journal, false))
+        .toList();
+  }
+
+  @GetMapping("/{journalId}")
+  @Tag(name = "Get Journal By ID")
+  @Operation(summary = "Get information about the journal with the journal ID.")
+  @HttpResponse(status = HttpStatus.OK)
+  @PreAuthorize("isAuthenticated()")
+  public GetJournalResponseBodyDto getJournalById(
+      @AuthenticationPrincipal String userId, @PathVariable String journalId)
+      throws JournalNotFoundException {
+    Journal journal = journalService.getJournalById(userId, journalId);
+    boolean isJournalBookmarked = bookmarkService.isJournalBookmarked(userId, journalId);
+
+    return GetJournalResponseBodyDto.from(journal, isJournalBookmarked);
   }
 
   @PostMapping
-  public ResponseEntity<HttpResponseBody<CreateJournalResponseBodyDto>> createJournal(
-      @AuthenticationPrincipal String uid,
-      @RequestBody @Valid CreateJournalRequestBodyDto requestBodyDto,
-      HttpServletRequest request)
-      throws UsernameNotFoundException,
-          ShelfNotFoundException,
-          CannotCreateJournalInArchiveException {
-    User user = userService.getUserById(uid);
-    Shelf shelf = shelfService.getShelfById(requestBodyDto.getShelfId());
-    if (shelf.isArchive()) {
-      throw new CannotCreateJournalInArchiveException();
-    }
-
+  @Tag(name = "Create Journal")
+  @Operation(summary = "Create a new journal.")
+  @HttpResponse(status = HttpStatus.CREATED)
+  @PreAuthorize("isAuthenticated()")
+  public CreateJournalResponseBodyDto createJournal(
+      @AuthenticationPrincipal String userId,
+      @RequestBody @Valid CreateJournalRequestBodyDto requestBodyDto)
+      throws ShelfNotFoundException {
     Journal journal =
         journalService.createJournal(
-            user, requestBodyDto.getTitle(), requestBodyDto.getDescription());
-    shelfService.putJournalInShelf(journal, shelf);
+            userId, requestBodyDto.shelfId(), requestBodyDto.title(), requestBodyDto.description());
 
-    journalRoleService.setRole(user, journal, Role.AUTHOR);
-
-    HttpStatus status = HttpStatus.CREATED;
-    CreateJournalResponseBodyDto data = CreateJournalResponseBodyDto.from(journal);
-
-    return ResponseEntity.status(status)
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(HttpResponseBody.success(request, status, data));
-  }
-
-  @PatchMapping("/{journalId}")
-  public ResponseEntity<HttpResponseBody<Void>> updateJournal(
-      @AuthenticationPrincipal String userId,
-      @PathVariable String journalId,
-      @RequestBody UpdateJournalRequestBodyDto requestBodyDto,
-      HttpServletRequest request)
-      throws UsernameNotFoundException, JournalNotFoundException, AccessDeniedException {
-    User user = userService.getUserById(userId);
-    Journal journal = journalService.getJournalById(journalId);
-
-    if (!journalRoleService.hasPermission(user, journal, Permission.WRITE)) {
-      throw new AccessDeniedException();
-    }
-
-    journalService.updateJournal(journal, requestBodyDto.getTitle());
-
-    HttpStatus status = HttpStatus.OK;
-    return ResponseEntity.status(status).body(HttpResponseBody.success(request, status, null));
-  }
-
-  @PostMapping("/{journalId}/bookmark")
-  public ResponseEntity<HttpResponseBody<Void>> addBookmark(
-      @AuthenticationPrincipal String userId,
-      @PathVariable String journalId,
-      HttpServletRequest request)
-      throws UsernameNotFoundException, JournalNotFoundException {
-    User user = userService.getUserById(userId);
-    Journal journal = journalService.getJournalById(journalId);
-
-    bookmarkService.addBookmark(user, journal);
-
-    HttpStatus status = HttpStatus.CREATED;
-    return ResponseEntity.status(status).body(HttpResponseBody.success(request, status, null));
+    return CreateJournalResponseBodyDto.from(journal);
   }
 
   @PostMapping("/{journalId}/share")
-  public ResponseEntity<HttpResponseBody<Void>> shareJournal(
+  @Tag(name = "Share Journal")
+  @Operation(summary = "Share a journal with another user.")
+  @HttpResponse(status = HttpStatus.CREATED)
+  @PreAuthorize("isAuthenticated()")
+  public void shareJournal(
       @AuthenticationPrincipal String userId,
       @PathVariable String journalId,
-      @RequestBody @Valid ShareJournalRequestBodyDto requestBodyDto,
-      HttpServletRequest request)
-      throws UsernameNotFoundException, JournalNotFoundException {
-    User user = userService.getUserById(userId);
-    Journal journal = journalService.getJournalById(journalId);
-
-    if (!journalRoleService.hasPermission(user, journal, Permission.SHARE)) {}
-
-    User invitee = userService.getUserById(requestBodyDto.userId());
-    journalRoleService.setRole(invitee, journal, requestBodyDto.role());
-
-    HttpStatus status = HttpStatus.CREATED;
-    return ResponseEntity.status(status).body(HttpResponseBody.success(request, status, null));
+      @RequestBody @Valid ShareJournalRequestBodyDto requestBodyDto)
+      throws JournalNotFoundException, AccessDeniedException {
+    journalService.shareJournal(userId, journalId, requestBodyDto.userId(), requestBodyDto.role());
   }
 
-  @PutMapping("/{jid}/shelf")
-  public ResponseEntity<HttpResponseBody<Void>> moveJournal(
-      @AuthenticationPrincipal String uid,
-      @PathVariable String jid,
-      @RequestBody @Valid MoveJournalRequestBodyDto requestBodyDto,
-      HttpServletRequest request)
-      throws UsernameNotFoundException, JournalNotFoundException, ShelfNotFoundException {
-    User user = userService.getUserById(uid);
-
-    Journal journal = journalService.getJournalById(jid);
-    journalRoleService.hasPermission(user, journal, Permission.READ);
-
-    Shelf shelf = shelfService.getShelfById(requestBodyDto.getShelfId());
-    if (!shelf.getOwner().equals(user)) {
-      throw new ShelfNotFoundException(shelf.getId());
-    }
-
-    shelfService.putJournalInShelf(journal, shelf);
-
-    HttpStatus status = HttpStatus.NO_CONTENT;
-    return ResponseEntity.status(status).body(HttpResponseBody.success(request, status, null));
-  }
-
-  @DeleteMapping("/{jid}")
-  public ResponseEntity<HttpResponseBody<Void>> deleteJournal(
-      @AuthenticationPrincipal String uid, @PathVariable String jid, HttpServletRequest request)
-      throws UsernameNotFoundException, JournalNotFoundException, AccessDeniedException {
-    User user = userService.getUserById(uid);
-    Journal journal = journalService.getJournalById(jid);
-
-    if (!journalRoleService.hasPermission(user, journal, Permission.DELETE)) {
-      throw new AccessDeniedException();
-    }
-
-    Optional<Journal> deletedJournal = journalService.deleteJournal(user, journal);
-
-    if (deletedJournal.isPresent()) {
-      Shelf archive = shelfService.getArchive(user);
-      shelfService.putJournalInShelf(journal, archive);
-    }
-
-    HttpStatus status = HttpStatus.NO_CONTENT;
-    return ResponseEntity.status(status).body(HttpResponseBody.success(request, status, null));
-  }
-
-  @DeleteMapping("/{journalId}/bookmark")
-  public ResponseEntity<HttpResponseBody<Void>> deleteBookmark(
+  @PatchMapping("/{journalId}")
+  @Tag(name = "Update Journal By ID")
+  @Operation(summary = "Update information about the journal with the journal ID.")
+  @HttpResponse(status = HttpStatus.OK)
+  @PreAuthorize("isAuthenticated()")
+  public void updateJournal(
       @AuthenticationPrincipal String userId,
       @PathVariable String journalId,
-      HttpServletRequest request)
-      throws UsernameNotFoundException, JournalNotFoundException {
-    User user = userService.getUserById(userId);
-    Journal journal = journalService.getJournalById(journalId);
-    bookmarkService.deleteBookmark(user, journal);
+      @RequestBody UpdateJournalRequestBodyDto requestBodyDto)
+      throws JournalNotFoundException, AccessDeniedException, ShelfNotFoundException {
+    journalService.updateJournal(userId, journalId, requestBodyDto);
+  }
 
-    HttpStatus status = HttpStatus.NO_CONTENT;
-    return ResponseEntity.status(status).body(HttpResponseBody.success(request, status, null));
+  @DeleteMapping("/{journalId}")
+  @Tag(name = "Delete Journal By ID")
+  @Operation(summary = "Delete the journal with the journal ID.")
+  @HttpResponse(status = HttpStatus.NO_CONTENT)
+  @PreAuthorize("isAuthenticated()")
+  public void deleteJournal(@AuthenticationPrincipal String userId, @PathVariable String journalId)
+      throws JournalNotFoundException, AccessDeniedException {
+    journalService.deleteJournal(userId, journalId);
   }
 
   @DeleteMapping("/{journalId}/share")
-  public ResponseEntity<HttpResponseBody<Void>> unshareJournal(
+  @Tag(name = "Unshare Journal")
+  @Operation(summary = "Unshare a journal with another user.")
+  @HttpResponse(status = HttpStatus.NO_CONTENT)
+  @PreAuthorize("isAuthenticated()")
+  public void unshareJournal(
       @AuthenticationPrincipal String userId,
       @PathVariable String journalId,
-      @RequestBody @Valid UnshareJournalRequestBodyDto requestBodyDto,
-      HttpServletRequest request)
-      throws UsernameNotFoundException, JournalNotFoundException, AccessDeniedException {
-    User user = userService.getUserById(userId);
-    Journal journal = journalService.getJournalById(journalId);
-
-    if (!journalRoleService.hasPermission(user, journal, Permission.SHARE)) {
-      throw new AccessDeniedException();
-    }
-
-    User invitee = userService.getUserById(requestBodyDto.userId());
-    journalRoleService.deleteRole(invitee, journal);
-
-    HttpStatus status = HttpStatus.CREATED;
-    return ResponseEntity.status(status).body(HttpResponseBody.success(request, status, null));
+      @RequestBody @Valid UnshareJournalRequestBodyDto requestBodyDto)
+      throws JournalNotFoundException, AccessDeniedException {
+    journalService.unshareJournal(userId, journalId, requestBodyDto.userId());
   }
 }

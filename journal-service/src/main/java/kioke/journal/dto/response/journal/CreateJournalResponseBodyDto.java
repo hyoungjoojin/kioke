@@ -7,12 +7,12 @@ import lombok.Data;
 @Data
 @Builder
 public class CreateJournalResponseBodyDto {
-  private String jid;
+  private String journalId;
   private String title;
 
   public static CreateJournalResponseBodyDto from(Journal journal) {
     return CreateJournalResponseBodyDto.builder()
-        .jid(journal.getJid())
+        .journalId(journal.getJournalId())
         .title(journal.getTitle())
         .build();
   }
