@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.List;
 import kioke.commons.exception.security.TokenNotFoundException;
 import kioke.commons.service.AbstractAuthService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,10 +18,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 public abstract class AbstractAuthorizationFilter extends OncePerRequestFilter {
 
-  public abstract List<HttpRequest> getWhitelist();
+  public List<HttpRequest> getWhitelist() {
+    HttpRequest[] whitelist = {};
+    return List.of(whitelist);
+  }
 
-  @Autowired UserDetailsService userDetailsService;
-  @Autowired AbstractAuthService authService;
+  protected abstract UserDetailsService getUserDetailsService();
+
+  protected abstract AbstractAuthService getAuthService();
 
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
@@ -46,15 +49,18 @@ public abstract class AbstractAuthorizationFilter extends OncePerRequestFilter {
 
     final String token = authorizationHeader.substring(7);
 
-    String uid = authService.extractSubjectFromToken(token);
+    String uid = getAuthService().extractSubjectFromToken(token);
     if (uid != null) {
       var securityContext = SecurityContextHolder.getContext();
 
       if (securityContext.getAuthentication() == null) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(uid);
+        UserDetails userDetails = getUserDetailsService().loadUserByUsername(uid);
 
         securityContext.setAuthentication(
-            new UsernamePasswordAuthenticationToken(uid, null, userDetails.getAuthorities()));
+            new UsernamePasswordAuthenticationToken(
+                userDetails.getUsername(),
+                userDetails.getPassword(),
+                userDetails.getAuthorities()));
       }
     }
 

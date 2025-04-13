@@ -8,19 +8,14 @@ public enum ErrorCode {
       "E-0000",
       "Internal Server Error",
       "An unknown error occurred on the server."),
-  NO_ACCESS_TOKEN(
-      HttpStatus.BAD_REQUEST,
-      "E-0001",
-      "No Access Token",
-      "No access token is provided in the request."),
   INVALID_ACCESS_TOKEN(
       HttpStatus.UNAUTHORIZED,
-      "E-0002",
+      "E-0001",
       "Invalid Access Token",
-      "The provided access token is invalid or may be expired."),
+      "The access token either could not found, is invalid, or may be expired."),
   ACCESS_DENIED(
       HttpStatus.FORBIDDEN,
-      "E-0003",
+      "E-0002",
       "Access Denied",
       "You do not have the necessary permissions to perform this action."),
 
