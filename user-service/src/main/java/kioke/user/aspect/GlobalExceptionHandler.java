@@ -1,4 +1,4 @@
-package kioke.user.controller;
+package kioke.user.aspect;
 
 import kioke.commons.aspect.AbstractGlobalExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

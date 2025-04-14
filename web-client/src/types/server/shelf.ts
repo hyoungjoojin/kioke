@@ -1,5 +1,8 @@
-import { Shelf } from "@/types/primitives/shelf";
+import { JournalPreview } from "../primitives/journal";
 
-export interface GetShelvesResponseBody {
-  shelves: Shelf[];
-}
+export type GetShelfResponseBody = {
+  shelfId: string;
+  name: string;
+  journals: JournalPreview[];
+  isArchive: boolean;
+};

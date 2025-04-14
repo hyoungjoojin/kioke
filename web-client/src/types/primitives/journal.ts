@@ -2,7 +2,7 @@ import { Role } from "@/constants/role";
 import { PagePreview } from "./page";
 
 export interface Journal {
-  id: string;
+  journalId: string;
   title: string;
   description: string;
   bookmarked: boolean;

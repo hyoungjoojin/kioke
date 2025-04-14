@@ -1,62 +1,57 @@
 package kioke.user.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.Optional;
-import kioke.commons.http.HttpResponseBody;
+import kioke.commons.annotation.HttpResponse;
 import kioke.user.dto.request.user.SearchUserRequestBodyDto;
+import kioke.user.dto.response.user.GetMyInformationResponseBodyDto;
 import kioke.user.dto.response.user.GetUserResponseBodyDto;
-import kioke.user.dto.response.user.GetUserResponseBodyDto.GetAuthenticatedUserResponseBodyDto;
-import kioke.user.dto.response.user.GetUserResponseBodyDto.GetUserByIdResponseBodyDto;
 import kioke.user.dto.response.user.SearchUserResponseBodyDto;
 import kioke.user.model.User;
 import kioke.user.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
-  @Autowired @Lazy UserService userService;
+  private final UserService userService;
 
-  @GetMapping
-  public ResponseEntity<HttpResponseBody<GetAuthenticatedUserResponseBodyDto>> getAuthenticatedUser(
-      @AuthenticationPrincipal String uid, HttpServletRequest request)
-      throws UsernameNotFoundException {
-    User user = userService.getUserById(uid);
-
-    HttpStatus status = HttpStatus.OK;
-    return ResponseEntity.status(status)
-        .body(
-            HttpResponseBody.success(
-                request, status, GetAuthenticatedUserResponseBodyDto.from(user)));
+  public UserController(UserService userService) {
+    this.userService = userService;
   }
 
-  @GetMapping("/{uid}")
-  public ResponseEntity<HttpResponseBody<? extends GetUserResponseBodyDto>> getUserById(
-      @AuthenticationPrincipal String uid,
-      @PathVariable(name = "uid") String requestedUid,
-      HttpServletRequest request)
+  @GetMapping("/me")
+  @HttpResponse(status = HttpStatus.OK)
+  public GetMyInformationResponseBodyDto getMyInformation(@AuthenticationPrincipal String userId)
       throws UsernameNotFoundException {
-    User user = userService.getUserById(requestedUid);
+    User user = userService.getUserById(userId);
 
-    HttpStatus status = HttpStatus.OK;
-    return ResponseEntity.status(status)
-        .body(HttpResponseBody.success(request, status, GetUserByIdResponseBodyDto.from(user)));
+    return GetMyInformationResponseBodyDto.from(user);
+  }
+
+  @GetMapping("/{userId}")
+  @HttpResponse(status = HttpStatus.OK)
+  public GetUserResponseBodyDto getUserById(@PathVariable(name = "userId") String userId)
+      throws UsernameNotFoundException {
+    User user = userService.getUserById(userId);
+
+    return GetUserResponseBodyDto.from(user);
   }
 
   @PostMapping("/search")
-  public ResponseEntity<HttpResponseBody<SearchUserResponseBodyDto>> searchUser(
-      @RequestBody SearchUserRequestBodyDto requestBodyDto, HttpServletRequest request) {
+  @HttpResponse(status = HttpStatus.OK)
+  public SearchUserResponseBodyDto searchUser(
+      @RequestBody SearchUserRequestBodyDto requestBodyDto) {
     Optional<User> user = userService.searchUser(requestBodyDto.email());
 
-    HttpStatus status = HttpStatus.OK;
-    return ResponseEntity.status(status)
-        .body(HttpResponseBody.success(request, status, SearchUserResponseBodyDto.from(user)));
+    return SearchUserResponseBodyDto.from(user);
   }
 }

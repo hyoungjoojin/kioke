@@ -28,10 +28,10 @@ export const protectedKioke = kioke.extend({
 });
 
 export async function processResponse<T>(
-  response: Promise<KyResponse<HttpResponseBody<T>>>,
+  response: KyResponse<HttpResponseBody<T>>,
 ) {
   return response
-    .then((res) => res.json())
+    .json()
     .then((res) => {
       if (!res.data || !res.success) {
         throw new KiokeError(ErrorCode.SHOULD_NOT_HAPPEN);

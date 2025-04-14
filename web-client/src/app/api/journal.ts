@@ -5,35 +5,28 @@ import { HttpResponseBody } from "@/types/server";
 import {
   CreateJournalResponseBody,
   GetJournalResponseBody,
+  UpdateJournalRequestBody,
 } from "@/types/server/journal";
 import { processResponse, protectedKioke } from "@/utils/server";
 import { getUser } from "./user";
 import { Journal } from "@/types/primitives/journal";
 
-export const createJournal = async (
-  shelfId: string,
-  title: string,
-  description: string,
-) => {
-  const response = await protectedKioke
-    .post<CreateJournalResponseBody>("journals", {
-      json: {
-        shelfId,
-        title,
-        description,
+export const getJournals = async (bookmarked: boolean = false) => {
+  const response = protectedKioke
+    .get<HttpResponseBody<GetJournalResponseBody[]>>("journals", {
+      searchParams: {
+        bookmarked,
       },
     })
-    .json();
+    .then((response) => processResponse(response));
 
   return response;
 };
 
 export const getJournal = async (journalId: string): Promise<Journal> => {
-  const response = await processResponse(
-    protectedKioke.get<HttpResponseBody<GetJournalResponseBody>>(
-      `journals/${journalId}`,
-    ),
-  );
+  const response = await protectedKioke
+    .get<HttpResponseBody<GetJournalResponseBody>>(`journals/${journalId}`)
+    .then((response) => processResponse(response));
 
   const users = await Promise.all(
     response.users.map(async (user) => {
@@ -50,10 +43,28 @@ export const getJournal = async (journalId: string): Promise<Journal> => {
   );
 
   const pages = response.pages.map((page) => {
-    return { ...page, date: new Date(page.date) };
+    return { ...page, createdAt: new Date(page.createdAt) };
   });
 
   return { ...response, users, pages };
+};
+
+export const createJournal = async (
+  shelfId: string,
+  title: string,
+  description: string,
+) => {
+  const response = protectedKioke
+    .post<HttpResponseBody<CreateJournalResponseBody>>("journals", {
+      json: {
+        shelfId,
+        title,
+        description,
+      },
+    })
+    .then((response) => processResponse(response));
+
+  return response;
 };
 
 export const shareJournal = async (
@@ -61,46 +72,41 @@ export const shareJournal = async (
   journalId: string,
   role: Role,
 ) => {
-  const response = protectedKioke
+  protectedKioke
     .post(`journals/${journalId}/share`, {
       json: {
         userId,
         role,
       },
     })
-    .json();
-
-  return response;
+    .then((response) => processResponse(response));
 };
 
-export const updateJournal = async (journalId: string, title: string) => {
-  await protectedKioke
+export const updateJournal = async (
+  journalId: string,
+  data: UpdateJournalRequestBody,
+) => {
+  protectedKioke
     .patch(`journals/${journalId}`, {
-      json: {
-        title,
-      },
+      json: data,
     })
-    .json();
+    .then((response) => processResponse(response));
 };
 
 export const bookmarkJournal = async (journalId: string) => {
-  await protectedKioke.post(`journals/${journalId}/bookmark`).json();
+  updateJournal(journalId, { bookmark: true });
 };
 
-export const moveJournal = async (jid: string, shelfId: string) => {
-  await protectedKioke
-    .put(`journals/${jid}/shelf`, {
-      json: {
-        shelfId,
-      },
-    })
-    .json();
+export const moveJournal = async (journalId: string, shelfId: string) => {
+  updateJournal(journalId, { shelfId });
 };
 
-export const deleteJournal = async (jid: string) => {
-  await protectedKioke.delete(`journals/${jid}`).json();
+export const deleteJournal = async (journalId: string) => {
+  protectedKioke
+    .delete(`journals/${journalId}`)
+    .then((response) => processResponse(response));
 };
 
 export const deleteBookmark = async (journalId: string) => {
-  await protectedKioke.delete(`journals/${journalId}/bookmark`).json();
+  updateJournal(journalId, { bookmark: false });
 };

@@ -45,7 +45,7 @@ export default function CreateJournalModal() {
 
     if (selectedShelf) {
       createJournal({
-        shelfId: selectedShelf.id,
+        shelfId: selectedShelf.shelfId,
         title,
         description,
       });

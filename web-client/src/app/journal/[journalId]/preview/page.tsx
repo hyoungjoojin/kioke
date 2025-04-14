@@ -429,7 +429,7 @@ export default function JournalPreview() {
                     <TextIcon size={16} className="mr-1" />
                     {page.title === "" ? "Untitled" : page.title}
                   </p>
-                  <p>{page.date.toDateString()}</p>
+                  <p>{page.createdAt.toDateString()}</p>
                 </div>
               );
             })}
