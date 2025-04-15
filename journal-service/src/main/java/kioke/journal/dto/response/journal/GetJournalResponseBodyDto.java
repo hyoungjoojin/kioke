@@ -3,10 +3,9 @@ package kioke.journal.dto.response.journal;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 import java.util.List;
-import kioke.journal.constant.Role;
+import kioke.journal.dto.data.journal.JournalDto;
 import kioke.journal.dto.data.page.PagePreviewDto;
-import kioke.journal.model.Journal;
-import kioke.journal.model.JournalRole;
+import kioke.journal.dto.data.user.UserDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 
@@ -21,23 +20,16 @@ public record GetJournalResponseBodyDto(
     LocalDateTime createdAt,
     LocalDateTime lastModified) {
 
-  public static GetJournalResponseBodyDto from(Journal journal, boolean isJournalBookmarked) {
+  public static GetJournalResponseBodyDto from(JournalDto journalDto) {
     return GetJournalResponseBodyDto.builder()
-        .journalId(journal.getJournalId())
-        .title(journal.getTitle())
-        .description(journal.getDescription())
-        .users(journal.getUsers().stream().map(role -> UserDto.from(role)).toList())
-        .pages(journal.getPages().stream().map(page -> PagePreviewDto.from(page)).toList())
-        .bookmarked(isJournalBookmarked)
-        .createdAt(journal.getCreatedAt())
-        .lastModified(journal.getLastModified())
+        .journalId(journalDto.journalId())
+        .title(journalDto.title())
+        .description(journalDto.description())
+        .users(journalDto.users())
+        .pages(journalDto.pages())
+        .bookmarked(journalDto.bookmarked())
+        .createdAt(journalDto.createdAt())
+        .lastModified(journalDto.lastModified())
         .build();
-  }
-
-  private static record UserDto(String userId, Role role) {
-
-    public static UserDto from(JournalRole journalRole) {
-      return new UserDto(journalRole.getUser().getUserId(), journalRole.getRole());
-    }
   }
 }

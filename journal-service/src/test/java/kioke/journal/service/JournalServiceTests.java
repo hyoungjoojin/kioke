@@ -9,7 +9,6 @@ import java.util.Optional;
 import kioke.journal.constant.Permission;
 import kioke.journal.exception.journal.JournalNotFoundException;
 import kioke.journal.model.Journal;
-import kioke.journal.model.User;
 import kioke.journal.repository.JournalRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,12 +29,10 @@ public class JournalServiceTests {
   private final String userId = "5385d839-e50e-4f40-99c8-464ef3100bc0";
   private final String journalId = "7361b326-5bd8-4f6e-94a1-9fd276445395";
 
-  private User user;
   private Journal journal;
 
   @BeforeEach
   public void setup() {
-    user = User.builder().userId(userId).build();
     journal = Journal.builder().journalId(journalId).build();
   }
 

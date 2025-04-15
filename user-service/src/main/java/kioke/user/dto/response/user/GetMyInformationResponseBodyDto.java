@@ -8,7 +8,7 @@ import lombok.Builder;
 
 @Builder(access = AccessLevel.PRIVATE)
 public record GetMyInformationResponseBodyDto(
-    String userId, String email, String firstName, String lastName, Preferences preferernces) {
+    String userId, String email, String firstName, String lastName, Preferences preferences) {
 
   public static GetMyInformationResponseBodyDto from(User user) {
     return GetMyInformationResponseBodyDto.builder()
@@ -16,7 +16,7 @@ public record GetMyInformationResponseBodyDto(
         .email(user.getEmail())
         .firstName(user.getFirstName())
         .lastName(user.getLastName())
-        .preferernces(
+        .preferences(
             new Preferences(user.getPreferences().getLocale(), user.getPreferences().getTheme()))
         .build();
   }

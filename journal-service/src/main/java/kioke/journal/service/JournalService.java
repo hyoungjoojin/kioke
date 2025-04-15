@@ -6,6 +6,7 @@ import java.util.Objects;
 import kioke.commons.exception.security.AccessDeniedException;
 import kioke.journal.constant.Permission;
 import kioke.journal.constant.Role;
+import kioke.journal.dto.data.journal.JournalDto;
 import kioke.journal.dto.request.journal.UpdateJournalRequestBodyDto;
 import kioke.journal.exception.journal.JournalNotFoundException;
 import kioke.journal.exception.shelf.ShelfNotFoundException;
@@ -42,7 +43,7 @@ public class JournalService {
   }
 
   @Transactional(readOnly = true)
-  public List<Journal> getJournals(String userId, Boolean bookmarked) {
+  public List<JournalDto> getJournals(String userId, Boolean bookmarked) {
     Objects.requireNonNull(userId, "User ID should not be null.");
 
     List<String> journalIds;
@@ -66,7 +67,8 @@ public class JournalService {
   }
 
   @Transactional(readOnly = true)
-  public Journal getJournalById(String userId, String journalId) throws JournalNotFoundException {
+  public JournalDto getJournalById(String userId, String journalId)
+      throws JournalNotFoundException {
     Objects.requireNonNull(userId, "User ID should not be null.");
     Objects.requireNonNull(journalId, "Journal ID should not be null.");
 
@@ -75,13 +77,16 @@ public class JournalService {
       throw new JournalNotFoundException(journalId);
     }
 
-    return journalRepository
-        .findById(journalId)
-        .orElseThrow(
-            () -> {
-              log.debug("Journal could not be found in the database.");
-              return new JournalNotFoundException(journalId);
-            });
+    Journal journal =
+        journalRepository
+            .findById(journalId)
+            .orElseThrow(
+                () -> {
+                  log.debug("Journal could not be found in the database.");
+                  return new JournalNotFoundException(journalId);
+                });
+
+    return JournalDto.from(journal, bookmarkService.isJournalBookmarked(userId, journalId));
   }
 
   @Transactional(rollbackFor = Exception.class)
@@ -115,7 +120,11 @@ public class JournalService {
       throws JournalNotFoundException, AccessDeniedException {
     User invitee = userService.getUserById(inviteeUserId);
 
-    Journal journal = getJournalById(userId, journalId);
+    Journal journal =
+        journalRepository
+            .findById(journalId)
+            .orElseThrow(() -> new JournalNotFoundException(journalId));
+
     if (!journalRoleService.hasPermission(userId, journalId, Permission.SHARE)) {
       log.debug("User has no permission to share the journal.");
       throw new AccessDeniedException();
@@ -140,7 +149,11 @@ public class JournalService {
       String userId, String journalId, UpdateJournalRequestBodyDto requestBodyDto)
       throws JournalNotFoundException, AccessDeniedException, ShelfNotFoundException {
     User user = userService.getUserById(userId);
-    Journal journal = getJournalById(userId, journalId);
+
+    Journal journal =
+        journalRepository
+            .findById(journalId)
+            .orElseThrow(() -> new JournalNotFoundException(journalId));
 
     if (!journalRoleService.hasPermission(userId, journalId, Permission.WRITE)) {
       log.debug("User has no permission to update the journal.");
@@ -175,7 +188,10 @@ public class JournalService {
   public void deleteJournal(String userId, String journalId)
       throws JournalNotFoundException, AccessDeniedException {
     User user = userService.getUserById(userId);
-    Journal journal = getJournalById(userId, journalId);
+    Journal journal =
+        journalRepository
+            .findById(journalId)
+            .orElseThrow(() -> new JournalNotFoundException(journalId));
 
     if (!journalRoleService.hasPermission(userId, journalId, Permission.DELETE)) {
       log.debug("User has no permission to delete the journal.");

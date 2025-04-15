@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import kioke.commons.annotation.HttpResponse;
 import kioke.commons.exception.security.AccessDeniedException;
+import kioke.journal.dto.data.journal.JournalDto;
 import kioke.journal.dto.request.journal.CreateJournalRequestBodyDto;
 import kioke.journal.dto.request.journal.ShareJournalRequestBodyDto;
 import kioke.journal.dto.request.journal.UnshareJournalRequestBodyDto;
@@ -15,7 +16,6 @@ import kioke.journal.dto.response.journal.GetJournalResponseBodyDto;
 import kioke.journal.exception.journal.JournalNotFoundException;
 import kioke.journal.exception.shelf.ShelfNotFoundException;
 import kioke.journal.model.Journal;
-import kioke.journal.service.BookmarkService;
 import kioke.journal.service.JournalService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,11 +36,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class JournalController {
 
   private final JournalService journalService;
-  private final BookmarkService bookmarkService;
 
-  public JournalController(JournalService journalService, BookmarkService bookmarkService) {
+  public JournalController(JournalService journalService) {
     this.journalService = journalService;
-    this.bookmarkService = bookmarkService;
   }
 
   @GetMapping
@@ -51,11 +49,9 @@ public class JournalController {
   public List<GetJournalResponseBodyDto> getJournals(
       @AuthenticationPrincipal String userId,
       @RequestParam(name = "bookmarked", required = false) Boolean bookmarked) {
-    List<Journal> journals = journalService.getJournals(userId, bookmarked);
+    List<JournalDto> journals = journalService.getJournals(userId, bookmarked);
 
-    return journals.stream()
-        .map(journal -> GetJournalResponseBodyDto.from(journal, false))
-        .toList();
+    return journals.stream().map(journal -> GetJournalResponseBodyDto.from(journal)).toList();
   }
 
   @GetMapping("/{journalId}")
@@ -66,10 +62,9 @@ public class JournalController {
   public GetJournalResponseBodyDto getJournalById(
       @AuthenticationPrincipal String userId, @PathVariable String journalId)
       throws JournalNotFoundException {
-    Journal journal = journalService.getJournalById(userId, journalId);
-    boolean isJournalBookmarked = bookmarkService.isJournalBookmarked(userId, journalId);
+    JournalDto journal = journalService.getJournalById(userId, journalId);
 
-    return GetJournalResponseBodyDto.from(journal, isJournalBookmarked);
+    return GetJournalResponseBodyDto.from(journal);
   }
 
   @PostMapping

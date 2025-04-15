@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.Collections;
 import kioke.commons.constant.ErrorCode;
 import kioke.journal.configuration.AspectConfiguration;
+import kioke.journal.dto.data.journal.JournalDto;
 import kioke.journal.exception.journal.JournalNotFoundException;
 import kioke.journal.model.Journal;
 import kioke.journal.repository.JournalRoleRepository;
@@ -77,7 +78,7 @@ public class JournalControllerTests {
 
   @Test
   public void getJournalById_success_statusOk() throws Exception {
-    given(journalService.getJournalById(userId, journalId)).willReturn(journal);
+    given(journalService.getJournalById(userId, journalId)).willReturn(JournalDto.from(journal, true));
 
     given(bookmarkService.isJournalBookmarked(userId, journalId)).willReturn(true);
 
@@ -88,6 +89,7 @@ public class JournalControllerTests {
         .andExpect(jsonPath("$.data.journalId", is(journalId)))
         .andExpect(jsonPath("$.data.bookmarked", is(true)));
 
+    given(journalService.getJournalById(userId, journalId)).willReturn(JournalDto.from(journal, false));
     given(bookmarkService.isJournalBookmarked(userId, journalId)).willReturn(false);
 
     mockMvc

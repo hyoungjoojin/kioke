@@ -6,6 +6,7 @@ import kioke.journal.constant.Permission;
 import kioke.journal.exception.journal.JournalNotFoundException;
 import kioke.journal.model.Journal;
 import kioke.journal.model.Page;
+import kioke.journal.repository.JournalRepository;
 import kioke.journal.repository.PageRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,17 +16,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class PageService {
 
-  private final JournalService journalService;
   private final JournalRoleService journalRoleService;
 
+  private final JournalRepository journalRepository;
   private final PageRepository pageRepository;
 
   public PageService(
-      JournalService journalService,
       JournalRoleService journalRoleService,
+      JournalRepository journalRepository,
       PageRepository pageRepository) {
-    this.journalService = journalService;
     this.journalRoleService = journalRoleService;
+    this.journalRepository = journalRepository;
     this.pageRepository = pageRepository;
   }
 
@@ -48,7 +49,10 @@ public class PageService {
   @Transactional
   public Page createPage(String userId, String journalId, String title)
       throws JournalNotFoundException, AccessDeniedException {
-    Journal journal = journalService.getJournalById(userId, journalId);
+    Journal journal =
+        journalRepository
+            .findById(journalId)
+            .orElseThrow(() -> new JournalNotFoundException(journalId));
 
     if (!journalRoleService.hasPermission(userId, journalId, Permission.WRITE)) {
       log.debug("User has no permission to write to the journal.");

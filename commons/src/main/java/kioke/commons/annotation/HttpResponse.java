@@ -11,4 +11,8 @@ import org.springframework.http.HttpStatus;
 public @interface HttpResponse {
 
   public HttpStatus status();
+
+  public HttpHeader[] headers() default {};
+
+  public String contentType() default "application/json";
 }

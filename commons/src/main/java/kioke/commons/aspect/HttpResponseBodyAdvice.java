@@ -1,9 +1,11 @@
 package kioke.commons.aspect;
 
 import jakarta.servlet.http.HttpServletRequest;
+import kioke.commons.annotation.HttpHeader;
 import kioke.commons.annotation.HttpResponse;
 import kioke.commons.http.HttpResponseBody;
 import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,12 +28,7 @@ public class HttpResponseBodyAdvice implements ResponseBodyAdvice<Object> {
     }
 
     Class<?> clazz = returnType.getParameterType();
-
-    if (ResponseEntity.class.isAssignableFrom(clazz)) {
-      return false;
-    }
-
-    return true;
+    return !ResponseEntity.class.isAssignableFrom(clazz);
   }
 
   @Override
@@ -42,14 +39,24 @@ public class HttpResponseBodyAdvice implements ResponseBodyAdvice<Object> {
       Class<? extends HttpMessageConverter<?>> selectedConverterType,
       ServerHttpRequest request,
       ServerHttpResponse response) {
-    HttpResponse httpResponse = returnType.getMethodAnnotation(HttpResponse.class);
-    HttpStatus status = httpResponse.status();
+    HttpResponse responseAnnotation = returnType.getMethodAnnotation(HttpResponse.class);
 
     ServletRequestAttributes requestAttributes =
         (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
     HttpServletRequest httpServletRequest = requestAttributes.getRequest();
 
+    HttpStatus status = responseAnnotation.status();
     response.setStatusCode(status);
+
+    HttpHeader[] headersAnnotation = responseAnnotation.headers();
+    HttpHeaders responseHeaders = response.getHeaders();
+    for (HttpHeader header : headersAnnotation) {
+      responseHeaders.add(header.name(), header.value());
+    }
+
+    MediaType contentType = MediaType.valueOf(responseAnnotation.contentType());
+    responseHeaders.setContentType(contentType);
+
     return HttpResponseBody.success(httpServletRequest, status, body);
   }
 }

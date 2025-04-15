@@ -1,6 +1,6 @@
-package kioke.user.aspect;
+package kioke.journal.exception;
 
-import kioke.commons.aspect.AbstractGlobalExceptionHandler;
+import kioke.commons.exception.AbstractGlobalExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice

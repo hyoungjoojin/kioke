@@ -1,8 +1,7 @@
-package kioke.commons.aspect;
+package kioke.commons.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kioke.commons.constant.ErrorCode;
-import kioke.commons.exception.KiokeException;
 import kioke.commons.exception.security.TokenExpiredException;
 import kioke.commons.exception.security.TokenInvalidException;
 import kioke.commons.exception.security.TokenNotFoundException;

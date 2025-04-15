@@ -13,6 +13,6 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, String> {
   public Optional<Bookmark> findByUserIdAndJournalId(
       @Param("userId") String userId, @Param("journalId") String journalId);
 
-  @Query("SELECT e.journal FROM Bookmark e WHERE e.user.id = :userId")
+  @Query("SELECT e.journal.id FROM Bookmark e WHERE e.user.id = :userId")
   public List<String> findAllJournalIdsByUser(@Param("userId") String userId);
 }
