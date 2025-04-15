@@ -13,27 +13,28 @@ export const getMyInformation = async (accessToken: string) => {
         Authorization: `Bearer ${accessToken}`,
       },
     })
-    .get<HttpResponseBody<GetMyInformationResponseBody>>("users");
+    .get<HttpResponseBody<GetMyInformationResponseBody>>("users/me")
+    .then((response) => processResponse(response));
 
-  return processResponse(response);
+  return response;
 };
 
 export const getUser = async (userId: string) => {
-  const response = protectedKioke.get<HttpResponseBody<GetUserResponseBody>>(
-    `users/${userId}`,
-  );
+  const response = protectedKioke
+    .get<HttpResponseBody<GetUserResponseBody>>(`users/${userId}`)
+    .then((response) => processResponse(response));
 
-  return processResponse(response);
+  return response;
 };
 
 export const searchUser = async (email: string) => {
-  const response = protectedKioke.post<
-    HttpResponseBody<SearchUserResponseBody>
-  >("users/search", {
-    json: {
-      email,
-    },
-  });
+  const response = protectedKioke
+    .post<HttpResponseBody<SearchUserResponseBody>>("users/search", {
+      json: {
+        email,
+      },
+    })
+    .then((response) => processResponse(response));
 
-  return processResponse(response);
+  return response;
 };

@@ -1,7 +1,6 @@
 package kioke.journal.service;
 
 import java.util.List;
-import java.util.Optional;
 import kioke.journal.exception.shelf.ShelfNotFoundException;
 import kioke.journal.model.Journal;
 import kioke.journal.model.Shelf;
@@ -9,36 +8,55 @@ import kioke.journal.model.ShelfSlot;
 import kioke.journal.model.User;
 import kioke.journal.repository.ShelfRepository;
 import kioke.journal.repository.ShelfSlotRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 public class ShelfService {
-  @Autowired @Lazy private ShelfRepository shelfRepository;
-  @Autowired @Lazy private ShelfSlotRepository shelfSlotRepository;
 
-  public Shelf createShelf(User user, String name) {
-    Shelf shelf = Shelf.builder().name(name).owner(user).isArchive(false).build();
-    shelf = shelfRepository.save(shelf);
-    return shelf;
+  private final UserService userService;
+
+  private final ShelfRepository shelfRepository;
+  private final ShelfSlotRepository shelfSlotRepository;
+
+  public ShelfService(
+      UserService userService,
+      ShelfRepository shelfRepository,
+      ShelfSlotRepository shelfSlotRepository) {
+    this.userService = userService;
+    this.shelfRepository = shelfRepository;
+    this.shelfSlotRepository = shelfSlotRepository;
   }
 
-  public Shelf createArchive(User user) {
-    Shelf shelf = Shelf.builder().name("Archive").owner(user).isArchive(true).build();
-    shelf = shelfRepository.save(shelf);
-    return shelf;
-  }
-
-  public Shelf getShelfById(String shelfId) throws ShelfNotFoundException {
-    return shelfRepository.findById(shelfId).orElseThrow(() -> new ShelfNotFoundException(shelfId));
-  }
-
-  public List<Shelf> getShelves(User user) {
+  @Transactional(readOnly = true)
+  public List<Shelf> getShelves(String userId) {
+    User user = userService.getUserById(userId);
     return user.getShelves();
   }
 
-  public Shelf getArchive(User user) {
+  @Transactional(readOnly = true)
+  public Shelf getShelfById(String userId, String shelfId) throws ShelfNotFoundException {
+    Shelf shelf =
+        shelfRepository
+            .findById(shelfId)
+            .orElseThrow(
+                () -> {
+                  log.debug("Shelf could not be found in the database.");
+                  return new ShelfNotFoundException(shelfId);
+                });
+
+    if (!shelf.getOwner().getUserId().equals(userId)) {
+      log.debug("User has no permission to read the shelf.");
+      throw new ShelfNotFoundException(shelfId);
+    }
+
+    return shelf;
+  }
+
+  @Transactional(readOnly = true)
+  public Shelf getArchiveShelf(User user) {
     Shelf archive =
         shelfRepository
             .findByOwnerAndIsArchiveTrue(user)
@@ -47,26 +65,44 @@ public class ShelfService {
     return archive;
   }
 
-  public void updateShelf(Shelf shelf, String name) {
+  @Transactional
+  public void setShelf(User user, Journal journal, Shelf shelf) {
+    ShelfSlot shelfSlot =
+        shelfSlotRepository
+            .findByUserAndJournal(user, journal)
+            .orElse(ShelfSlot.builder().user(user).shelf(null).journal(journal).build());
+
+    if (!shelf.equals(shelfSlot.getShelf())) {
+      shelfSlot.setShelf(shelf);
+      shelfSlotRepository.save(shelfSlot);
+    }
+  }
+
+  @Transactional
+  public Shelf createShelf(String userId, String name) {
+    User user = userService.getUserById(userId);
+
+    Shelf shelf = Shelf.builder().name(name).owner(user).isArchive(false).build();
+    shelf = shelfRepository.save(shelf);
+    return shelf;
+  }
+
+  @Transactional
+  public Shelf createArchive(User user) {
+    Shelf shelf = Shelf.builder().name("Archive").owner(user).isArchive(true).build();
+    shelf = shelfRepository.save(shelf);
+    return shelf;
+  }
+
+  @Transactional
+  public void updateShelf(String userId, String shelfId, String name)
+      throws ShelfNotFoundException {
+    Shelf shelf = getShelfById(userId, shelfId);
+
     if (name != null && !shelf.isArchive()) {
       shelf.setName(name);
     }
 
-    shelf = shelfRepository.save(shelf);
-  }
-
-  public void putJournalInShelf(Journal journal, Shelf shelf) {
-    User user = shelf.getOwner();
-    Optional<ShelfSlot> existingShelfSlot = shelfSlotRepository.findByUserAndJournal(user, journal);
-
-    ShelfSlot shelfSlot;
-    if (existingShelfSlot.isPresent()) {
-      shelfSlot = existingShelfSlot.get();
-      shelfSlot.setShelf(shelf);
-    } else {
-      shelfSlot = ShelfSlot.builder().user(user).shelf(shelf).journal(journal).build();
-    }
-
-    shelfSlotRepository.save(shelfSlot);
+    shelfRepository.save(shelf);
   }
 }

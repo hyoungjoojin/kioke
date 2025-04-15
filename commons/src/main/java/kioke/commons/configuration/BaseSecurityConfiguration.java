@@ -1,24 +1,18 @@
 package kioke.commons.configuration;
 
 import kioke.commons.filter.AbstractAuthorizationFilter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-@Configuration
-@EnableWebSecurity
-public class SecurityConfiguration {
+public abstract class BaseSecurityConfiguration {
 
-  @Autowired protected AbstractAuthorizationFilter authorizationFilter;
+  protected abstract AbstractAuthorizationFilter getAuthorizationFilter();
 
-  @Bean
-  SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+  protected SecurityFilterChain buildSecurityFilterChain(HttpSecurity httpSecurity)
+      throws Exception {
     return httpSecurity
         .csrf(csrf -> csrf.disable())
         .formLogin(form -> form.disable())
@@ -27,7 +21,7 @@ public class SecurityConfiguration {
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
             authorize -> {
-              authorizationFilter
+              getAuthorizationFilter()
                   .getWhitelist()
                   .forEach(
                       (whitelistItem) -> {
@@ -39,7 +33,7 @@ public class SecurityConfiguration {
                       });
               authorize.anyRequest().authenticated();
             })
-        .addFilterBefore(authorizationFilter, UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(getAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
         .build();
   }
 }

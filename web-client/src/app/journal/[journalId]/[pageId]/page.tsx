@@ -1,6 +1,5 @@
 "use client";
 
-import EditableTitle from "@/components/features/editor/EditableTitle";
 import { usePageQuery } from "@/hooks/query/page";
 import { cn } from "@/lib/utils";
 import { ArrowLeft } from "lucide-react";
@@ -27,7 +26,6 @@ export default function Page() {
             "bg-white w-4/5 max-sm:w-11/12 m-auto h-full py-12 px-10",
           )}
         >
-          <EditableTitle content={page?.title} className="text-4xl mb-5" />
           <h1 className="text-4xl mb-5">
             {page && page.title.length === 0 ? (
               <span className="text-gray-500">Untitled</span>

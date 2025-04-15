@@ -23,7 +23,7 @@ export const useUpdateShelfMutation = (targetShelf: Shelf) => {
 
       queryClient.setQueryData(["shelves"], (old: Shelf[]) => {
         return old.map((shelf) => {
-          return shelf.id !== targetShelf.id
+          return shelf.shelfId !== targetShelf.shelfId
             ? shelf
             : { ...shelf, name: variables.name };
         });
@@ -33,7 +33,7 @@ export const useUpdateShelfMutation = (targetShelf: Shelf) => {
     onError: () => {
       queryClient.setQueryData(["shelves"], (old: Shelf[]) => {
         return old.map((shelf) => {
-          return shelf.id !== targetShelf.id
+          return shelf.shelfId !== targetShelf.shelfId
             ? shelf
             : { ...shelf, name: targetShelf.name };
         });

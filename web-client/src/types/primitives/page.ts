@@ -8,5 +8,5 @@ export interface Page {
 export interface PagePreview {
   pageId: string;
   title: string;
-  date: Date;
+  createdAt: Date;
 }

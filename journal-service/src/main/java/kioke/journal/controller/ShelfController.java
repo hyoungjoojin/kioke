@@ -1,29 +1,22 @@
 package kioke.journal.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
-import kioke.commons.exception.security.AccessDeniedException;
-import kioke.commons.http.HttpResponseBody;
+import kioke.commons.annotation.HttpResponse;
 import kioke.journal.dto.request.shelf.CreateShelfRequestBodyDto;
 import kioke.journal.dto.request.shelf.UpdateShelfRequestBodyDto;
 import kioke.journal.dto.response.shelf.CreateShelfResponseBodyDto;
-import kioke.journal.dto.response.shelf.GetShelvesResponseBodyDto;
+import kioke.journal.dto.response.shelf.GetShelfResponseBodyDto;
 import kioke.journal.exception.shelf.ShelfNotFoundException;
-import kioke.journal.model.Journal;
 import kioke.journal.model.Shelf;
-import kioke.journal.model.User;
 import kioke.journal.service.BookmarkService;
 import kioke.journal.service.ShelfService;
-import kioke.journal.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,64 +29,43 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/shelves")
 @Slf4j
 public class ShelfController {
-  @Autowired @Lazy private ShelfService shelfService;
-  @Autowired @Lazy private UserService userService;
-  @Autowired private BookmarkService bookmarkService;
 
-  @PostMapping
-  public ResponseEntity<HttpResponseBody<CreateShelfResponseBodyDto>> createShelf(
-      @AuthenticationPrincipal String uid,
-      @RequestBody @Valid CreateShelfRequestBodyDto requestBodyDto,
-      HttpServletRequest request)
-      throws UsernameNotFoundException {
-    String name = requestBodyDto.getName();
+  private final ShelfService shelfService;
+  private final BookmarkService bookmarkService;
 
-    User user = userService.getUserById(uid);
-
-    Shelf shelf = shelfService.createShelf(user, name);
-
-    HttpStatus status = HttpStatus.CREATED;
-    CreateShelfResponseBodyDto data = CreateShelfResponseBodyDto.from(shelf);
-
-    return ResponseEntity.status(status)
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(HttpResponseBody.success(request, status, data));
-  }
-
-  @PatchMapping("/{shelfId}")
-  public ResponseEntity<HttpResponseBody<Void>> updateShelf(
-      @AuthenticationPrincipal String userId,
-      @PathVariable String shelfId,
-      @RequestBody @Valid UpdateShelfRequestBodyDto requestBodyDto,
-      HttpServletRequest request)
-      throws UsernameNotFoundException, ShelfNotFoundException, AccessDeniedException {
-    User user = userService.getUserById(userId);
-    Shelf shelf = shelfService.getShelfById(shelfId);
-
-    if (!shelf.getOwner().equals(user)) {
-      throw new AccessDeniedException();
-    }
-
-    shelfService.updateShelf(shelf, requestBodyDto.getName());
-
-    HttpStatus status = HttpStatus.OK;
-    return ResponseEntity.status(status).body(HttpResponseBody.success(request, status, null));
+  public ShelfController(ShelfService shelfService, BookmarkService bookmarkService) {
+    this.shelfService = shelfService;
+    this.bookmarkService = bookmarkService;
   }
 
   @GetMapping
-  public ResponseEntity<HttpResponseBody<GetShelvesResponseBodyDto>> getShelves(
-      @AuthenticationPrincipal String uid, HttpServletRequest request)
-      throws UsernameNotFoundException {
-    User user = userService.getUserById(uid);
+  @Tag(name = "Get Shelves")
+  @Operation(summary = "Get all shelves for a given user.")
+  @HttpResponse(status = HttpStatus.OK)
+  @PreAuthorize("isAuthenticated()")
+  public List<GetShelfResponseBodyDto> getShelves(@AuthenticationPrincipal String userId) {
+    List<Shelf> shelves = shelfService.getShelves(userId);
+    List<String> bookmarks = bookmarkService.getBookmarkedJournalIds(userId);
+    return GetShelfResponseBodyDto.from(shelves, bookmarks);
+  }
 
-    List<Shelf> shelves = shelfService.getShelves(user);
-    List<Journal> bookmarks = bookmarkService.getBookmarks(user);
+  @PostMapping
+  @HttpResponse(status = HttpStatus.CREATED)
+  @PreAuthorize("isAuthenticated()")
+  public CreateShelfResponseBodyDto createShelf(
+      @AuthenticationPrincipal String userId,
+      @RequestBody @Valid CreateShelfRequestBodyDto requestBodyDto) {
+    Shelf shelf = shelfService.createShelf(userId, requestBodyDto.name());
+    return CreateShelfResponseBodyDto.from(shelf);
+  }
 
-    HttpStatus status = HttpStatus.OK;
-    GetShelvesResponseBodyDto data = GetShelvesResponseBodyDto.from(shelves, bookmarks);
-
-    return ResponseEntity.status(HttpStatus.OK)
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(HttpResponseBody.success(request, status, data));
+  @PatchMapping("/{shelfId}")
+  @HttpResponse(status = HttpStatus.OK)
+  public void updateShelf(
+      @AuthenticationPrincipal String userId,
+      @PathVariable String shelfId,
+      @RequestBody @Valid UpdateShelfRequestBodyDto requestBodyDto)
+      throws ShelfNotFoundException {
+    shelfService.updateShelf(userId, shelfId, requestBodyDto.name());
   }
 }

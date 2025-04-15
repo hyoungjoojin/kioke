@@ -1,8 +1,7 @@
-package kioke.commons.controller;
+package kioke.commons.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kioke.commons.constant.ErrorCode;
-import kioke.commons.exception.KiokeException;
 import kioke.commons.exception.security.TokenExpiredException;
 import kioke.commons.exception.security.TokenInvalidException;
 import kioke.commons.exception.security.TokenNotFoundException;
@@ -25,20 +24,12 @@ public abstract class AbstractGlobalExceptionHandler extends ResponseEntityExcep
         .body(HttpResponseBody.error(request, errorCode, e.getDetail()));
   }
 
-  @ExceptionHandler({TokenNotFoundException.class})
-  public ResponseEntity<HttpResponseBody<Void>> tokenNotFoundExceptionHandler(
-      Exception e, HttpServletRequest request) {
-    ErrorCode errorCode = ErrorCode.NO_ACCESS_TOKEN;
-
-    return ResponseEntity.status(errorCode.getStatus())
-        .body(HttpResponseBody.error(request, errorCode));
-  }
-
   @ExceptionHandler({
+    TokenNotFoundException.class,
     TokenInvalidException.class,
     TokenExpiredException.class,
   })
-  public ResponseEntity<HttpResponseBody<Void>> invalidTokenExceptionHandler(
+  public ResponseEntity<HttpResponseBody<Void>> tokenNotFoundExceptionHandler(
       Exception e, HttpServletRequest request) {
     ErrorCode errorCode = ErrorCode.INVALID_ACCESS_TOKEN;
 

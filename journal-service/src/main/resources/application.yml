@@ -13,6 +13,22 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
 
+management:
+  endpoints:
+    jmx:
+      exposure:
+        include: health, info, prometheus, metrics
+    web:
+      base-path: /actuator
+      exposure:
+        include: health, info, prometheus, metrics
+
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
+
 rabbitmq:
   queue:
     user-registration:

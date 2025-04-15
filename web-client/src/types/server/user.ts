@@ -1,8 +1,12 @@
 export interface GetMyInformationResponseBody {
-  uid: string;
+  userId: string;
   email: string;
   firstName: string;
   lastName: string;
+  preferences: {
+    locale: string;
+    theme: string;
+  };
 }
 
 export interface GetUserResponseBody {

@@ -1,4 +1,4 @@
-package com.kioke.journal;
+package kioke.journal;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

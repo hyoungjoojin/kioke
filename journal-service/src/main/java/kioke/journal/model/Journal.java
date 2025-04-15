@@ -26,9 +26,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @AllArgsConstructor
 @Builder
 public class Journal {
+
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  private String jid;
+  private String journalId;
 
   @OneToMany(mappedBy = "journal", orphanRemoval = true)
   private List<JournalRole> users;

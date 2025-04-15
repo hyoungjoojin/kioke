@@ -38,11 +38,11 @@ public class UserRegistrationMessageConsumerService
       return;
     }
 
-    User user = User.builder().uid(userId).journals(new ArrayList<>()).build();
+    User user = User.builder().userId(userId).journals(new ArrayList<>()).build();
     user = userRepository.save(user);
 
     shelfService.createArchive(user);
-    shelfService.createShelf(user, "My Bookshelf");
+    shelfService.createShelf(userId, "My Bookshelf");
   }
 
   @Override

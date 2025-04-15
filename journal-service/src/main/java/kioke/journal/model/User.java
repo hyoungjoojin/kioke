@@ -21,7 +21,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @AllArgsConstructor
 @Builder
 public class User implements UserDetails {
-  @Id private String uid;
+  @Id private String userId;
 
   @OneToMany(mappedBy = "owner")
   private List<Shelf> shelves;
@@ -37,7 +37,7 @@ public class User implements UserDetails {
 
   @Override
   public String getUsername() {
-    return uid;
+    return userId;
   }
 
   @Override
