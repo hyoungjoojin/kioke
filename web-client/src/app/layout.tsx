@@ -6,7 +6,6 @@ import QueryProvider from "@/components/providers/QueryProvider";
 import { StoreProvider } from "@/components/providers/StoreProvider";
 
 import "@/styles/globals.css";
-import "@/styles/calendar.css";
 
 export const metadata: Metadata = {
   title: "kioke",

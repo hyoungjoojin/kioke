@@ -1,7 +1,8 @@
 "use client";
 
+import "./calendar.css";
+
 import { useCallback, useState } from "react";
-import { Button } from "./button";
 import moment from "moment";
 import ReactCalendar, { TileContentFunc } from "react-calendar";
 import { ChevronLeft, ChevronRight, CircleDot } from "lucide-react";
@@ -14,6 +15,7 @@ import {
 import { useRouter } from "next/navigation";
 import { Journal } from "@/types/primitives/journal";
 import { cn } from "@/lib/utils";
+import { Button } from "../button";
 
 interface CalendarProps {
   journal: Journal;
@@ -63,17 +65,23 @@ export default function Calendar({ journal }: CalendarProps) {
             {pagesByDate &&
               pagesByDate.map((page) => {
                 return (
-                  <HoverCard key={page.pageId} openDelay={1}>
+                  <HoverCard key={page.pageId} openDelay={1} closeDelay={1}>
                     <HoverCardTrigger>
-                      <CircleDot
-                        size={16}
-                        onClick={(event) => {
-                          router.push(
-                            `/journal/${journal.journalId}/${page.pageId}`,
-                          );
-                          event.stopPropagation();
-                        }}
-                      />
+                      <div className="flex items-center">
+                        <CircleDot
+                          size={14}
+                          onClick={(event) => {
+                            router.push(
+                              `/journal/${journal.journalId}/${page.pageId}`,
+                            );
+                            event.stopPropagation();
+                          }}
+                          className="mx-1"
+                        />
+                        <span className="text-xs">
+                          {page.title === "" ? "Untitled" : page.title}
+                        </span>
+                      </div>
                     </HoverCardTrigger>
 
                     <HoverCardContent>
@@ -95,6 +103,7 @@ export default function Calendar({ journal }: CalendarProps) {
     <div>
       <div className="w-full flex justify-between items-center font-semibold mb-7 px-5">
         <h1>{moment(selectedDate).format("MMMM, YYYY")}</h1>
+
         <div className="flex items-center">
           <Button
             variant="ghost"
