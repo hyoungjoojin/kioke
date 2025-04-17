@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import "@/styles/globals.css";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import QueryProvider from "@/components/providers/QueryProvider";
 import { StoreProvider } from "@/components/providers/StoreProvider";
+
+import "@/styles/globals.css";
 
 export const metadata: Metadata = {
   title: "kioke",
