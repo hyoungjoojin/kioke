@@ -24,7 +24,7 @@ import {
   CalendarRange,
   TextIcon,
 } from "lucide-react";
-import Calendar from "react-calendar";
+import Calendar from "@/components/ui/calendar";
 import { useParams, useRouter } from "next/navigation";
 import { useCreatePageMutation } from "@/hooks/query/page";
 import { Input } from "@/components/ui/input";
@@ -46,6 +46,7 @@ import { Role, Roles } from "@/constants/role";
 import { shareJournal } from "@/app/api/journal";
 import { getQueryClient } from "@/components/providers/QueryProvider";
 import EditableTitle from "@/components/features/editor/EditableTitle";
+import { LooseValue } from "react-calendar/dist/esm/shared/types.js";
 
 enum JOURNAL_PREVIEW_OPTION {
   LIST = "list",
@@ -436,7 +437,7 @@ export default function JournalPreview() {
           </TabsContent>
 
           <TabsContent value={JOURNAL_PREVIEW_OPTION.CALENDAR}>
-            <Calendar locale="en" />
+            <Calendar journal={journal} />
           </TabsContent>
         </Tabs>
       </main>

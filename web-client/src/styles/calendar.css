@@ -1,0 +1,25 @@
+.react-calendar {
+  max-width: 100%;
+  line-height: 1.125em;
+  margin-bottom: 1rem;
+}
+
+.react-calendar__month-view__weekdays abbr {
+  text-decoration: none;
+}
+
+.react-calendar__month-view__weekdays {
+  text-align: center;
+  font: inherit;
+  font-size: 0.8em;
+  color: gray;
+  margin-bottom: 0.5rem;
+}
+
+.react-calendar__month-view__days__day--weekend {
+  background-color: #f8f8f7;
+}
+
+.react-calendar__tile abbr {
+  display: none;
+}
