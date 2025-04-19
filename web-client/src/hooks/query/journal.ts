@@ -16,6 +16,7 @@ export const useJournalQuery = (jid: string) => {
     queryFn: () => {
       return getJournal(jid);
     },
+    retry: false,
     staleTime: 60 * 1000,
   });
 };

@@ -7,7 +7,11 @@ import {
   GetJournalResponseBody,
   UpdateJournalRequestBody,
 } from "@/types/server/journal";
-import { processResponse, protectedKioke } from "@/utils/server";
+import {
+  processErrorResponse,
+  processResponse,
+  protectedKioke,
+} from "@/utils/server";
 import { getUser } from "./user";
 import { Journal } from "@/types/primitives/journal";
 
@@ -26,7 +30,8 @@ export const getJournals = async (bookmarked: boolean = false) => {
 export const getJournal = async (journalId: string): Promise<Journal> => {
   const response = await protectedKioke
     .get<HttpResponseBody<GetJournalResponseBody>>(`journals/${journalId}`)
-    .then((response) => processResponse(response));
+    .then((response) => processResponse(response))
+    .catch((error) => processErrorResponse(error));
 
   const users = await Promise.all(
     response.users.map(async (user) => {
