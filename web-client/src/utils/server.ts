@@ -33,7 +33,7 @@ export async function processResponse<T>(
   return response
     .json()
     .then((res) => {
-      if (!res.data || !res.success) {
+      if (!res.success) {
         throw new KiokeError(ErrorCode.SHOULD_NOT_HAPPEN);
       }
 

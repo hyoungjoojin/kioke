@@ -8,6 +8,7 @@ export const usePageQuery = (journalId: string, pageId: string) => {
     queryFn: () => {
       return getPage(journalId, pageId);
     },
+    refetchOnMount: "always",
   });
 };
 

@@ -1,11 +1,17 @@
 "use client";
 
+import PageEditor from "@/components/ui/editor";
+import { RingSpinner } from "@/components/ui/spinner";
 import { usePageQuery } from "@/hooks/query/page";
 import { cn } from "@/lib/utils";
+import { SaveStatus, TransactionsManager } from "@/utils/transactions";
 import { ArrowLeft } from "lucide-react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Page() {
+  const router = useRouter();
+
   const { journalId, pageId } = useParams<{
     journalId: string;
     pageId: string;
@@ -13,12 +19,32 @@ export default function Page() {
 
   const { data: page } = usePageQuery(journalId, pageId);
 
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe =
+      TransactionsManager.getTransactionsManager().addListener((status) => {
+        setIsSaving(status === SaveStatus.SAVING);
+      });
+
+    return () => {
+      unsubscribe();
+    };
+  });
+
   return (
     <>
       <header className="w-full p-10 h-24 flex justify-between items-center">
-        <div className="flex items-center justify-center">
-          <ArrowLeft size={15} className="mr-1" /> Back to journal
+        <div
+          className="flex items-center justify-center hover:cursor-pointer"
+          onClick={() => {
+            router.push(`/journal/${journalId}/preview`);
+          }}
+        >
+          <ArrowLeft size={15} className="mr-1" />
+          <span>Back to journal</span>
         </div>
+        <RingSpinner loading={isSaving}></RingSpinner>
       </header>
       <main>
         <div
@@ -33,13 +59,11 @@ export default function Page() {
               page?.title
             )}
           </h1>
-          <p>
-            {page && page.title.length === 0 ? (
-              <span className="text-gray-500">Start writing your journal!</span>
-            ) : (
-              page?.title
-            )}
-          </p>
+          <PageEditor
+            journalId={journalId}
+            pageId={pageId}
+            content={page?.content}
+          />
         </div>
       </main>
     </>

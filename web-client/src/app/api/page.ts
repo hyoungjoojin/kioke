@@ -27,4 +27,22 @@ const createPage = async (journalId: string) => {
     .then((response) => processResponse(response));
 };
 
-export { createPage, getPage };
+const updatePage = async (
+  journalId: string,
+  pageId: string,
+  data: {
+    title?: string;
+    contents?: string;
+  },
+) => {
+  protectedKioke
+    .patch(`journals/${journalId}/pages/${pageId}`, {
+      json: {
+        title: data.title,
+        contents: data.contents,
+      },
+    })
+    .then((response) => processResponse(response));
+};
+
+export { createPage, getPage, updatePage };

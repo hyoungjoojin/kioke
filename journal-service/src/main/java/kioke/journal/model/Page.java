@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
@@ -41,7 +42,7 @@ public class Page {
 
   @NotNull private String title;
 
-  @NotNull private String content;
+  @Lob @NotNull private String content;
 
   @CreatedDate private LocalDateTime createdAt;
 
