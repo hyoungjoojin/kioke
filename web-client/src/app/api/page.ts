@@ -5,7 +5,11 @@ import {
   CreatePageResponseBody,
   GetPageResponseBody,
 } from "@/types/server/page";
-import { processResponse, protectedKioke } from "@/utils/server";
+import {
+  processEmptyResponse,
+  processResponse,
+  protectedKioke,
+} from "@/utils/server";
 
 const getPage = async (journalId: string, pageId: string) => {
   const response = protectedKioke
@@ -27,4 +31,22 @@ const createPage = async (journalId: string) => {
     .then((response) => processResponse(response));
 };
 
-export { createPage, getPage };
+const updatePage = async (
+  journalId: string,
+  pageId: string,
+  data: {
+    title?: string;
+    content?: string;
+  },
+) => {
+  protectedKioke
+    .patch(`journals/${journalId}/pages/${pageId}`, {
+      json: {
+        title: data.title,
+        content: data.content,
+      },
+    })
+    .then((response) => processEmptyResponse(response));
+};
+
+export { createPage, getPage, updatePage };

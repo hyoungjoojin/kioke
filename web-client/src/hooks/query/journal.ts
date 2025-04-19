@@ -74,7 +74,9 @@ export const useUpdateJournalMutation = (journalId: string) => {
 
   return useMutation({
     mutationFn: (variables: { title: string }) =>
-      updateJournal(journalId, variables.title),
+      updateJournal(journalId, {
+        title: variables.title,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["journals", journalId],

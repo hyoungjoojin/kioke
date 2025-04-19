@@ -65,4 +65,25 @@ public class PageService {
     page = pageRepository.save(page);
     return page;
   }
+
+  @Transactional
+  public void updatePage(
+      String userId, String journalId, String pageId, String title, String contents)
+      throws JournalNotFoundException, AccessDeniedException {
+    if (!journalRoleService.hasPermission(userId, journalId, Permission.WRITE)) {
+      log.debug("User has no permission to write to the journal.");
+      throw new AccessDeniedException();
+    }
+
+    Page page =
+        pageRepository.findById(pageId).orElseThrow(() -> new JournalNotFoundException(journalId));
+
+    if (title != null) {
+      page.setTitle(title);
+    }
+
+    if (contents != null) {
+      page.setContent(contents);
+    }
+  }
 }
