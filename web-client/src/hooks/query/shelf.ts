@@ -11,11 +11,12 @@ export const useShelvesQuery = () => {
   });
 };
 
-export const useUpdateShelfMutation = (targetShelf: Shelf) => {
+export const useUpdateShelfMutation = () => {
   const queryClient = getQueryClient();
 
   return useMutation({
-    mutationFn: (data: { name: string }) => updateShelf(targetShelf, data.name),
+    mutationFn: (data: { targetShelf: Shelf; name: string }) =>
+      updateShelf(data.targetShelf, data.name),
     onMutate: async (variables) => {
       await queryClient.cancelQueries({
         queryKey: ["shelves"],
@@ -23,19 +24,19 @@ export const useUpdateShelfMutation = (targetShelf: Shelf) => {
 
       queryClient.setQueryData(["shelves"], (old: Shelf[]) => {
         return old.map((shelf) => {
-          return shelf.shelfId !== targetShelf.shelfId
+          return shelf.shelfId !== variables.targetShelf.shelfId
             ? shelf
             : { ...shelf, name: variables.name };
         });
       });
     },
     onSuccess: () => {},
-    onError: () => {
+    onError: (_, variables) => {
       queryClient.setQueryData(["shelves"], (old: Shelf[]) => {
         return old.map((shelf) => {
-          return shelf.shelfId !== targetShelf.shelfId
+          return shelf.shelfId !== variables.targetShelf.shelfId
             ? shelf
-            : { ...shelf, name: targetShelf.name };
+            : { ...shelf, name: variables.targetShelf.name };
         });
       });
     },

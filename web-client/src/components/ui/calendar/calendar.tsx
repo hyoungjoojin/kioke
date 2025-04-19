@@ -21,6 +21,8 @@ interface CalendarProps {
   journal: Journal;
 }
 
+const today = new Date();
+
 export default function Calendar({ journal }: CalendarProps) {
   const router = useRouter();
 
@@ -29,8 +31,6 @@ export default function Calendar({ journal }: CalendarProps) {
   const pagesGroupedByDate = groupBy(journal.pages, (page) => {
     return moment(page.createdAt).format("YYMMDD");
   });
-
-  const today = new Date();
 
   const tileContent: TileContentFunc = useCallback(
     ({ date }) => {
@@ -96,7 +96,7 @@ export default function Calendar({ journal }: CalendarProps) {
         </div>
       );
     },
-    [today, selectedDate, setSelectedDate, journal],
+    [selectedDate, journal, pagesGroupedByDate, router],
   );
 
   return (

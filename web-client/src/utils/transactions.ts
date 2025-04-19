@@ -82,7 +82,7 @@ export class TransactionsManager {
     }, this.AUTOSAVE_INTERVAL);
   }
 
-  private saveTransactionToLocalStorage(transaction: KiokeTransaction) {}
+  private saveTransactionToLocalStorage(_: KiokeTransaction) {}
 
   private loadTransactionsFromLocalStorage(): KiokeTransaction[] {
     return [];

@@ -132,7 +132,7 @@ export default function JournalPreview() {
           user: user.userId ? user : null,
         }));
       }, 250),
-    [],
+    [userSearchState.isFocused],
   );
 
   const searchUserInputSubmitHandler = async () => {
