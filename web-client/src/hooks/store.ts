@@ -18,3 +18,12 @@ export const useSelectedShelfIndex = () => {
 
   return { selectedShelfIndex, setSelectedShelfIndex };
 };
+
+export const useTransactionStatus = () => {
+  const { status, actions } = useBoundStore((state) => state);
+
+  return {
+    status,
+    setStatus: actions.setStatus,
+  };
+};

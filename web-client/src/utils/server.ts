@@ -33,6 +33,39 @@ export async function processResponse<T>(
   return response
     .json()
     .then((res) => {
+      if (!res.data || !res.success) {
+        throw new KiokeError(ErrorCode.SHOULD_NOT_HAPPEN);
+      }
+
+      return res.data;
+    })
+    .catch(async (error) => {
+      if (error instanceof HTTPError) {
+        const response: HttpResponseBody<null> = await error.response.json();
+        const errorDetail = response.error;
+
+        if (errorDetail) {
+          throw new KiokeError(
+            errorDetail.code,
+            errorDetail.title,
+            errorDetail.message,
+            errorDetail.details,
+          );
+        } else {
+          throw new KiokeError(ErrorCode.SHOULD_NOT_HAPPEN);
+        }
+      }
+
+      throw error;
+    });
+}
+
+export async function processEmptyResponse<T>(
+  response: KyResponse<HttpResponseBody<T>>,
+) {
+  return response
+    .json()
+    .then((res) => {
       if (!res.success) {
         throw new KiokeError(ErrorCode.SHOULD_NOT_HAPPEN);
       }

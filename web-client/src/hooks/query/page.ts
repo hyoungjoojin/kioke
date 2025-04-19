@@ -1,4 +1,4 @@
-import { createPage, getPage } from "@/app/api/page";
+import { createPage, getPage, updatePage } from "@/app/api/page";
 import { getQueryClient } from "@/components/providers/QueryProvider";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -20,6 +20,19 @@ export const useCreatePageMutation = (journalId: string) => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["journals", journalId],
+      });
+    },
+  });
+};
+
+export const useUpdatePageMutation = (journalId: string, pageId: string) => {
+  const queryClient = getQueryClient();
+
+  return useMutation({
+    mutationFn: (title: string) => updatePage(journalId, pageId, { title }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["page", journalId, pageId],
       });
     },
   });

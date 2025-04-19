@@ -73,6 +73,6 @@ public class PageController {
       @RequestBody UpdatePageRequestBodyDto requestBodyDto)
       throws JournalNotFoundException, AccessDeniedException {
     pageService.updatePage(
-        userId, journalId, pageId, requestBodyDto.title(), requestBodyDto.contents());
+        userId, journalId, pageId, requestBodyDto.title(), requestBodyDto.content());
   }
 }

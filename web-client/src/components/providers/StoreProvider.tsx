@@ -1,10 +1,11 @@
 "use client";
 
 import createBoundStore, { type Store } from "@/store";
+import { TransactionsManager } from "@/utils/transactions";
 import { createContext, useContext, useRef } from "react";
 import { useStore } from "zustand";
 
-type StoreApi = ReturnType<typeof createBoundStore>;
+export type StoreApi = ReturnType<typeof createBoundStore>;
 
 const StoreContext = createContext<StoreApi | undefined>(undefined);
 
@@ -13,6 +14,8 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
   if (!storeRef.current) {
     storeRef.current = createBoundStore();
   }
+
+  new TransactionsManager(storeRef.current);
 
   return (
     <StoreContext.Provider value={storeRef.current}>

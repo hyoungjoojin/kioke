@@ -1,4 +1,8 @@
+"use client";
+
 import { updatePage } from "@/app/api/page";
+import { StoreApi } from "@/components/providers/StoreProvider";
+import { TransactionStatus } from "@/store/transaction";
 import { groupBy } from "lodash";
 import { Transaction } from "prosemirror-state";
 
@@ -8,33 +12,30 @@ type KiokeTransaction = {
   text: string;
 };
 
-export enum SaveStatus {
-  SAVING = "saving",
-  SAVED = "saved",
-  ERROR = "error",
-}
-
-type StatusListener = (status: SaveStatus) => void;
-
 export class TransactionsManager {
   private static _transactionsManager: TransactionsManager | null = null;
 
   private transactions: KiokeTransaction[] = [];
   private timer: NodeJS.Timeout | null = null;
   private updated: boolean = false;
-  private listeners: Set<StatusListener> = new Set();
+
+  private setStatus: ((status: TransactionStatus) => void) | null = null;
 
   private readonly AUTOSAVE_INTERVAL = 5 * 1000;
 
-  constructor() {
+  constructor(store: StoreApi) {
     this.transactions = this.loadTransactionsFromLocalStorage();
 
+    this.setStatus = store.getState().actions.setStatus;
+
     this.autoSave();
+
+    TransactionsManager._transactionsManager = this;
   }
 
   public static getTransactionsManager() {
     if (!TransactionsManager._transactionsManager) {
-      TransactionsManager._transactionsManager = new TransactionsManager();
+      throw new Error("Transaction manager not initialized");
     }
 
     return TransactionsManager._transactionsManager;
@@ -57,15 +58,11 @@ export class TransactionsManager {
 
     if (!this.updated) {
       this.updated = true;
+
+      if (this.setStatus) {
+        this.setStatus(TransactionStatus.SAVING);
+      }
     }
-  }
-
-  public addListener(listener: (status: SaveStatus) => void) {
-    this.listeners.add(listener);
-
-    return () => {
-      this.listeners.delete(listener);
-    };
   }
 
   private autoSave() {
@@ -74,8 +71,13 @@ export class TransactionsManager {
     }
 
     this.timer = setInterval(() => {
-      if (this.updated && this.transactions.length !== 0) {
+      if (this.updated) {
         this.sendTransactionsToServer();
+      }
+
+      this.updated = false;
+      if (this.setStatus) {
+        this.setStatus(TransactionStatus.SAVED);
       }
     }, this.AUTOSAVE_INTERVAL);
   }
@@ -87,8 +89,6 @@ export class TransactionsManager {
   }
 
   private async sendTransactionsToServer() {
-    this.nofify(SaveStatus.SAVING);
-
     const groupedTransactions = groupBy(
       this.transactions,
       (value) => `${value.journalId}|${value.pageId}`,
@@ -99,20 +99,12 @@ export class TransactionsManager {
 
       const groupedTransaction = groupedTransactions[key];
       updatePage(journalId, pageId, {
-        contents: groupedTransaction[groupedTransaction.length - 1].text,
+        content: groupedTransaction[groupedTransaction.length - 1].text,
       });
     }
 
     this.transactions = [];
     this.updated = false;
-
-    this.nofify(SaveStatus.SAVED);
-  }
-
-  private nofify(status: SaveStatus) {
-    for (const listener of this.listeners) {
-      listener(status);
-    }
   }
 
   private static mapTransactionToKiokeTransaction(
