@@ -1,6 +1,6 @@
 "use client";
 
-import LoginForm from "@/components/pages/auth/login/LoginForm";
+import LoginForm from "./components/LoginForm";
 import { SelectLanguage } from "@/components/utils/i18n";
 import { MainLogo } from "@/components/utils/logo";
 import { ToggleDarkModeButton } from "@/components/utils/theme";

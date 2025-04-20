@@ -1,16 +1,16 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import ShelfHeader from "@/components/pages/home/ShelfHeader";
+import ShelfHeader from "./components/ShelfHeader";
 import { getShelves } from "../api/shelf";
-import JournalList from "@/components/pages/home/JournalList";
-import ProfileButton from "@/components/pages/home/ProfileButton";
+import JournalList from "./components/JournalList";
+import ProfileButton from "./components/ProfileButton";
 import {
   dehydrate,
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query";
-import AddJournalButton from "@/components/pages/home/AddJournalButton";
-import ShowShelfListButton from "@/components/pages/home/ShowShelfListButton";
+import AddJournalButton from "./components/AddJournalButton";
+import ShowShelfListButton from "./components/ShowShelfListButton";
 
 export default async function Home() {
   const session = await auth();

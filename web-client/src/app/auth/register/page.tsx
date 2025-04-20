@@ -1,9 +1,9 @@
 "use client";
 
-import RegisterForm from "@/components/pages/auth/register/RegisterForm";
 import { SelectLanguage } from "@/components/utils/i18n";
 import { MainLogo } from "@/components/utils/logo";
 import { ToggleDarkModeButton } from "@/components/utils/theme";
+import RegisterForm from "./components/RegisterForm";
 
 export default function Register() {
   return (
