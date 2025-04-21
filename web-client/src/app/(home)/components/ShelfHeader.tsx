@@ -12,19 +12,18 @@ const ShelfHeaderSkeleton = () => {
 export default function ShelfHeader() {
   const { data: shelves, isLoading, isError } = useShelvesQuery();
   const selectedShelf = useSelectedShelf(shelves);
+  const { mutate: updateShelf } = useUpdateShelfMutation();
 
   if (isLoading || isError || !selectedShelf) {
     return <ShelfHeaderSkeleton />;
   }
-
-  const { mutate: updateShelf } = useUpdateShelfMutation(selectedShelf);
 
   return selectedShelf ? (
     <div className="h-16 my-10 flex justify-center items-center">
       <EditableTitle
         content={selectedShelf.name}
         onSubmit={(content) => {
-          updateShelf({ name: content });
+          updateShelf({ targetShelf: selectedShelf, name: content });
         }}
       />
     </div>
