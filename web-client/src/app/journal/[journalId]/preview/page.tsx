@@ -24,7 +24,7 @@ import {
   CalendarRange,
   TextIcon,
 } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+import { notFound, useParams, useRouter } from "next/navigation";
 import { useCreatePageMutation } from "@/hooks/query/page";
 import { Input } from "@/components/ui/input";
 import { ChangeEvent, useMemo, useRef, useState } from "react";
@@ -46,6 +46,7 @@ import { shareJournal } from "@/app/api/journal";
 import { getQueryClient } from "@/components/providers/QueryProvider";
 import EditableTitle from "@/components/features/editor/EditableTitle";
 import Calendar from "@/components/ui/calendar/calendar";
+import { ErrorCode } from "@/constants/errors";
 
 enum JOURNAL_PREVIEW_OPTION {
   LIST = "list",
@@ -75,7 +76,12 @@ const JournalPreviewOptionValues: {
 export default function JournalPreview() {
   const router = useRouter();
   const { journalId } = useParams<{ journalId: string }>();
-  const { data: journal, isLoading } = useJournalQuery(journalId);
+  const {
+    data: journal,
+    isLoading,
+    isError,
+    error,
+  } = useJournalQuery(journalId);
   const { mutate: createPage } = useCreatePageMutation(journalId);
   const { mutate: updateJournal } = useUpdateJournalMutation(journalId);
   const { mutate: toggleJournalBookmark } =
@@ -132,7 +138,7 @@ export default function JournalPreview() {
           user: user.userId ? user : null,
         }));
       }, 250),
-    [],
+    [userSearchState.isFocused],
   );
 
   const searchUserInputSubmitHandler = async () => {
@@ -162,6 +168,10 @@ export default function JournalPreview() {
       console.log(e);
     }
   };
+
+  if (isError && error && error.message.includes(ErrorCode.JOURNAL_NOT_FOUND)) {
+    notFound();
+  }
 
   if (isLoading || !journal) {
     return "Loading...";
