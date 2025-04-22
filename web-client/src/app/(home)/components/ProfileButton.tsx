@@ -1,6 +1,7 @@
 "use client";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,15 +25,17 @@ export default function ProfileButton({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <div className="flex justify-center items-center mx-4">
-          <Avatar className="mr-2 h-8 w-8">
-            <AvatarFallback>{`${firstName[0]}${lastName[0]}`}</AvatarFallback>
-          </Avatar>
+        <Button variant="ghost">
+          <div className="flex items-center">
+            <Avatar>
+              <AvatarFallback>{`${firstName[0]}${lastName[0]}`}</AvatarFallback>
+            </Avatar>
 
-          <p className="text-sm">{firstName}</p>
+            <p className="text-sm">{firstName}</p>
 
-          <ChevronDown className="mt-1 h-4 w-4" />
-        </div>
+            <ChevronDown size={16} />
+          </div>
+        </Button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent loop align="start" sideOffset={10}>

@@ -4,8 +4,16 @@ import { getLocale, getMessages } from "next-intl/server";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import QueryProvider from "@/components/providers/QueryProvider";
 import { StoreProvider } from "@/components/providers/StoreProvider";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
+import { SessionProvider } from "@/components/providers/SessionProvider";
 
 import "@/styles/globals.css";
+import { auth } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "kioke",
@@ -13,13 +21,14 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
-  modal,
 }: Readonly<{
   children: React.ReactNode;
-  modal: React.ReactNode;
 }>) {
+  const session = await auth();
+
   const locale = await getLocale();
   const messages = await getMessages();
+  const queryClient = new QueryClient();
 
   return (
     <html lang={locale} suppressHydrationWarning>
@@ -31,12 +40,17 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <StoreProvider>
-              <QueryProvider>
-                {children}
-                {modal}
-              </QueryProvider>
-            </StoreProvider>
+            <SessionProvider session={session}>
+              <StoreProvider>
+                <QueryProvider>
+                  <SidebarProvider defaultOpen={false}>
+                    <HydrationBoundary state={dehydrate(queryClient)}>
+                      {children}
+                    </HydrationBoundary>
+                  </SidebarProvider>
+                </QueryProvider>
+              </StoreProvider>
+            </SessionProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>

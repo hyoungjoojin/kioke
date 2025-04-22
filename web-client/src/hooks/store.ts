@@ -1,22 +1,12 @@
 import { useBoundStore } from "@/components/providers/StoreProvider";
-import { Shelf } from "@/types/primitives/shelf";
 
-export const useSelectedShelf = (shelves: Shelf[] | undefined) => {
-  const selectedShelf = useBoundStore((state) =>
-    state.actions.getSelectedShelf(shelves),
-  );
+export const useSelectedShelfId = () => {
+  const { selectedShelfId, actions } = useBoundStore((state) => state);
 
-  return selectedShelf;
-};
-
-export const useSelectedShelfIndex = () => {
-  const selectedShelfIndex = useBoundStore((state) => state.selectedShelfIndex);
-
-  const setSelectedShelfIndex = useBoundStore(
-    (state) => state.actions.setSelectedShelfIndex,
-  );
-
-  return { selectedShelfIndex, setSelectedShelfIndex };
+  return {
+    selectedShelfId,
+    setSelectedShelfId: actions.setSelectedShelfId,
+  };
 };
 
 export const useTransactionStatus = () => {
@@ -25,5 +15,14 @@ export const useTransactionStatus = () => {
   return {
     status,
     setStatus: actions.setStatus,
+  };
+};
+
+export const useCurrentView = () => {
+  const { currentView, actions } = useBoundStore((state) => state);
+
+  return {
+    currentView,
+    setCurrentView: actions.setCurrentView,
   };
 };

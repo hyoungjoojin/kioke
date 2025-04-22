@@ -1,7 +1,20 @@
 import { Shelf } from "@/types/primitives/shelf";
 import { HttpResponseBody } from "@/types/server";
 import { GetShelfResponseBody } from "@/types/server/shelf";
-import { processResponse, protectedKioke } from "@/utils/server";
+import {
+  processErrorResponse,
+  processResponse,
+  protectedKioke,
+} from "@/utils/server";
+
+export const getShelf = async (shelfId: string) => {
+  const response = await protectedKioke
+    .get<HttpResponseBody<GetShelfResponseBody>>(`shelves/${shelfId}`)
+    .then((response) => processResponse(response))
+    .catch((error) => processErrorResponse(error));
+
+  return response;
+};
 
 export const getShelves = async (): Promise<Shelf[]> => {
   const response = await protectedKioke
@@ -24,9 +37,9 @@ export const getShelves = async (): Promise<Shelf[]> => {
   return response;
 };
 
-export const updateShelf = async (shelf: Shelf, name: string) => {
+export const updateShelf = async (shelfId: string, name: string) => {
   await protectedKioke
-    .patch(`shelves/${shelf.shelfId}`, {
+    .patch(`shelves/${shelfId}`, {
       json: {
         name,
       },
