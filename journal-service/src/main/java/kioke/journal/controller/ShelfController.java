@@ -49,6 +49,19 @@ public class ShelfController {
     return GetShelfResponseBodyDto.from(shelves, bookmarks);
   }
 
+  @GetMapping("/{shelfId}")
+  @Tag(name = "Get Shelf By ID")
+  @Operation(summary = "Get information about the shelf with the shelf ID.")
+  @HttpResponse(status = HttpStatus.OK)
+  @PreAuthorize("isAuthenticated()")
+  public GetShelfResponseBodyDto getShelfById(
+      @AuthenticationPrincipal String userId, @PathVariable String shelfId)
+      throws ShelfNotFoundException {
+    Shelf shelf = shelfService.getShelfById(userId, shelfId);
+    List<String> bookmarks = bookmarkService.getBookmarkedJournalIds(userId);
+    return GetShelfResponseBodyDto.from(shelf, bookmarks);
+  }
+
   @PostMapping
   @HttpResponse(status = HttpStatus.CREATED)
   @PreAuthorize("isAuthenticated()")

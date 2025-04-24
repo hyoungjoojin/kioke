@@ -18,16 +18,17 @@ import {
   UserRoundPlus,
   Trash2,
   Heart,
-  HomeIcon,
   Plus,
   List,
   CalendarRange,
   TextIcon,
+  ArrowLeft,
 } from "lucide-react";
-import { notFound, useParams, useRouter } from "next/navigation";
+import View from "@/constants/view";
+import { notFound, redirect, useParams, useRouter } from "next/navigation";
 import { useCreatePageMutation } from "@/hooks/query/page";
 import { Input } from "@/components/ui/input";
-import { ChangeEvent, useMemo, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import { emailSchema } from "@/utils/schema";
 import { searchUser } from "@/app/api/user";
 import { SearchUserResponseBody } from "@/types/server/user";
@@ -47,6 +48,10 @@ import { getQueryClient } from "@/components/providers/QueryProvider";
 import EditableTitle from "@/components/features/editor/EditableTitle";
 import Calendar from "@/components/ui/calendar/calendar";
 import { ErrorCode } from "@/constants/errors";
+import KiokeSidebar from "@/components/features/sidebar/KiokeSidebar";
+import { useSession } from "next-auth/react";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useCurrentView } from "@/hooks/store/view";
 
 enum JOURNAL_PREVIEW_OPTION {
   LIST = "list",
@@ -74,8 +79,15 @@ const JournalPreviewOptionValues: {
 };
 
 export default function JournalPreview() {
+  const session = useSession();
   const router = useRouter();
   const { journalId } = useParams<{ journalId: string }>();
+  const { setCurrentView } = useCurrentView();
+
+  useEffect(() => {
+    setCurrentView(View.SHELF);
+  }, []);
+
   const {
     data: journal,
     isLoading,
@@ -98,6 +110,11 @@ export default function JournalPreview() {
     isLoading: false,
     user: null,
   });
+
+  const user = session?.data?.user;
+  if (!user) {
+    redirect("/auth/login");
+  }
 
   const searchUserInputChangeHandler = useMemo(
     () =>
@@ -179,15 +196,17 @@ export default function JournalPreview() {
 
   return (
     <>
-      <header className="flex justify-between items-center w-full h-10 mt-2 px-7">
-        <div>
-          <Button
-            variant="link"
-            onClick={() => {
-              router.push("/");
-            }}
-          >
-            <HomeIcon size={18} />
+      <aside>
+        <KiokeSidebar user={user} />
+      </aside>
+
+      <header className="absolute w-full pt-3 px-3 flex justify-between">
+        <div className="flex items-center">
+          <SidebarTrigger />
+
+          <Button variant="ghost" className="hover:cursor-not-allowed">
+            <ArrowLeft size={18} />
+            <span>Back to shelf</span>
           </Button>
         </div>
 
@@ -379,76 +398,78 @@ export default function JournalPreview() {
         </div>
       </header>
 
-      <main className="w-4/5 mx-auto">
-        <EditableTitle
-          content={journal.title}
-          onSubmit={(title) => {
-            if (journal.title !== title) {
-              updateJournal({ title });
-            }
-          }}
-        />
-        <p className="mt-5 italic">{journal.description}</p>
+      <main className="w-full pt-16">
+        <section className="px-16">
+          <EditableTitle
+            content={journal.title}
+            onSubmit={(title) => {
+              if (journal.title !== title) {
+                updateJournal({ title });
+              }
+            }}
+          />
+          <p className="mt-5 italic">{journal.description}</p>
 
-        <h2 className="text-xl mt-12">Pages</h2>
+          <h2 className="text-xl mt-12">Pages</h2>
 
-        <Tabs defaultValue={JOURNAL_PREVIEW_OPTION.LIST} className="mt-2">
-          <div className="flex justify-between items-center">
-            <TabsList className="grid grid-cols-2">
-              {Object.entries(JournalPreviewOptionValues).map(
-                ([key, value]) => {
-                  return (
-                    <TabsTrigger
-                      key={key}
-                      value={key}
-                      className="w-full flex justify-center px-4"
-                    >
-                      {value.icon}
-                      <p className="ml-1">{value.title}</p>
-                    </TabsTrigger>
-                  );
-                },
-              )}
-            </TabsList>
+          <Tabs defaultValue={JOURNAL_PREVIEW_OPTION.LIST} className="mt-2">
+            <div className="flex justify-between items-center">
+              <TabsList className="grid grid-cols-2">
+                {Object.entries(JournalPreviewOptionValues).map(
+                  ([key, value]) => {
+                    return (
+                      <TabsTrigger
+                        key={key}
+                        value={key}
+                        className="w-full flex justify-center px-4"
+                      >
+                        {value.icon}
+                        <p className="ml-1">{value.title}</p>
+                      </TabsTrigger>
+                    );
+                  },
+                )}
+              </TabsList>
 
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                createPage();
-              }}
-            >
-              <Plus size={16} />
-              <p className="text-xs font-semibold text-gray-600">Add Page</p>
-            </Button>
-          </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  createPage();
+                }}
+              >
+                <Plus size={16} />
+                <p className="text-xs font-semibold text-gray-600">Add Page</p>
+              </Button>
+            </div>
 
-          <TabsContent value={JOURNAL_PREVIEW_OPTION.LIST}>
-            {journal.pages.map((page, index) => {
-              return (
-                <div
-                  key={index}
-                  className="flex justify-between items-center my-2"
-                >
-                  <p
-                    onClick={() => {
-                      router.push(`/journal/${journalId}/${page.pageId}`);
-                    }}
-                    className="flex items-center border-b border-b-transparent hover:border-b-black hover:cursor-pointer"
+            <TabsContent value={JOURNAL_PREVIEW_OPTION.LIST}>
+              {journal.pages.map((page, index) => {
+                return (
+                  <div
+                    key={index}
+                    className="flex justify-between items-center my-2"
                   >
-                    <TextIcon size={16} className="mr-1" />
-                    {page.title === "" ? "Untitled" : page.title}
-                  </p>
-                  <p>{page.createdAt.toDateString()}</p>
-                </div>
-              );
-            })}
-          </TabsContent>
+                    <p
+                      onClick={() => {
+                        router.push(`/journal/${journalId}/${page.pageId}`);
+                      }}
+                      className="flex items-center border-b border-b-transparent hover:border-b-black hover:cursor-pointer"
+                    >
+                      <TextIcon size={16} className="mr-1" />
+                      {page.title === "" ? "Untitled" : page.title}
+                    </p>
+                    <p>{page.createdAt.toDateString()}</p>
+                  </div>
+                );
+              })}
+            </TabsContent>
 
-          <TabsContent value={JOURNAL_PREVIEW_OPTION.CALENDAR}>
-            <Calendar journal={journal} />
-          </TabsContent>
-        </Tabs>
+            <TabsContent value={JOURNAL_PREVIEW_OPTION.CALENDAR}>
+              <Calendar journal={journal} />
+            </TabsContent>
+          </Tabs>
+        </section>
       </main>
     </>
   );

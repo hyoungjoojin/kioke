@@ -1,16 +1,9 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import ShelfHeader from "@/components/pages/home/ShelfHeader";
 import { getShelves } from "../api/shelf";
-import JournalList from "@/components/pages/home/JournalList";
-import ProfileButton from "@/components/pages/home/ProfileButton";
-import {
-  dehydrate,
-  HydrationBoundary,
-  QueryClient,
-} from "@tanstack/react-query";
-import AddJournalButton from "@/components/pages/home/AddJournalButton";
-import ShowShelfListButton from "@/components/pages/home/ShowShelfListButton";
+import { QueryClient } from "@tanstack/react-query";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import KiokeSidebar from "@/components/features/sidebar/KiokeSidebar";
 
 export default async function Home() {
   const session = await auth();
@@ -28,27 +21,16 @@ export default async function Home() {
 
   return (
     <>
-      <header className="flex justify-between items-center w-screen my-3">
-        <ProfileButton firstName={user.firstName} lastName={user.lastName} />
+      <aside>
+        <KiokeSidebar user={user} />
+      </aside>
+
+      <header className="absolute w-full pt-3 px-3">
+        <SidebarTrigger />
       </header>
 
-      <main>
-        <div className="w-full flex flex-col justify-center items-center">
-          <HydrationBoundary state={dehydrate(queryClient)}>
-            <ShelfHeader />
-          </HydrationBoundary>
-
-          <div className="lg:w-1/2 w-4/5">
-            <div className="flex w-full justify-end">
-              <ShowShelfListButton className="mx-2" />
-              <AddJournalButton />
-            </div>
-
-            <HydrationBoundary state={dehydrate(queryClient)}>
-              <JournalList />
-            </HydrationBoundary>
-          </div>
-        </div>
+      <main className="w-full pt-16 px-3">
+        <h1 className="pl-16 text-3xl">Welcome, {user.firstName}</h1>
       </main>
     </>
   );

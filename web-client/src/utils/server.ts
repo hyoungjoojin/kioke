@@ -3,7 +3,6 @@ import { auth } from "@/lib/auth";
 import { HttpResponseBody } from "@/types/server";
 import ky, { HTTPError, KyResponse } from "ky";
 import { getSession } from "next-auth/react";
-import { redirect } from "next/dist/server/api-utils";
 
 export const kioke = ky.create({
   prefixUrl: process.env.NEXT_PUBLIC_KIOKE_BACKEND_URL,

@@ -1,14 +1,12 @@
 import { StateCreator } from "zustand";
 import { produce } from "immer";
-import { Shelf } from "@/types/primitives/shelf";
 
 interface ShelfState {
-  selectedShelfIndex: number;
+  selectedShelfId: string;
 }
 
 interface ShelfActions {
-  getSelectedShelf: (shelves: Shelf[] | undefined) => Shelf | null;
-  setSelectedShelfIndex: (shelves: Shelf[] | undefined, index: number) => void;
+  setSelectedShelfId: (shelfId: string) => void;
 }
 
 export type ShelfSlice = ShelfState & {
@@ -16,59 +14,19 @@ export type ShelfSlice = ShelfState & {
 };
 
 const initialState: ShelfState = {
-  selectedShelfIndex: -1,
+  selectedShelfId: "",
 };
 
 export const createShelfSlice: StateCreator<ShelfSlice, [], [], ShelfSlice> = (
   set,
-  get,
+  _,
 ) => ({
   ...initialState,
   actions: {
-    getSelectedShelf: (shelves: Shelf[] | undefined) => {
-      if (shelves === undefined) {
-        set(
-          produce((state: ShelfSlice) => {
-            state.selectedShelfIndex = -1;
-          }),
-        );
-
-        return null;
-      }
-
-      const { selectedShelfIndex } = get();
-      if (selectedShelfIndex >= 0 && selectedShelfIndex < shelves.length) {
-        return shelves[selectedShelfIndex];
-      }
-
-      if (shelves.length > 0) {
-        set(
-          produce((state: ShelfSlice) => {
-            state.selectedShelfIndex = 0;
-          }),
-        );
-
-        return shelves[0];
-      }
-
+    setSelectedShelfId: (shelfId: string) => {
       set(
         produce((state: ShelfSlice) => {
-          state.selectedShelfIndex = -1;
-        }),
-      );
-
-      return null;
-    },
-
-    setSelectedShelfIndex: (shelves: Shelf[] | undefined, index: number) => {
-      if (shelves === undefined) {
-        return;
-      }
-
-      set(
-        produce((state: ShelfSlice) => {
-          state.selectedShelfIndex =
-            index >= 0 && index < shelves.length ? index : -1;
+          state.selectedShelfId = shelfId;
         }),
       );
     },
