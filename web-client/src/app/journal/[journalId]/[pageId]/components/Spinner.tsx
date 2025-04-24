@@ -1,5 +1,5 @@
 import { RingSpinner } from "@/components/ui/spinner";
-import { useTransactionStatus } from "@/hooks/store";
+import { useTransactionStatus } from "@/hooks/store/transaction";
 import { TransactionStatus } from "@/store/transaction";
 
 export default function Spinner() {

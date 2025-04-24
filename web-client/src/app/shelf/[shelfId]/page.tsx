@@ -2,7 +2,7 @@
 
 import KiokeSidebar from "@/components/features/sidebar/KiokeSidebar";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { useCurrentView, useSelectedShelfId } from "@/hooks/store";
+import { useCurrentView } from "@/hooks/store/view";
 import View from "@/constants/view";
 import { useSession } from "next-auth/react";
 import { redirect, useParams } from "next/navigation";
@@ -12,6 +12,7 @@ import JournalList from "./components/JournalList";
 import { Skeleton } from "@/components/ui/skeleton";
 import { JournalPreview } from "@/types/primitives/journal";
 import EditableTitle from "@/components/features/editor/EditableTitle";
+import { useSelectedShelfId } from "@/hooks/store/shelf";
 
 function ShelfTitle(props: {
   data: {

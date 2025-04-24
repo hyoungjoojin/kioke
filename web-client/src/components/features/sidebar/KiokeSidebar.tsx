@@ -1,6 +1,5 @@
 "use client";
 
-import ProfileButton from "@/app/(home)/components/ProfileButton";
 import { Button } from "@/components/ui/button";
 import {
   Sidebar,
@@ -16,7 +15,7 @@ import {
 } from "@/components/ui/sidebar";
 import { KIOKE_ROUTES } from "@/constants/route";
 import { useShelvesQuery } from "@/hooks/query/shelf";
-import { useCurrentView, useSelectedShelfId } from "@/hooks/store";
+import { useCurrentView } from "@/hooks/store/view";
 import {
   AlignJustify,
   Bell,
@@ -24,6 +23,8 @@ import {
   HeartIcon,
   HomeIcon,
   Library,
+  LogOut,
+  Settings,
 } from "lucide-react";
 import View from "@/constants/view";
 import { User } from "next-auth";
@@ -36,6 +37,63 @@ import {
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { signOut } from "next-auth/react";
+import Link from "next/link";
+import { useSelectedShelfId } from "@/hooks/store/shelf";
+
+interface ProfileButtonProps {
+  firstName: string;
+  lastName: string;
+}
+
+function ProfileButton({ firstName, lastName }: ProfileButtonProps) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost">
+          <div className="flex items-center">
+            <Avatar>
+              <AvatarFallback>{`${firstName[0]}${lastName[0]}`}</AvatarFallback>
+            </Avatar>
+
+            <p className="text-sm">{firstName}</p>
+
+            <ChevronDown size={16} />
+          </div>
+        </Button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent loop align="start" sideOffset={10}>
+        <Link href="/settings">
+          <DropdownMenuItem>
+            <div className="flex items-center">
+              <Settings className="h-4 w-4 mr-1" />
+              Settings
+            </div>
+          </DropdownMenuItem>
+        </Link>
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem
+          onClick={() => signOut({ redirectTo: "/", redirect: true })}
+        >
+          <div className="flex items-center">
+            <LogOut className="h-4 w-4 mr-1" />
+            Log out
+          </div>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 export default function KiokeSidebar({ user }: { user: User }) {
   const router = useRouter();

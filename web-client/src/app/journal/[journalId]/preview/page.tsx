@@ -18,7 +18,6 @@ import {
   UserRoundPlus,
   Trash2,
   Heart,
-  HomeIcon,
   Plus,
   List,
   CalendarRange,
@@ -52,7 +51,7 @@ import { ErrorCode } from "@/constants/errors";
 import KiokeSidebar from "@/components/features/sidebar/KiokeSidebar";
 import { useSession } from "next-auth/react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { useCurrentView, useSelectedShelfId } from "@/hooks/store";
+import { useCurrentView } from "@/hooks/store/view";
 
 enum JOURNAL_PREVIEW_OPTION {
   LIST = "list",

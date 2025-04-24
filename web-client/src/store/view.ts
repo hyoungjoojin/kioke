@@ -7,7 +7,6 @@ interface ViewState {
 }
 
 interface ViewActions {
-  getCurrentView: () => View;
   setCurrentView: (view: View) => void;
 }
 
@@ -21,13 +20,10 @@ const initialState: ViewState = {
 
 export const createViewSlice: StateCreator<ViewSlice, [], [], ViewSlice> = (
   set,
-  get,
+  _,
 ) => ({
   ...initialState,
   actions: {
-    getCurrentView: () => {
-      return get().currentView;
-    },
     setCurrentView: (view: View) => {
       set(
         produce((state) => {
