@@ -5,6 +5,7 @@ import java.util.List;
 import kioke.journal.dto.data.page.PagePreviewDto;
 import kioke.journal.dto.data.user.UserDto;
 import kioke.journal.model.Journal;
+import kioke.journal.model.UserJournalMetadata;
 import lombok.AccessLevel;
 import lombok.Builder;
 
@@ -19,14 +20,17 @@ public record JournalDto(
     LocalDateTime createdAt,
     LocalDateTime lastModified) {
 
-  public static JournalDto from(Journal journal, boolean bookmarked) {
+  public static JournalDto from(Journal journal, UserJournalMetadata userJournalMetadata) {
     return JournalDto.builder()
         .journalId(journal.getJournalId())
         .title(journal.getTitle())
         .description(journal.getDescription())
-        .users(journal.getUsers().stream().map(role -> UserDto.from(role)).toList())
+        .users(
+            journal.getUsers().stream()
+                .map(user -> new UserDto(user.getUserId(), user.getRole()))
+                .toList())
         .pages(journal.getPages().stream().map(page -> PagePreviewDto.from(page)).toList())
-        .bookmarked(bookmarked)
+        .bookmarked(userJournalMetadata.isBookmarked())
         .createdAt(journal.getCreatedAt())
         .lastModified(journal.getLastModified())
         .build();

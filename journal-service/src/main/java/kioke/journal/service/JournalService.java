@@ -7,12 +7,14 @@ import kioke.commons.exception.security.AccessDeniedException;
 import kioke.journal.constant.Permission;
 import kioke.journal.constant.Role;
 import kioke.journal.dto.data.journal.JournalDto;
+import kioke.journal.dto.data.journal.JournalPreviewDto;
 import kioke.journal.dto.request.journal.UpdateJournalRequestBodyDto;
 import kioke.journal.exception.journal.JournalNotFoundException;
 import kioke.journal.exception.shelf.ShelfNotFoundException;
 import kioke.journal.model.Journal;
 import kioke.journal.model.Shelf;
 import kioke.journal.model.User;
+import kioke.journal.model.UserJournalMetadata;
 import kioke.journal.repository.JournalRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,47 +25,31 @@ import org.springframework.transaction.annotation.Transactional;
 public class JournalService {
 
   private final UserService userService;
-  private final BookmarkService bookmarkService;
+  private final UserJournalMetadataService userJournalMetadataService;
   private final ShelfService shelfService;
-  private final JournalRoleService journalRoleService;
 
   private final JournalRepository journalRepository;
 
   public JournalService(
       UserService userService,
-      BookmarkService bookmarkService,
+      UserJournalMetadataService userJournalMetadataService,
       ShelfService shelfService,
-      JournalRoleService journalRoleService,
       JournalRepository journalRepository) {
     this.userService = userService;
-    this.bookmarkService = bookmarkService;
+    this.userJournalMetadataService = userJournalMetadataService;
     this.shelfService = shelfService;
-    this.journalRoleService = journalRoleService;
     this.journalRepository = journalRepository;
   }
 
   @Transactional(readOnly = true)
-  public List<JournalDto> getJournals(String userId, Boolean bookmarked) {
+  public List<JournalPreviewDto> getJournals(String userId, Boolean bookmarked) {
     Objects.requireNonNull(userId, "User ID should not be null.");
 
-    List<String> journalIds;
-    if (bookmarked) {
-      journalIds = bookmarkService.getBookmarkedJournalIds(userId);
-    } else {
-      journalIds = journalRoleService.getJournalIds(userId);
-    }
+    boolean findOnlyBookmarkedJournals = bookmarked == null ? false : bookmarked;
+    List<JournalPreviewDto> journalPreviewDtos =
+        userJournalMetadataService.getJournals(userId, findOnlyBookmarkedJournals);
 
-    return journalIds.stream()
-        .map(
-            journalId -> {
-              try {
-                return getJournalById(userId, journalId);
-              } catch (JournalNotFoundException e) {
-                return null;
-              }
-            })
-        .filter(journal -> journal != null)
-        .toList();
+    return journalPreviewDtos;
   }
 
   @Transactional(readOnly = true)
@@ -72,8 +58,7 @@ public class JournalService {
     Objects.requireNonNull(userId, "User ID should not be null.");
     Objects.requireNonNull(journalId, "Journal ID should not be null.");
 
-    if (!journalRoleService.hasPermission(userId, journalId, Permission.READ)) {
-      log.debug("User has no permission to read the journal.");
+    if (!userJournalMetadataService.hasPermission(userId, journalId, Permission.READ)) {
       throw new JournalNotFoundException(journalId);
     }
 
@@ -86,7 +71,10 @@ public class JournalService {
                   return new JournalNotFoundException(journalId);
                 });
 
-    return JournalDto.from(journal, bookmarkService.isJournalBookmarked(userId, journalId));
+    UserJournalMetadata userJournalMetadata =
+        userJournalMetadataService.getJournal(userId, journalId).get();
+
+    return JournalDto.from(journal, userJournalMetadata);
   }
 
   @Transactional(rollbackFor = Exception.class)
@@ -109,7 +97,7 @@ public class JournalService {
 
     journal = journalRepository.save(journal);
 
-    journalRoleService.setRole(user, journal, Role.AUTHOR);
+    userJournalMetadataService.setRole(user, journal, Role.AUTHOR);
     shelfService.setShelf(user, journal, shelf);
 
     return journal;
@@ -125,23 +113,23 @@ public class JournalService {
             .findById(journalId)
             .orElseThrow(() -> new JournalNotFoundException(journalId));
 
-    if (!journalRoleService.hasPermission(userId, journalId, Permission.SHARE)) {
+    if (!userJournalMetadataService.hasPermission(userId, journalId, Permission.SHARE)) {
       log.debug("User has no permission to share the journal.");
       throw new AccessDeniedException();
     }
 
-    journalRoleService.setRole(invitee, journal, role);
+    userJournalMetadataService.setRole(invitee, journal, role);
   }
 
   @Transactional
   public void unshareJournal(String userId, String journalId, String inviteeUserId)
       throws JournalNotFoundException, AccessDeniedException {
-    if (!journalRoleService.hasPermission(userId, journalId, Permission.SHARE)) {
+    if (!userJournalMetadataService.hasPermission(userId, journalId, Permission.SHARE)) {
       log.debug("User has no permission to share the journal.");
       throw new AccessDeniedException();
     }
 
-    journalRoleService.deleteRole(inviteeUserId, journalId);
+    userJournalMetadataService.deleteRole(inviteeUserId, journalId);
   }
 
   @Transactional(rollbackFor = Exception.class)
@@ -155,8 +143,7 @@ public class JournalService {
             .findById(journalId)
             .orElseThrow(() -> new JournalNotFoundException(journalId));
 
-    if (!journalRoleService.hasPermission(userId, journalId, Permission.WRITE)) {
-      log.debug("User has no permission to update the journal.");
+    if (!userJournalMetadataService.hasPermission(userId, journalId, Permission.WRITE)) {
       throw new AccessDeniedException();
     }
 
@@ -175,9 +162,9 @@ public class JournalService {
 
     if (requestBodyDto.bookmark() != null) {
       if (requestBodyDto.bookmark()) {
-        bookmarkService.addBookmark(user, journal);
+        userJournalMetadataService.addBookmark(userId, journalId);
       } else {
-        bookmarkService.deleteBookmark(user, journal);
+        userJournalMetadataService.deleteBookmark(userId, journalId);
       }
     }
 
@@ -193,8 +180,7 @@ public class JournalService {
             .findById(journalId)
             .orElseThrow(() -> new JournalNotFoundException(journalId));
 
-    if (!journalRoleService.hasPermission(userId, journalId, Permission.DELETE)) {
-      log.debug("User has no permission to delete the journal.");
+    if (!userJournalMetadataService.hasPermission(userId, journalId, Permission.DELETE)) {
       throw new AccessDeniedException();
     }
 

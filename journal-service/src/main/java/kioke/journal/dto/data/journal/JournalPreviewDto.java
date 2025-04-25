@@ -1,6 +1,7 @@
 package kioke.journal.dto.data.journal;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.LocalDateTime;
 import kioke.journal.model.Journal;
 import lombok.Builder;
 
@@ -9,7 +10,7 @@ public record JournalPreviewDto(
     String journalId,
     String title,
     @JsonProperty("bookmarked") boolean bookmarked,
-    java.time.LocalDateTime createdAt) {
+    LocalDateTime createdAt) {
 
   public static JournalPreviewDto from(Journal journal, boolean bookmarked) {
     return JournalPreviewDto.builder()

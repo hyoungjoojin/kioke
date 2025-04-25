@@ -30,10 +30,7 @@ public class User implements UserDetails {
   private List<ShelfSlot> shelfSlots;
 
   @OneToMany(mappedBy = "user")
-  private List<JournalRole> journals;
-
-  @OneToMany(mappedBy = "user")
-  private List<Bookmark> bookmarks;
+  private List<UserJournalMetadata> journals;
 
   @Override
   public String getUsername() {

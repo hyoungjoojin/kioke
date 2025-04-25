@@ -32,7 +32,7 @@ public class Journal {
   private String journalId;
 
   @OneToMany(mappedBy = "journal", orphanRemoval = true)
-  private List<JournalRole> users;
+  private List<UserJournalMetadata> users;
 
   @OneToMany(mappedBy = "journal", orphanRemoval = true)
   private List<ShelfSlot> shelves;
@@ -43,9 +43,6 @@ public class Journal {
 
   @OneToMany(mappedBy = "journal", orphanRemoval = true)
   private List<Page> pages;
-
-  @OneToMany(mappedBy = "journal")
-  private List<Bookmark> bookmarks;
 
   @NotNull private boolean isDeleted;
 

@@ -7,16 +7,19 @@ import java.util.List;
 import kioke.commons.annotation.HttpResponse;
 import kioke.commons.exception.security.AccessDeniedException;
 import kioke.journal.dto.data.journal.JournalDto;
+import kioke.journal.dto.data.journal.JournalPreviewDto;
 import kioke.journal.dto.request.journal.CreateJournalRequestBodyDto;
 import kioke.journal.dto.request.journal.ShareJournalRequestBodyDto;
 import kioke.journal.dto.request.journal.UnshareJournalRequestBodyDto;
 import kioke.journal.dto.request.journal.UpdateJournalRequestBodyDto;
 import kioke.journal.dto.response.journal.CreateJournalResponseBodyDto;
 import kioke.journal.dto.response.journal.GetJournalResponseBodyDto;
+import kioke.journal.dto.response.journal.GetJournalsResponseBodyDto;
 import kioke.journal.exception.journal.JournalNotFoundException;
 import kioke.journal.exception.shelf.ShelfNotFoundException;
 import kioke.journal.model.Journal;
 import kioke.journal.service.JournalService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -33,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/journals")
 @Tag(name = "Journal Operations API")
+@Slf4j
 public class JournalController {
 
   private final JournalService journalService;
@@ -46,12 +50,24 @@ public class JournalController {
   @Operation(summary = "Get all journals for a given user.")
   @HttpResponse(status = HttpStatus.OK)
   @PreAuthorize("isAuthenticated()")
-  public List<GetJournalResponseBodyDto> getJournals(
+  public GetJournalsResponseBodyDto getJournals(
       @AuthenticationPrincipal String userId,
       @RequestParam(name = "bookmarked", required = false) Boolean bookmarked) {
-    List<JournalDto> journals = journalService.getJournals(userId, bookmarked);
+    List<JournalPreviewDto> journalPreviewDtos = journalService.getJournals(userId, bookmarked);
 
-    return journals.stream().map(journal -> GetJournalResponseBodyDto.from(journal)).toList();
+    return GetJournalsResponseBodyDto.from(journalPreviewDtos);
+  }
+
+  @GetMapping("/recent")
+  @Tag(name = "Get Recently Viewed Journals")
+  @Operation(summary = "Get recently viewed journals for a given user.")
+  @HttpResponse(status = HttpStatus.OK)
+  @PreAuthorize("isAuthenticated()")
+  public GetJournalsResponseBodyDto getRecentlyViewedJournals(
+      @AuthenticationPrincipal String userId) {
+    List<JournalPreviewDto> journalPreviewDtos = journalService.getJournals(userId, false);
+
+    return GetJournalsResponseBodyDto.from(journalPreviewDtos);
   }
 
   @GetMapping("/{journalId}")
