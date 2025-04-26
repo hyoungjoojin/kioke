@@ -6,9 +6,21 @@ import {
   updateJournal,
   bookmarkJournal,
   deleteBookmark,
+  getJournals,
 } from "@/app/api/journal";
 import { getQueryClient } from "@/components/providers/QueryProvider";
 import { useMutation, useQuery } from "@tanstack/react-query";
+
+export const useJournalsQuery = () => {
+  return useQuery({
+    queryKey: ["journals"],
+    queryFn: () => {
+      return getJournals();
+    },
+    retry: false,
+    staleTime: 60 * 1000,
+  });
+};
 
 export const useJournalQuery = (jid: string) => {
   return useQuery({

@@ -9,6 +9,10 @@ export interface GetJournalResponseBody {
   pages: { pageId: string; title: string; createdAt: string }[];
 }
 
+export interface GetJournalsResponseBody {
+  journals: GetJournalResponseBody[];
+}
+
 export interface CreateJournalResponseBody {
   journalId: string;
   title: string;
