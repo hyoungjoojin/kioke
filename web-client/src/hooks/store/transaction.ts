@@ -1,4 +1,4 @@
-import { useBoundStore } from "@/components/providers/StoreProvider";
+import { useBoundStore } from '@/components/providers/StoreProvider';
 
 export const useTransactionStatus = () => {
   const status = useBoundStore((state) => state.status);

@@ -1,24 +1,24 @@
-"use server";
+'use server';
 
-import { Role } from "@/constants/role";
-import { HttpResponseBody } from "@/types/server";
+import { getUser } from './user';
+import { Role } from '@/constants/role';
+import { Journal } from '@/types/primitives/journal';
+import { HttpResponseBody } from '@/types/server';
 import {
   CreateJournalResponseBody,
   GetJournalResponseBody,
   GetJournalsResponseBody,
   UpdateJournalRequestBody,
-} from "@/types/server/journal";
+} from '@/types/server/journal';
 import {
   processErrorResponse,
   processResponse,
   protectedKioke,
-} from "@/utils/server";
-import { getUser } from "./user";
-import { Journal } from "@/types/primitives/journal";
+} from '@/utils/server';
 
 export const getJournals = async (bookmarked: boolean = false) => {
   const response = protectedKioke
-    .get<HttpResponseBody<GetJournalsResponseBody>>("journals", {
+    .get<HttpResponseBody<GetJournalsResponseBody>>('journals', {
       searchParams: {
         bookmarked,
       },
@@ -61,7 +61,7 @@ export const createJournal = async (
   description: string,
 ) => {
   const response = protectedKioke
-    .post<HttpResponseBody<CreateJournalResponseBody>>("journals", {
+    .post<HttpResponseBody<CreateJournalResponseBody>>('journals', {
       json: {
         shelfId,
         title,

@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { TransactionsManager } from "@/utils/transactions";
-import { EditorContent, EditorEvents, useEditor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import { debounce } from "lodash";
-import { useEffect } from "react";
+import { TransactionsManager } from '@/utils/transactions';
+import { EditorContent, EditorEvents, useEditor } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import { debounce } from 'lodash';
+import { useEffect } from 'react';
 
 interface PageEditorProps {
   journalId: string;
@@ -15,14 +15,14 @@ interface PageEditorProps {
 export default function PageEditor({
   journalId,
   pageId,
-  content = "",
+  content = '',
 }: PageEditorProps) {
   const editorInstance = useEditor({
     extensions: [StarterKit],
     content,
     immediatelyRender: false,
     shouldRerenderOnTransaction: false,
-    onUpdate: debounce(({ transaction }: EditorEvents["update"]) => {
+    onUpdate: debounce(({ transaction }: EditorEvents['update']) => {
       TransactionsManager.getTransactionsManager().addTransaction(
         journalId,
         pageId,

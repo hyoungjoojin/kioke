@@ -1,6 +1,6 @@
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
+import { useState } from 'react';
 
 interface EditableTitleProps {
   content: string;
@@ -27,22 +27,22 @@ export default function EditableTitle({
             setModifiedContent(e.target.value);
           }}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
+            if (e.key === 'Enter') {
               setFocused(false);
               onSubmit(modifiedContent);
             }
           }}
           autoFocus
-          className="h-full md:text-3xl"
+          className='h-full md:text-3xl'
         />
       ) : (
         <h1
           className={cn(
-            "hover:border hover:border-muted text-3xl",
-            content === "" ? "text-gray-700" : "",
+            'hover:border hover:border-muted text-3xl',
+            content === '' ? 'text-gray-700' : '',
           )}
         >
-          {content === "" ? "Untitled" : content}
+          {content === '' ? 'Untitled' : content}
         </h1>
       )}
     </div>

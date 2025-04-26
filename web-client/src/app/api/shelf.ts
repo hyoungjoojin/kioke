@@ -1,11 +1,11 @@
-import { Shelf } from "@/types/primitives/shelf";
-import { HttpResponseBody } from "@/types/server";
-import { GetShelfResponseBody } from "@/types/server/shelf";
+import { Shelf } from '@/types/primitives/shelf';
+import { HttpResponseBody } from '@/types/server';
+import { GetShelfResponseBody } from '@/types/server/shelf';
 import {
   processErrorResponse,
   processResponse,
   protectedKioke,
-} from "@/utils/server";
+} from '@/utils/server';
 
 export const getShelf = async (shelfId: string) => {
   const response = await protectedKioke
@@ -18,7 +18,7 @@ export const getShelf = async (shelfId: string) => {
 
 export const getShelves = async (): Promise<Shelf[]> => {
   const response = await protectedKioke
-    .get<HttpResponseBody<GetShelfResponseBody[]>>("shelves")
+    .get<HttpResponseBody<GetShelfResponseBody[]>>('shelves')
     .then((response) => processResponse(response))
     .then((shelves) => {
       shelves.sort((s1, s2) => {

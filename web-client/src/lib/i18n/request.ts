@@ -1,7 +1,7 @@
-import { LOCALE_COOKIE_NAME } from "@/constants/cookie";
-import { AVAILABLE_LOCALES, DEFAULT_LOCALE } from "@/constants/locale";
-import { getRequestConfig } from "next-intl/server";
-import { cookies } from "next/headers";
+import { LOCALE_COOKIE_NAME } from '@/constants/cookie';
+import { AVAILABLE_LOCALES, DEFAULT_LOCALE } from '@/constants/locale';
+import { getRequestConfig } from 'next-intl/server';
+import { cookies } from 'next/headers';
 
 export default getRequestConfig(async () => {
   const localeCookieValue =

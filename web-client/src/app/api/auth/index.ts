@@ -1,12 +1,12 @@
-"use server";
+'use server';
 
-import { HttpResponseBody } from "@/types/server";
-import { CredentialsLoginResponseBody } from "@/types/server/auth";
-import { kioke, processResponse } from "@/utils/server";
+import { HttpResponseBody } from '@/types/server';
+import { CredentialsLoginResponseBody } from '@/types/server/auth';
+import { kioke, processResponse } from '@/utils/server';
 
 export const loginWithCredentials = async (email: string, password: string) => {
   const response = kioke.post<HttpResponseBody<CredentialsLoginResponseBody>>(
-    "auth/login",
+    'auth/login',
     {
       json: {
         email,
@@ -25,7 +25,7 @@ export const registerWithCredentials = async (
   lastName: string,
 ): Promise<boolean> => {
   const success = await kioke
-    .post("auth/register", {
+    .post('auth/register', {
       json: {
         email,
         password,

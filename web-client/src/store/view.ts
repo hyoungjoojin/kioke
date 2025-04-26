@@ -1,6 +1,6 @@
-import { produce } from "immer";
-import View from "@/constants/view";
-import { StateCreator } from "zustand";
+import View from '@/constants/view';
+import { produce } from 'immer';
+import { StateCreator } from 'zustand';
 
 interface ViewState {
   currentView: View;

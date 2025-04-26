@@ -1,15 +1,13 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { z } from "zod";
-import { useTranslations } from "next-intl";
+} from '@/components/ui/card';
 import {
   Form,
   FormControl,
@@ -17,27 +15,29 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { signInWithCredentials } from "@/lib/auth/actions";
-import { useState } from "react";
-import { redirect } from "next/navigation";
-import { LoginFormSchema } from "@/lib/auth";
-import KiokeError, { ErrorCode } from "@/constants/errors";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import KiokeError, { ErrorCode } from '@/constants/errors';
+import { LoginFormSchema } from '@/lib/auth';
+import { signInWithCredentials } from '@/lib/auth/actions';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
+import { redirect } from 'next/navigation';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 export default function LoginForm() {
-  const t = useTranslations("");
+  const t = useTranslations('');
 
   const [isError, setIsError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
 
   const loginForm = useForm<z.infer<typeof LoginFormSchema>>({
     resolver: zodResolver(LoginFormSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
   });
 
@@ -48,7 +48,7 @@ export default function LoginForm() {
     );
 
     if (success) {
-      redirect("/");
+      redirect('/');
     } else {
       setIsError(true);
     }
@@ -59,15 +59,15 @@ export default function LoginForm() {
   };
 
   return (
-    <Card className="w-[28rem] dark:bg-zinc-900">
+    <Card className='w-[28rem] dark:bg-zinc-900'>
       <CardHeader>
-        <CardTitle>{t("login.title")}</CardTitle>
-        <CardDescription>{t("login.description")}</CardDescription>
+        <CardTitle>{t('login.title')}</CardTitle>
+        <CardDescription>{t('login.description')}</CardDescription>
       </CardHeader>
 
       <CardContent>
         {isError && (
-          <p className="text-[0.8rem] font-medium text-destructive">
+          <p className='text-[0.8rem] font-medium text-destructive'>
             {t(errorMessage)}
           </p>
         )}
@@ -78,21 +78,21 @@ export default function LoginForm() {
             }}
             onSubmit={loginForm.handleSubmit(formSubmitHandler)}
           >
-            <div className="my-3">
+            <div className='my-3'>
               <FormField
-                name="email"
+                name='email'
                 control={loginForm.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="flex justify-between items-center">
-                      <div className="text-black dark:text-white">
-                        {t("login.email.label")}
+                    <FormLabel className='flex justify-between items-center'>
+                      <div className='text-black dark:text-white'>
+                        {t('login.email.label')}
                       </div>
                       <FormMessage t={t} />
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={t("login.email.placeholder")}
+                        placeholder={t('login.email.placeholder')}
                         {...field}
                       />
                     </FormControl>
@@ -101,49 +101,49 @@ export default function LoginForm() {
               />
             </div>
 
-            <div className="my-3">
+            <div className='my-3'>
               <FormField
-                name="password"
+                name='password'
                 control={loginForm.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="flex justify-between items-center">
-                      <div className="text-black dark:text-white">
-                        {t("login.password.label")}
+                    <FormLabel className='flex justify-between items-center'>
+                      <div className='text-black dark:text-white'>
+                        {t('login.password.label')}
                       </div>
                       <FormMessage t={t} />
                     </FormLabel>
                     <FormControl>
                       <Input
-                        type="password"
-                        placeholder={t("login.password.placeholder")}
+                        type='password'
+                        placeholder={t('login.password.placeholder')}
                         {...field}
                       />
                     </FormControl>
                   </FormItem>
                 )}
               />
-              <div className="flex justify-end my-2">
-                <span className="text-sm hover:underline hover:cursor-pointer">
-                  {t("login.forgot-password")}
+              <div className='flex justify-end my-2'>
+                <span className='text-sm hover:underline hover:cursor-pointer'>
+                  {t('login.forgot-password')}
                 </span>
               </div>
             </div>
 
-            <div className="flex justify-center">
-              <Button type="submit" className="w-full">
-                {t("login.login-button")}
+            <div className='flex justify-center'>
+              <Button type='submit' className='w-full'>
+                {t('login.login-button')}
               </Button>
             </div>
 
             <div
               onClick={() => {
-                redirect("/auth/register");
+                redirect('/auth/register');
               }}
-              className="flex justify-center my-2"
+              className='flex justify-center my-2'
             >
-              <span className="text-sm hover:underline hover:cursor-pointer">
-                {t("login.register")}
+              <span className='text-sm hover:underline hover:cursor-pointer'>
+                {t('login.register')}
               </span>
             </div>
           </form>

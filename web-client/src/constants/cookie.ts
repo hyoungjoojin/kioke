@@ -1,1 +1,1 @@
-export const LOCALE_COOKIE_NAME = "KIOKE-LOCALE";
+export const LOCALE_COOKIE_NAME = 'KIOKE-LOCALE';

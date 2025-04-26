@@ -1,7 +1,7 @@
-import { create } from "zustand";
-import { createShelfSlice, type ShelfSlice } from "./shelf";
-import { createTransactionSlice, TransactionSlice } from "./transaction";
-import { createViewSlice, ViewSlice } from "./view";
+import { type ShelfSlice, createShelfSlice } from './shelf';
+import { TransactionSlice, createTransactionSlice } from './transaction';
+import { ViewSlice, createViewSlice } from './view';
+import { create } from 'zustand';
 
 export type Store = ViewSlice & ShelfSlice & TransactionSlice;
 

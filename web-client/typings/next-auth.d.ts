@@ -1,7 +1,7 @@
-import type { User, Session, AdapterUser } from "next-auth";
-import "next-auth/jwt";
+import type { AdapterUser, Session, User } from 'next-auth';
+import 'next-auth/jwt';
 
-declare module "next-auth" {
+declare module 'next-auth' {
   export interface User {
     uid: string;
     email: string;
@@ -15,7 +15,7 @@ declare module "next-auth" {
   }
 }
 
-declare module "next-auth/jwt" {
+declare module 'next-auth/jwt' {
   export interface JWT {
     user: User & AdapterUser;
     accessToken: string;

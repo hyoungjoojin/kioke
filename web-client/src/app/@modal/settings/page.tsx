@@ -1,26 +1,26 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import Modal from "@/components/ui/modal";
+import { Button } from '@/components/ui/button';
+import Modal from '@/components/ui/modal';
 import {
-  SidebarProvider,
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenu,
-  SidebarMenuItem,
   SidebarMenuButton,
-} from "@/components/ui/sidebar";
-import { Paintbrush, TriangleAlert, Trash } from "lucide-react";
-import { useState } from "react";
+  SidebarMenuItem,
+  SidebarProvider,
+} from '@/components/ui/sidebar';
+import { Paintbrush, Trash, TriangleAlert } from 'lucide-react';
+import { useState } from 'react';
 
 export default function SettingsModal() {
   const dangerZoneContent = (
     <div>
-      <h1 className="font-bold">Delete account</h1>
+      <h1 className='font-bold'>Delete account</h1>
       <p>This will delete your account.</p>
-      <Button variant="destructive">
+      <Button variant='destructive'>
         <Trash />
         Delete account
       </Button>
@@ -28,16 +28,16 @@ export default function SettingsModal() {
   );
 
   const menu = [
-    { name: "Appearance", icon: Paintbrush, content: <></> },
-    { name: "Danger Zone", icon: TriangleAlert, content: dangerZoneContent },
+    { name: 'Appearance', icon: Paintbrush, content: <></> },
+    { name: 'Danger Zone', icon: TriangleAlert, content: dangerZoneContent },
   ];
 
   const [menuIndex, setMenuIndex] = useState(0);
 
   return (
-    <Modal title="Settings">
+    <Modal title='Settings'>
       <SidebarProvider>
-        <Sidebar collapsible="none" className="bg-white w-52">
+        <Sidebar collapsible='none' className='bg-white w-52'>
           <SidebarContent>
             <SidebarGroup>
               <SidebarGroupContent>
@@ -54,7 +54,7 @@ export default function SettingsModal() {
                           asChild
                           isActive={index === menuIndex}
                         >
-                          <a href="#">
+                          <a href='#'>
                             <item.icon />
                             <span>{item.name}</span>
                           </a>

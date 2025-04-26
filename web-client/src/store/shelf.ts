@@ -1,5 +1,5 @@
-import { StateCreator } from "zustand";
-import { produce } from "immer";
+import { produce } from 'immer';
+import { StateCreator } from 'zustand';
 
 interface ShelfState {
   selectedShelfId: string;
@@ -14,7 +14,7 @@ export type ShelfSlice = ShelfState & {
 };
 
 const initialState: ShelfState = {
-  selectedShelfId: "",
+  selectedShelfId: '',
 };
 
 export const createShelfSlice: StateCreator<ShelfSlice, [], [], ShelfSlice> = (

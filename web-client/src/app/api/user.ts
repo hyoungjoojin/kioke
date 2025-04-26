@@ -1,10 +1,10 @@
-import { HttpResponseBody } from "@/types/server";
+import { HttpResponseBody } from '@/types/server';
 import {
   GetMyInformationResponseBody,
   GetUserResponseBody,
   SearchUserResponseBody,
-} from "@/types/server/user";
-import { kioke, processResponse, protectedKioke } from "@/utils/server";
+} from '@/types/server/user';
+import { kioke, processResponse, protectedKioke } from '@/utils/server';
 
 export const getMyInformation = async (accessToken: string) => {
   const response = kioke
@@ -13,7 +13,7 @@ export const getMyInformation = async (accessToken: string) => {
         Authorization: `Bearer ${accessToken}`,
       },
     })
-    .get<HttpResponseBody<GetMyInformationResponseBody>>("users/me")
+    .get<HttpResponseBody<GetMyInformationResponseBody>>('users/me')
     .then((response) => processResponse(response));
 
   return response;
@@ -29,7 +29,7 @@ export const getUser = async (userId: string) => {
 
 export const searchUser = async (email: string) => {
   const response = protectedKioke
-    .post<HttpResponseBody<SearchUserResponseBody>>("users/search", {
+    .post<HttpResponseBody<SearchUserResponseBody>>('users/search', {
       json: {
         email,
       },

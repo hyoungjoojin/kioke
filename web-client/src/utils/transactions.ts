@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { updatePage } from "@/app/api/page";
-import { StoreApi } from "@/components/providers/StoreProvider";
-import { TransactionStatus } from "@/store/transaction";
-import { groupBy } from "lodash";
-import { Transaction } from "prosemirror-state";
+import { updatePage } from '@/app/api/page';
+import { StoreApi } from '@/components/providers/StoreProvider';
+import { TransactionStatus } from '@/store/transaction';
+import { groupBy } from 'lodash';
+import { Transaction } from 'prosemirror-state';
 
 type KiokeTransaction = {
   journalId: string;
@@ -35,7 +35,7 @@ export class TransactionsManager {
 
   public static getTransactionsManager() {
     if (!TransactionsManager._transactionsManager) {
-      throw new Error("Transaction manager not initialized");
+      throw new Error('Transaction manager not initialized');
     }
 
     return TransactionsManager._transactionsManager;
@@ -95,7 +95,7 @@ export class TransactionsManager {
     );
 
     for (const key in groupedTransactions) {
-      const [journalId, pageId] = key.split("|");
+      const [journalId, pageId] = key.split('|');
 
       const groupedTransaction = groupedTransactions[key];
       updatePage(journalId, pageId, {

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Command,
@@ -7,11 +7,11 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
-import { useShelvesQuery } from "@/hooks/query/shelf";
-import { Shelf } from "@/types/primitives/shelf";
-import { CommandSeparator } from "cmdk";
-import { Trash2 } from "lucide-react";
+} from '@/components/ui/command';
+import { useShelvesQuery } from '@/hooks/query/shelf';
+import { Shelf } from '@/types/primitives/shelf';
+import { CommandSeparator } from 'cmdk';
+import { Trash2 } from 'lucide-react';
 
 interface SelectShelfCommandProps {
   onSelect: (selectedShelf: Shelf, selectedShelfIndex: number) => void;
@@ -35,7 +35,7 @@ const SelectShelfCommand = ({
       }}
       className={className}
     >
-      <CommandInput autoFocus placeholder="Enter a shelf to move to" />
+      <CommandInput autoFocus placeholder='Enter a shelf to move to' />
       <CommandList>
         <CommandGroup>
           <CommandEmpty>No results found.</CommandEmpty>
@@ -61,7 +61,7 @@ const SelectShelfCommand = ({
         {showArchive && (
           <>
             <CommandSeparator />
-            <CommandGroup heading="">
+            <CommandGroup heading=''>
               {shelves && archiveIndex && archiveIndex !== -1 && (
                 <CommandItem
                   onSelect={() => {

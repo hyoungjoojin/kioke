@@ -1,10 +1,10 @@
-import { produce } from "immer";
-import { StateCreator } from "zustand";
+import { produce } from 'immer';
+import { StateCreator } from 'zustand';
 
 export enum TransactionStatus {
-  SAVING = "saving",
-  SAVED = "saved",
-  ERROR = "error",
+  SAVING = 'saving',
+  SAVED = 'saved',
+  ERROR = 'error',
 }
 
 interface TransactionState {

@@ -1,4 +1,4 @@
-import { useBoundStore } from "@/components/providers/StoreProvider";
+import { useBoundStore } from '@/components/providers/StoreProvider';
 
 export const useSelectedShelfId = () => {
   const selectedShelfId = useBoundStore((state) => state.selectedShelfId);
