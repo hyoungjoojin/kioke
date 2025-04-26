@@ -5,6 +5,7 @@ import { HttpResponseBody } from "@/types/server";
 import {
   CreateJournalResponseBody,
   GetJournalResponseBody,
+  GetJournalsResponseBody,
   UpdateJournalRequestBody,
 } from "@/types/server/journal";
 import {
@@ -17,14 +18,14 @@ import { Journal } from "@/types/primitives/journal";
 
 export const getJournals = async (bookmarked: boolean = false) => {
   const response = protectedKioke
-    .get<HttpResponseBody<GetJournalResponseBody[]>>("journals", {
+    .get<HttpResponseBody<GetJournalsResponseBody>>("journals", {
       searchParams: {
         bookmarked,
       },
     })
     .then((response) => processResponse(response));
 
-  return response;
+  return (await response).journals;
 };
 
 export const getJournal = async (journalId: string): Promise<Journal> => {

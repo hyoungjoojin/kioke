@@ -16,16 +16,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class PageService {
 
-  private final JournalRoleService journalRoleService;
+  private final UserJournalMetadataService userJournalMetadataService;
 
   private final JournalRepository journalRepository;
   private final PageRepository pageRepository;
 
   public PageService(
-      JournalRoleService journalRoleService,
+      UserJournalMetadataService userJournalMetadataService,
       JournalRepository journalRepository,
       PageRepository pageRepository) {
-    this.journalRoleService = journalRoleService;
+    this.userJournalMetadataService = userJournalMetadataService;
     this.journalRepository = journalRepository;
     this.pageRepository = pageRepository;
   }
@@ -33,7 +33,7 @@ public class PageService {
   @Transactional(readOnly = true)
   public Page getPageById(String userId, String journalId, String pageId)
       throws JournalNotFoundException {
-    if (!journalRoleService.hasPermission(userId, journalId, Permission.READ)) {
+    if (!userJournalMetadataService.hasPermission(userId, journalId, Permission.READ)) {
       log.debug("User has no permission to read the journal.");
       throw new JournalNotFoundException(journalId);
     }
@@ -54,7 +54,7 @@ public class PageService {
             .findById(journalId)
             .orElseThrow(() -> new JournalNotFoundException(journalId));
 
-    if (!journalRoleService.hasPermission(userId, journalId, Permission.WRITE)) {
+    if (!userJournalMetadataService.hasPermission(userId, journalId, Permission.WRITE)) {
       log.debug("User has no permission to write to the journal.");
       throw new AccessDeniedException();
     }
@@ -70,7 +70,7 @@ public class PageService {
   public void updatePage(
       String userId, String journalId, String pageId, String title, String contents)
       throws JournalNotFoundException, AccessDeniedException {
-    if (!journalRoleService.hasPermission(userId, journalId, Permission.WRITE)) {
+    if (!userJournalMetadataService.hasPermission(userId, journalId, Permission.WRITE)) {
       log.debug("User has no permission to write to the journal.");
       throw new AccessDeniedException();
     }

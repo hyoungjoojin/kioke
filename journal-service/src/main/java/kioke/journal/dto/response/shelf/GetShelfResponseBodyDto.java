@@ -16,9 +16,12 @@ public record GetShelfResponseBodyDto(
     List<JournalPreviewDto> journals,
     @JsonProperty("isArchive") boolean isArchive) {
 
-  public static GetShelfResponseBodyDto from(Shelf shelf, List<String> bookmarks) {
+  public static GetShelfResponseBodyDto from(Shelf shelf, List<JournalPreviewDto> bookmarks) {
     Map<String, Boolean> bookmarksMap =
-        bookmarks.stream().collect(Collectors.toMap(journalId -> journalId, journalId -> true));
+        bookmarks.stream()
+            .collect(
+                Collectors.toMap(
+                    journalPreviewDto -> journalPreviewDto.journalId(), journalId -> true));
 
     return GetShelfResponseBodyDto.builder()
         .shelfId(shelf.getId())
@@ -36,9 +39,13 @@ public record GetShelfResponseBodyDto(
         .build();
   }
 
-  public static List<GetShelfResponseBodyDto> from(List<Shelf> shelves, List<String> bookmarks) {
+  public static List<GetShelfResponseBodyDto> from(
+      List<Shelf> shelves, List<JournalPreviewDto> bookmarks) {
     Map<String, Boolean> bookmarksMap =
-        bookmarks.stream().collect(Collectors.toMap(journalId -> journalId, journalId -> true));
+        bookmarks.stream()
+            .collect(
+                Collectors.toMap(
+                    journalPreviewDto -> journalPreviewDto.journalId(), journalId -> true));
 
     return shelves.stream()
         .map(

@@ -5,14 +5,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import kioke.commons.annotation.HttpResponse;
+import kioke.journal.dto.data.journal.JournalPreviewDto;
 import kioke.journal.dto.request.shelf.CreateShelfRequestBodyDto;
 import kioke.journal.dto.request.shelf.UpdateShelfRequestBodyDto;
 import kioke.journal.dto.response.shelf.CreateShelfResponseBodyDto;
 import kioke.journal.dto.response.shelf.GetShelfResponseBodyDto;
 import kioke.journal.exception.shelf.ShelfNotFoundException;
 import kioke.journal.model.Shelf;
-import kioke.journal.service.BookmarkService;
 import kioke.journal.service.ShelfService;
+import kioke.journal.service.UserJournalMetadataService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,11 +32,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class ShelfController {
 
   private final ShelfService shelfService;
-  private final BookmarkService bookmarkService;
+  private final UserJournalMetadataService userJournalMetadataService;
 
-  public ShelfController(ShelfService shelfService, BookmarkService bookmarkService) {
+  public ShelfController(
+      ShelfService shelfService, UserJournalMetadataService userJournalMetadataService) {
     this.shelfService = shelfService;
-    this.bookmarkService = bookmarkService;
+    this.userJournalMetadataService = userJournalMetadataService;
   }
 
   @GetMapping
@@ -45,7 +47,8 @@ public class ShelfController {
   @PreAuthorize("isAuthenticated()")
   public List<GetShelfResponseBodyDto> getShelves(@AuthenticationPrincipal String userId) {
     List<Shelf> shelves = shelfService.getShelves(userId);
-    List<String> bookmarks = bookmarkService.getBookmarkedJournalIds(userId);
+    List<JournalPreviewDto> bookmarks = userJournalMetadataService.getJournals(userId, true);
+
     return GetShelfResponseBodyDto.from(shelves, bookmarks);
   }
 
@@ -58,7 +61,8 @@ public class ShelfController {
       @AuthenticationPrincipal String userId, @PathVariable String shelfId)
       throws ShelfNotFoundException {
     Shelf shelf = shelfService.getShelfById(userId, shelfId);
-    List<String> bookmarks = bookmarkService.getBookmarkedJournalIds(userId);
+    List<JournalPreviewDto> bookmarks = userJournalMetadataService.getJournals(userId, true);
+
     return GetShelfResponseBodyDto.from(shelf, bookmarks);
   }
 
