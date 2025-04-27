@@ -11,16 +11,29 @@ import {
 import { getQueryClient } from '@/components/providers/QueryProvider';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-export const useJournalsQuery = () => {
-  return useQuery({
+export function useGetJournals() {
+  const query = useQuery({
     queryKey: ['journals'],
     queryFn: () => {
       return getJournals();
     },
-    retry: false,
-    staleTime: 60 * 1000,
   });
-};
+
+  return query;
+}
+
+export function useGetBookmarkedJournals() {
+  const query = useQuery({
+    queryKey: ['journals', 'bookmarked'],
+    queryFn: () => {
+      return getJournals({
+        bookmarked: true,
+      });
+    },
+  });
+
+  return query;
+}
 
 export const useJournalQuery = (jid: string) => {
   return useQuery({

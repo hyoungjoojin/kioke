@@ -95,6 +95,19 @@ function ProfileButton({ firstName, lastName }: ProfileButtonProps) {
   );
 }
 
+const SIDEBAR_MENU_ITEMS = [
+  {
+    label: 'Home',
+    icon: <HomeIcon />,
+    view: View.HOME,
+  },
+  {
+    label: 'Bookmarks',
+    icon: <HeartIcon />,
+    view: View.BOOKMARKS,
+  },
+];
+
 export default function KiokeSidebar({ user }: { user: User }) {
   const router = useRouter();
 
@@ -104,19 +117,6 @@ export default function KiokeSidebar({ user }: { user: User }) {
   const { setOpen } = useSidebar();
 
   const { currentView, setCurrentView } = useCurrentView();
-
-  const sidebarMenuItems = [
-    {
-      label: 'Home',
-      icon: <HomeIcon />,
-      view: View.HOME,
-    },
-    {
-      label: 'Bookmarks',
-      icon: <HeartIcon />,
-      view: View.BOOKMARKS,
-    },
-  ];
 
   return (
     <Sidebar className='pt-3 pl-3'>
@@ -143,7 +143,7 @@ export default function KiokeSidebar({ user }: { user: User }) {
       <SidebarContent className='pr-3'>
         <SidebarGroup className='mb-5'>
           <SidebarMenu>
-            {sidebarMenuItems.map((sidebarMenuItem, index) => {
+            {SIDEBAR_MENU_ITEMS.map((sidebarMenuItem, index) => {
               return (
                 <SidebarMenuItem key={index}>
                   <SidebarMenuButton asChild>
@@ -177,7 +177,7 @@ export default function KiokeSidebar({ user }: { user: User }) {
         <Collapsible defaultOpen className='group/collapsible'>
           <SidebarGroup>
             <SidebarGroupLabel asChild>
-              <CollapsibleTrigger className=''>
+              <CollapsibleTrigger className='hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:cursor-not-allowed'>
                 <span className='text-sm text-black'>Shelves</span>
                 <ChevronDown className='ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180' />
               </CollapsibleTrigger>

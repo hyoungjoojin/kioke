@@ -1,58 +1,38 @@
 'use server';
 
-import { getUser } from './user';
 import { Role } from '@/constants/role';
-import { Journal } from '@/types/primitives/journal';
 import { HttpResponseBody } from '@/types/server';
 import {
-  CreateJournalResponseBody,
-  GetJournalResponseBody,
-  GetJournalsResponseBody,
-  UpdateJournalRequestBody,
-} from '@/types/server/journal';
-import {
-  processErrorResponse,
-  processResponse,
-  protectedKioke,
-} from '@/utils/server';
+  CreateJournalResponseBodyDto,
+  GetJournalResponseBodyDto,
+  GetJournalsParams,
+  GetJournalsResponseBodyDto,
+  UpdateJournalRequestBodyDto,
+} from '@/types/server/journal.generated';
+import { processResponse, protectedKioke } from '@/utils/server';
 
-export const getJournals = async (bookmarked: boolean = false) => {
+export async function getJournals(
+  params?: GetJournalsParams,
+): Promise<GetJournalsResponseBodyDto> {
   const response = protectedKioke
-    .get<HttpResponseBody<GetJournalsResponseBody>>('journals', {
+    .get<HttpResponseBody<GetJournalsResponseBodyDto>>('journals', {
       searchParams: {
-        bookmarked,
+        ...params,
       },
     })
     .then((response) => processResponse(response));
 
-  return (await response).journals;
-};
+  return response;
+}
 
-export const getJournal = async (journalId: string): Promise<Journal> => {
+export const getJournal = async (
+  journalId: string,
+): Promise<GetJournalResponseBodyDto> => {
   const response = await protectedKioke
-    .get<HttpResponseBody<GetJournalResponseBody>>(`journals/${journalId}`)
-    .then((response) => processResponse(response))
-    .catch((error) => processErrorResponse(error));
+    .get<HttpResponseBody<GetJournalResponseBodyDto>>(`journals/${journalId}`)
+    .then((response) => processResponse(response));
 
-  const users = await Promise.all(
-    response.users.map(async (user) => {
-      const userInfo = await getUser(user.userId);
-
-      return {
-        role: Role[user.role as keyof typeof Role],
-        userId: userInfo.userId,
-        email: userInfo.email,
-        firstName: userInfo.firstName,
-        lastName: userInfo.lastName,
-      };
-    }),
-  );
-
-  const pages = response.pages.map((page) => {
-    return { ...page, createdAt: new Date(page.createdAt) };
-  });
-
-  return { ...response, users, pages };
+  return response;
 };
 
 export const createJournal = async (
@@ -61,7 +41,7 @@ export const createJournal = async (
   description: string,
 ) => {
   const response = protectedKioke
-    .post<HttpResponseBody<CreateJournalResponseBody>>('journals', {
+    .post<HttpResponseBody<CreateJournalResponseBodyDto>>('journals', {
       json: {
         shelfId,
         title,
@@ -90,7 +70,7 @@ export const shareJournal = async (
 
 export const updateJournal = async (
   journalId: string,
-  data: UpdateJournalRequestBody,
+  data: UpdateJournalRequestBodyDto,
 ) => {
   protectedKioke
     .patch(`journals/${journalId}`, {

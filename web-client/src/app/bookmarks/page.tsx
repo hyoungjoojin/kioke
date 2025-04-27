@@ -1,3 +1,4 @@
+import BookmarksList from './components/BookmarksList';
 import KiokeSidebar from '@/components/features/sidebar/KiokeSidebar';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { auth } from '@/lib/auth';
@@ -22,7 +23,11 @@ export default async function Bookmarks() {
       </header>
 
       <main className='w-full pt-16 px-3'>
-        <h1 className='pl-16 text-3xl'>Bookmarks</h1>
+        <h1 className='pl-16 text-3xl mb-16'>Bookmarks</h1>
+
+        <section className='px-16'>
+          <BookmarksList />
+        </section>
       </main>
     </>
   );

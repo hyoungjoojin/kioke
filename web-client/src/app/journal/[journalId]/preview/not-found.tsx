@@ -10,7 +10,7 @@ export default function NotFound() {
               404
             </h1>
             <p className='mb-4 text-lg font-light text-gray-500 dark:text-gray-400'>
-              The journal can't be found.
+              The journal can&apos;t be found.
             </p>
             <Link
               href='/'

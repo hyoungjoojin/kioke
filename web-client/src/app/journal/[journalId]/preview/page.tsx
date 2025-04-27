@@ -326,26 +326,26 @@ export default function JournalPreview() {
                 <div className='h-[32rem] flex items-center justify-center'>
                   {!userSearchState.isFocused && (
                     <div className='w-full self-start'>
-                      {journal.users.length ? (
+                      {journal.users ? (
                         journal.users.map((user, index) => {
+                          // TODO - UserDTO here is from the user service; cannot use generated types.
                           return (
                             <div
                               key={index}
                               className='w-4/5 mx-auto flex justify-between items-center py-2'
                             >
-                              <div className='flex'>
-                                <Avatar className='mr-2 h-8 w-8'>
-                                  <AvatarFallback>{`${user.firstName[0]}${user.lastName[0]}`}</AvatarFallback>
-                                </Avatar>
-                                <div>
-                                  <p className='text-sm'>
-                                    {user.firstName} {user.lastName}
-                                  </p>
-                                  <p className='text-xs'>{user.email}</p>
-                                </div>
-                              </div>
+                              {/* <div className='flex'> */}
+                              {/*   <Avatar className='mr-2 h-8 w-8'> */}
+                              {/*     <AvatarFallback>{`AA`}</AvatarFallback> */}
+                              {/*   </Avatar> */}
+                              {/*   <div> */}
+                              {/*     <p className='text-sm'> */}
+                              {/*     </p> */}
+                              {/*     <p className='text-xs'>{tem}</p> */}
+                              {/*   </div> */}
+                              {/* </div> */}
 
-                              <p>{Roles[user.role].title}</p>
+                              {/* <p>{Roles[user.role].title}</p> */}
                             </div>
                           );
                         })

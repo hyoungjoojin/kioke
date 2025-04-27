@@ -1,7 +1,7 @@
 import View from '@/constants/view';
 
 export const KIOKE_ROUTES: {
-  [key in View]: (...args: any[]) => string;
+  [key in View]: (...args: string[]) => string;
 } = {
   [View.HOME]: () => {
     return '/';

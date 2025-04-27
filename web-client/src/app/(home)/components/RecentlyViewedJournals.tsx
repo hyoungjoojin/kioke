@@ -1,13 +1,13 @@
 'use client';
 
-import { Card, CardContent, CardTitle } from '@/components/ui/card';
-import { useJournalsQuery } from '@/hooks/query/journal';
+import { Card, CardTitle } from '@/components/ui/card';
+import { useGetJournals } from '@/hooks/query/journal';
 import { Clock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export default function RecentlyViewedJournals() {
   const router = useRouter();
-  const { data: journals } = useJournalsQuery();
+  const { data: getJournalsResponse } = useGetJournals();
 
   return (
     <>
@@ -17,8 +17,8 @@ export default function RecentlyViewedJournals() {
       </h1>
 
       <div className='flex'>
-        {journals &&
-          journals.map((journal, index) => (
+        {getJournalsResponse?.journals &&
+          getJournalsResponse.journals.map((journal, index) => (
             <Card
               key={index}
               className='h-36 w-36 mx-1 hover:cursor-pointer'
@@ -27,7 +27,6 @@ export default function RecentlyViewedJournals() {
               }}
             >
               <CardTitle className='m-2'>{journal.title}</CardTitle>
-              <CardContent>{journal.description}</CardContent>
             </Card>
           ))}
       </div>
