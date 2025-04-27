@@ -1,13 +1,11 @@
 package kioke.journal.service;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import kioke.commons.exception.security.AccessDeniedException;
 import kioke.journal.constant.Permission;
 import kioke.journal.constant.Role;
 import kioke.journal.dto.data.journal.JournalDto;
-import kioke.journal.dto.data.journal.JournalPreviewDto;
 import kioke.journal.dto.request.journal.UpdateJournalRequestBodyDto;
 import kioke.journal.exception.journal.JournalNotFoundException;
 import kioke.journal.exception.shelf.ShelfNotFoundException;
@@ -39,17 +37,6 @@ public class JournalService {
     this.userJournalMetadataService = userJournalMetadataService;
     this.shelfService = shelfService;
     this.journalRepository = journalRepository;
-  }
-
-  @Transactional(readOnly = true)
-  public List<JournalPreviewDto> getJournals(String userId, Boolean bookmarked) {
-    Objects.requireNonNull(userId, "User ID should not be null.");
-
-    boolean findOnlyBookmarkedJournals = bookmarked == null ? false : bookmarked;
-    List<JournalPreviewDto> journalPreviewDtos =
-        userJournalMetadataService.getJournals(userId, findOnlyBookmarkedJournals);
-
-    return journalPreviewDtos;
   }
 
   @Transactional(readOnly = true)

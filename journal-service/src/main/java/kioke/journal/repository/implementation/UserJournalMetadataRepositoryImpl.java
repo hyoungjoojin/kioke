@@ -25,25 +25,10 @@ public class UserJournalMetadataRepositoryImpl implements UserJournalMetadataRep
   }
 
   @Override
-  public Optional<UserJournalMetadata> findByUserIdAndJournalId(String userId, String journalId) {
-    UserJournalMetadata result =
-        jpaQueryFactory
-            .selectFrom(userJournalMetadata)
-            .where(
-                userJournalMetadata
-                    .user
-                    .userId
-                    .eq(userId)
-                    .and(userJournalMetadata.journal.journalId.eq(journalId)))
-            .fetchOne();
-
-    return Optional.ofNullable(result);
-  }
-
-  @Override
-  public List<JournalPreviewDto> findAllJournalIdsByUser(
+  public List<JournalPreviewDto> findAllJournalsByUser(
       String userId, boolean findOnlyBookmarkedJournals) {
-    BooleanBuilder booleanBuilder = new BooleanBuilder();
+    BooleanBuilder booleanBuilder =
+        new BooleanBuilder().and(userJournalMetadata.user.userId.eq(userId));
     if (findOnlyBookmarkedJournals) {
       booleanBuilder.and(userJournalMetadata.isBookmarked.eq(true));
     }
@@ -60,5 +45,21 @@ public class UserJournalMetadataRepositoryImpl implements UserJournalMetadataRep
         .join(userJournalMetadata.journal, journal)
         .where(booleanBuilder)
         .fetch();
+  }
+
+  @Override
+  public Optional<UserJournalMetadata> findByUserIdAndJournalId(String userId, String journalId) {
+    UserJournalMetadata result =
+        jpaQueryFactory
+            .selectFrom(userJournalMetadata)
+            .where(
+                userJournalMetadata
+                    .user
+                    .userId
+                    .eq(userId)
+                    .and(userJournalMetadata.journal.journalId.eq(journalId)))
+            .fetchOne();
+
+    return Optional.ofNullable(result);
   }
 }

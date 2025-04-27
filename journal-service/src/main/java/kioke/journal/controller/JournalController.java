@@ -1,6 +1,9 @@
 package kioke.journal.controller;
 
+import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -19,6 +22,7 @@ import kioke.journal.exception.journal.JournalNotFoundException;
 import kioke.journal.exception.shelf.ShelfNotFoundException;
 import kioke.journal.model.Journal;
 import kioke.journal.service.JournalService;
+import kioke.journal.service.UserJournalMetadataService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,25 +39,40 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/journals")
-@Tag(name = "Journal Operations API")
+@Tag(name = "Journal Operations API", description = "API endpoints for managing journals.")
 @Slf4j
 public class JournalController {
 
   private final JournalService journalService;
+  private final UserJournalMetadataService userJournalMetadataService;
 
-  public JournalController(JournalService journalService) {
+  public JournalController(
+      JournalService journalService, UserJournalMetadataService userJournalMetadataService) {
     this.journalService = journalService;
+    this.userJournalMetadataService = userJournalMetadataService;
   }
 
   @GetMapping
-  @Tag(name = "Get Journals")
-  @Operation(summary = "Get all journals for a given user.")
   @HttpResponse(status = HttpStatus.OK)
+  @Operation(
+      summary = "Get a list of all journals.",
+      description = "Return a list of journals for the authentiated user.")
   @PreAuthorize("isAuthenticated()")
+  @Timed(value = "getJournals_timer", description = "Time taken to execute getJournals.")
   public GetJournalsResponseBodyDto getJournals(
       @AuthenticationPrincipal String userId,
-      @RequestParam(name = "bookmarked", required = false) Boolean bookmarked) {
-    List<JournalPreviewDto> journalPreviewDtos = journalService.getJournals(userId, bookmarked);
+      @Parameter(
+              name = "bookmarked",
+              description = "If true, only return bookmarked journals.",
+              in = ParameterIn.QUERY,
+              required = false)
+          @RequestParam(name = "bookmarked", required = false, defaultValue = "false")
+          Boolean findOnlyBookmarkedJournals) {
+    log.debug(
+        "recieved GET /journals request with params (bookmarked={})", findOnlyBookmarkedJournals);
+
+    List<JournalPreviewDto> journalPreviewDtos =
+        userJournalMetadataService.getJournals(userId, findOnlyBookmarkedJournals);
 
     return GetJournalsResponseBodyDto.from(journalPreviewDtos);
   }
@@ -65,7 +84,8 @@ public class JournalController {
   @PreAuthorize("isAuthenticated()")
   public GetJournalsResponseBodyDto getRecentlyViewedJournals(
       @AuthenticationPrincipal String userId) {
-    List<JournalPreviewDto> journalPreviewDtos = journalService.getJournals(userId, false);
+    List<JournalPreviewDto> journalPreviewDtos =
+        userJournalMetadataService.getJournals(userId, false);
 
     return GetJournalsResponseBodyDto.from(journalPreviewDtos);
   }

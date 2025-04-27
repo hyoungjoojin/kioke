@@ -26,8 +26,12 @@ public class UserJournalMetadataService {
 
   @Transactional(readOnly = true)
   public List<JournalPreviewDto> getJournals(String userId, boolean findOnlyBookmarkedJournals) {
-    return userJournalMetadataRepository.findAllJournalIdsByUser(
-        userId, findOnlyBookmarkedJournals);
+    log.debug("start fetching journals from database");
+    List<JournalPreviewDto> journals =
+        userJournalMetadataRepository.findAllJournalsByUser(userId, findOnlyBookmarkedJournals);
+    log.debug("finished fetching journals from database");
+
+    return journals;
   }
 
   @Transactional

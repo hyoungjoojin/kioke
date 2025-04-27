@@ -19,7 +19,13 @@ public class AuthorizationFilter extends AbstractAuthorizationFilter {
 
   private final List<HttpRequest> whitelist =
       Collections.unmodifiableList(
-          Arrays.asList(new HttpRequest(HttpMethod.GET, "/v3/api-docs/journal")));
+          Arrays.asList(
+              new HttpRequest(HttpMethod.GET, "/v3/api-docs/journal"),
+              new HttpRequest(HttpMethod.GET, "/actuator"),
+              new HttpRequest(HttpMethod.GET, "/actuator/health"),
+              new HttpRequest(HttpMethod.GET, "/actuator/info"),
+              new HttpRequest(HttpMethod.GET, "/actuator/prometheus"),
+              new HttpRequest(HttpMethod.GET, "/actuator/metrics")));
 
   public AuthorizationFilter(UserService userService, AuthService authService) {
     this.userService = userService;
