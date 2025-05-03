@@ -6,6 +6,7 @@ import static kioke.journal.model.QUserJournalMetadata.userJournalMetadata;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import kioke.journal.dto.data.journal.JournalPreviewDto;
@@ -27,6 +28,10 @@ public class UserJournalMetadataRepositoryImpl implements UserJournalMetadataRep
   @Override
   public List<JournalPreviewDto> findAllJournalsByUser(
       String userId, boolean findOnlyBookmarkedJournals) {
+    if (userId == null) {
+      return Collections.emptyList();
+    }
+
     BooleanBuilder booleanBuilder =
         new BooleanBuilder().and(userJournalMetadata.user.userId.eq(userId));
     if (findOnlyBookmarkedJournals) {

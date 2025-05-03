@@ -7,5 +7,5 @@
 import type { JournalPreviewDto } from './journalPreviewDto';
 
 export interface GetJournalsResponseBodyDto {
-  journals?: JournalPreviewDto[];
+  journals: JournalPreviewDto[];
 }

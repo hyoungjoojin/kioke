@@ -30,3 +30,7 @@ kioke:
   mock:
     data-generator:
       enabled: false
+
+logging:
+  level:
+    kioke: DEBUG

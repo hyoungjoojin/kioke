@@ -22,7 +22,6 @@ import kioke.journal.exception.journal.JournalNotFoundException;
 import kioke.journal.exception.shelf.ShelfNotFoundException;
 import kioke.journal.model.Journal;
 import kioke.journal.service.JournalService;
-import kioke.journal.service.UserJournalMetadataService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -44,21 +43,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class JournalController {
 
   private final JournalService journalService;
-  private final UserJournalMetadataService userJournalMetadataService;
 
-  public JournalController(
-      JournalService journalService, UserJournalMetadataService userJournalMetadataService) {
+  public JournalController(JournalService journalService) {
     this.journalService = journalService;
-    this.userJournalMetadataService = userJournalMetadataService;
   }
 
+  @Timed(value = "getJournals_timer")
   @GetMapping
   @HttpResponse(status = HttpStatus.OK)
   @Operation(
       summary = "Get a list of all journals.",
-      description = "Return a list of journals for the authentiated user.")
+      description = "Return a list of journals for the authenticated user.")
   @PreAuthorize("isAuthenticated()")
-  @Timed(value = "getJournals_timer", description = "Time taken to execute getJournals.")
   public GetJournalsResponseBodyDto getJournals(
       @AuthenticationPrincipal String userId,
       @Parameter(
@@ -69,10 +65,10 @@ public class JournalController {
           @RequestParam(name = "bookmarked", required = false, defaultValue = "false")
           Boolean findOnlyBookmarkedJournals) {
     log.debug(
-        "recieved GET /journals request with params (bookmarked={})", findOnlyBookmarkedJournals);
+        "received GET /journals request with params (bookmarked={})", findOnlyBookmarkedJournals);
 
     List<JournalPreviewDto> journalPreviewDtos =
-        userJournalMetadataService.getJournals(userId, findOnlyBookmarkedJournals);
+        journalService.getJournals(userId, findOnlyBookmarkedJournals);
 
     return GetJournalsResponseBodyDto.from(journalPreviewDtos);
   }
@@ -84,8 +80,7 @@ public class JournalController {
   @PreAuthorize("isAuthenticated()")
   public GetJournalsResponseBodyDto getRecentlyViewedJournals(
       @AuthenticationPrincipal String userId) {
-    List<JournalPreviewDto> journalPreviewDtos =
-        userJournalMetadataService.getJournals(userId, false);
+    List<JournalPreviewDto> journalPreviewDtos = journalService.getJournals(userId, false);
 
     return GetJournalsResponseBodyDto.from(journalPreviewDtos);
   }

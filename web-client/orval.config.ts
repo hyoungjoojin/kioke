@@ -7,7 +7,7 @@ export default defineConfig({
     },
     output: {
       target: './.cache/generated/journal.ts',
-      schemas: './src/types/server/journal.generated',
+      schemas: './src/types/server/journal/generated',
     },
     hooks: {
       afterAllFilesWrite: 'prettier --write',

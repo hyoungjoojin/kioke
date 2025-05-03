@@ -1,11 +1,13 @@
 package kioke.journal.service;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import kioke.commons.exception.security.AccessDeniedException;
 import kioke.journal.constant.Permission;
 import kioke.journal.constant.Role;
 import kioke.journal.dto.data.journal.JournalDto;
+import kioke.journal.dto.data.journal.JournalPreviewDto;
 import kioke.journal.dto.request.journal.UpdateJournalRequestBodyDto;
 import kioke.journal.exception.journal.JournalNotFoundException;
 import kioke.journal.exception.shelf.ShelfNotFoundException;
@@ -14,6 +16,7 @@ import kioke.journal.model.Shelf;
 import kioke.journal.model.User;
 import kioke.journal.model.UserJournalMetadata;
 import kioke.journal.repository.JournalRepository;
+import kioke.journal.repository.UserJournalMetadataRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,16 +30,33 @@ public class JournalService {
   private final ShelfService shelfService;
 
   private final JournalRepository journalRepository;
+  private final UserJournalMetadataRepository userJournalMetadataRepository;
 
   public JournalService(
       UserService userService,
       UserJournalMetadataService userJournalMetadataService,
       ShelfService shelfService,
-      JournalRepository journalRepository) {
+      JournalRepository journalRepository,
+      UserJournalMetadataRepository userJournalMetadataRepository) {
     this.userService = userService;
     this.userJournalMetadataService = userJournalMetadataService;
     this.shelfService = shelfService;
     this.journalRepository = journalRepository;
+    this.userJournalMetadataRepository = userJournalMetadataRepository;
+  }
+
+  @Transactional(readOnly = true)
+  public List<JournalPreviewDto> getJournals(String userId, boolean findOnlyBookmarkedJournals) {
+    if (userId == null) {
+      throw new IllegalArgumentException("User ID should not be null.");
+    }
+
+    log.debug("start fetching journals from database");
+    List<JournalPreviewDto> journals =
+        userJournalMetadataRepository.findAllJournalsByUser(userId, findOnlyBookmarkedJournals);
+    log.debug("finished fetching journals from database");
+
+    return journals;
   }
 
   @Transactional(readOnly = true)

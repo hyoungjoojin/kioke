@@ -8,7 +8,7 @@ import {
   GetJournalsParams,
   GetJournalsResponseBodyDto,
   UpdateJournalRequestBodyDto,
-} from '@/types/server/journal.generated';
+} from '@/types/server/journal/generated';
 import { processResponse, protectedKioke } from '@/utils/server';
 
 export async function getJournals(

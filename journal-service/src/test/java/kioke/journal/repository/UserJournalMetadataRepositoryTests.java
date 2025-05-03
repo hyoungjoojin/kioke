@@ -72,13 +72,13 @@ public class UserJournalMetadataRepositoryTests {
     dynamicPropertyRegistry.add("spring.datasource.password", postgreSQLContainer::getPassword);
   }
 
-  private User targetUser;
-  private User otherUser;
+  private User user1;
+  private User user2;
   private User nonExistingUser;
 
-  private Journal targetJournal;
-  private Journal targetBookmarkedJournal;
-  private Journal otherJournal;
+  private Journal journal1;
+  private Journal journal2;
+  private Journal bookmarkedJournal1;
 
   @BeforeEach
   private void setUp() {
@@ -90,33 +90,42 @@ public class UserJournalMetadataRepositoryTests {
   }
 
   @Test
-  public void test_findAllJournalsByUser_userHasJournals_returnJournals() {
+  public void
+      test_findAllJournalsByUser_givenUserHasJournals_whenFindAllJournals_thenReturnJournals() {
     List<JournalPreviewDto> journals =
-        userJournalMetadataRepository.findAllJournalsByUser(targetUser.getUserId(), false);
+        userJournalMetadataRepository.findAllJournalsByUser(user1.getUserId(), false);
     assertNotNull(journals);
     assertSame(journals.size(), 2);
 
     List<String> actual = journals.stream().map(JournalPreviewDto::journalId).toList();
-    log.info(actual.toArray().toString());
 
     assertThat(
-        actual,
-        containsInAnyOrder(targetJournal.getJournalId(), targetBookmarkedJournal.getJournalId()));
+        actual, containsInAnyOrder(journal1.getJournalId(), bookmarkedJournal1.getJournalId()));
   }
 
   @Test
-  public void test_findAllJournalsByUser_userHasBookmarkedJournals_returnBookmarkedJournals() {
+  public void
+      test_findAllJournalsByUser_givenUserHasBookmarkedJournals_whenFindOnlyBookmarkedJournals_thenReturnBookmarkedJournals() {
     List<JournalPreviewDto> journals =
-        userJournalMetadataRepository.findAllJournalsByUser(targetUser.getUserId(), true);
+        userJournalMetadataRepository.findAllJournalsByUser(user1.getUserId(), true);
     assertNotNull(journals);
     assertSame(journals.size(), 1);
-    assertSame(journals.get(0).journalId(), targetBookmarkedJournal.getJournalId());
+    assertSame(journals.get(0).journalId(), bookmarkedJournal1.getJournalId());
   }
 
   @Test
-  public void test_findAllJournalsByUser_userIdDoesNotExist_returnJournals() {
+  public void
+      test_findAllJournalsByUser_givenUserIdDoesNotExist_whenFindAllJournals_returnEmptyList() {
     List<JournalPreviewDto> journals =
         userJournalMetadataRepository.findAllJournalsByUser(nonExistingUser.getUserId(), false);
+    assertNotNull(journals);
+    assertSame(journals.size(), 0);
+  }
+
+  @Test
+  public void test_findAllJournalsByUser_givenNullUserId_whenFindAllJournals_returnEmptyList() {
+    List<JournalPreviewDto> journals =
+        userJournalMetadataRepository.findAllJournalsByUser(null, false);
     assertNotNull(journals);
     assertSame(journals.size(), 0);
   }
@@ -130,29 +139,29 @@ public class UserJournalMetadataRepositoryTests {
 
   @Transactional
   private void generateUsers() {
-    targetUser = User.builder().userId("ef5ceb4b-4575-40d6-948c-8252ca9663b7").build();
-    otherUser = User.builder().userId("9f409cb1-6b09-48c2-bf71-061dd962ca6b").build();
+    user1 = User.builder().userId("ef5ceb4b-4575-40d6-948c-8252ca9663b7").build();
+    user2 = User.builder().userId("9f409cb1-6b09-48c2-bf71-061dd962ca6b").build();
     nonExistingUser = User.builder().userId("7348d6db-6440-4aff-964f-933977ad7855").build();
 
-    List<User> users = userRepository.saveAll(List.of(targetUser, otherUser));
-    targetUser = users.get(0);
-    otherUser = users.get(1);
+    List<User> users = userRepository.saveAll(List.of(user1, user2));
+    user1 = users.get(0);
+    user2 = users.get(1);
   }
 
   @Transactional
   private void generateJournals() {
-    targetJournal =
+    journal1 =
         Journal.builder().title(faker.book().title()).description(faker.lorem().sentence()).build();
-    targetBookmarkedJournal =
+    bookmarkedJournal1 =
         Journal.builder().title(faker.book().title()).description(faker.lorem().sentence()).build();
-    otherJournal =
+    journal2 =
         Journal.builder().title(faker.book().title()).description(faker.lorem().sentence()).build();
 
     List<Journal> journals =
-        journalRepository.saveAll(List.of(targetJournal, targetBookmarkedJournal, otherJournal));
-    targetJournal = journals.get(0);
-    targetBookmarkedJournal = journals.get(1);
-    otherJournal = journals.get(2);
+        journalRepository.saveAll(List.of(journal1, bookmarkedJournal1, journal2));
+    journal1 = journals.get(0);
+    bookmarkedJournal1 = journals.get(1);
+    journal2 = journals.get(2);
   }
 
   @Transactional
@@ -160,22 +169,22 @@ public class UserJournalMetadataRepositoryTests {
     List<UserJournalMetadata> userJournalMetadata =
         List.of(
             UserJournalMetadata.builder()
-                .user(targetUser)
-                .journal(targetJournal)
+                .user(user1)
+                .journal(journal1)
                 .role(Role.AUTHOR)
                 .lastViewed(Instant.now())
                 .isBookmarked(false)
                 .build(),
             UserJournalMetadata.builder()
-                .user(targetUser)
-                .journal(targetBookmarkedJournal)
+                .user(user1)
+                .journal(bookmarkedJournal1)
                 .role(Role.AUTHOR)
                 .lastViewed(Instant.now())
                 .isBookmarked(true)
                 .build(),
             UserJournalMetadata.builder()
-                .user(otherUser)
-                .journal(otherJournal)
+                .user(user2)
+                .journal(journal2)
                 .role(Role.AUTHOR)
                 .lastViewed(Instant.now())
                 .isBookmarked(true)
