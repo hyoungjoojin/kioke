@@ -1,5 +1,5 @@
-import { Role } from "@/constants/role";
-import { PagePreview } from "./page";
+import { PagePreview } from './page';
+import { Role } from '@/constants/role';
 
 export interface Journal {
   journalId: string;

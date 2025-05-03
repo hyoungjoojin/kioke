@@ -25,7 +25,7 @@ public class DataSourceProxyConfiguration {
       if (bean instanceof DataSource && !(bean instanceof ProxyDataSource)) {
         return ProxyDataSourceBuilder.create((DataSource) bean)
             .name("Journal Database DataSource")
-            .logQueryBySlf4j(SLF4JLogLevel.INFO)
+            .logQueryBySlf4j(SLF4JLogLevel.DEBUG)
             .multiline()
             .countQuery()
             .build();

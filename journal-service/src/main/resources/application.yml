@@ -33,3 +33,10 @@ rabbitmq:
   queue:
     user-registration:
       name: user.registration.journal
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs/journal
+
+  swagger-ui:
+    enabled: false

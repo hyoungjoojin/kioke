@@ -1,6 +1,9 @@
 package kioke.journal.controller;
 
+import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -35,7 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/journals")
-@Tag(name = "Journal Operations API")
+@Tag(name = "Journal Operations API", description = "API endpoints for managing journals.")
 @Slf4j
 public class JournalController {
 
@@ -45,15 +48,27 @@ public class JournalController {
     this.journalService = journalService;
   }
 
+  @Timed(value = "getJournals_timer")
   @GetMapping
-  @Tag(name = "Get Journals")
-  @Operation(summary = "Get all journals for a given user.")
   @HttpResponse(status = HttpStatus.OK)
+  @Operation(
+      summary = "Get a list of all journals.",
+      description = "Return a list of journals for the authenticated user.")
   @PreAuthorize("isAuthenticated()")
   public GetJournalsResponseBodyDto getJournals(
       @AuthenticationPrincipal String userId,
-      @RequestParam(name = "bookmarked", required = false) Boolean bookmarked) {
-    List<JournalPreviewDto> journalPreviewDtos = journalService.getJournals(userId, bookmarked);
+      @Parameter(
+              name = "bookmarked",
+              description = "If true, only return bookmarked journals.",
+              in = ParameterIn.QUERY,
+              required = false)
+          @RequestParam(name = "bookmarked", required = false, defaultValue = "false")
+          Boolean findOnlyBookmarkedJournals) {
+    log.debug(
+        "received GET /journals request with params (bookmarked={})", findOnlyBookmarkedJournals);
+
+    List<JournalPreviewDto> journalPreviewDtos =
+        journalService.getJournals(userId, findOnlyBookmarkedJournals);
 
     return GetJournalsResponseBodyDto.from(journalPreviewDtos);
   }

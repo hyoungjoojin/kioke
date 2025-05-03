@@ -1,4 +1,4 @@
-import { useBoundStore } from "@/components/providers/StoreProvider";
+import { useBoundStore } from '@/components/providers/StoreProvider';
 
 export const useCurrentView = () => {
   const currentView = useBoundStore((state) => state.currentView);

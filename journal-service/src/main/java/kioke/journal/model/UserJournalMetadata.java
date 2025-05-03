@@ -37,11 +37,11 @@ public class UserJournalMetadata {
   @GeneratedValue(strategy = GenerationType.UUID)
   private String id;
 
-  @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+  @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
   @JoinColumn(name = "USER_ID", nullable = false)
   private User user;
 
-  @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+  @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
   @JoinColumn(name = "JOURNAL_ID", nullable = false)
   private Journal journal;
 

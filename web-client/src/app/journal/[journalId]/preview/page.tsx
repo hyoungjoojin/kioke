@@ -1,61 +1,61 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  useJournalQuery,
-  useToggleJournalBookmarkMutation,
-  useUpdateJournalMutation,
-} from "@/hooks/query/journal";
+import { shareJournal } from '@/app/api/journal';
+import { searchUser } from '@/app/api/user';
+import EditableTitle from '@/components/features/editor/EditableTitle';
+import KiokeSidebar from '@/components/features/sidebar/KiokeSidebar';
+import { getQueryClient } from '@/components/providers/QueryProvider';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import Calendar from '@/components/ui/calendar/calendar';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Ellipsis,
-  UserRoundPlus,
-  Trash2,
-  Heart,
-  Plus,
-  List,
-  CalendarRange,
-  TextIcon,
-  ArrowLeft,
-} from "lucide-react";
-import View from "@/constants/view";
-import { notFound, redirect, useParams, useRouter } from "next/navigation";
-import { useCreatePageMutation } from "@/hooks/query/page";
-import { Input } from "@/components/ui/input";
-import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
-import { emailSchema } from "@/utils/schema";
-import { searchUser } from "@/app/api/user";
-import { SearchUserResponseBody } from "@/types/server/user";
-import debounce from "lodash/debounce";
-import { RingSpinner } from "@/components/ui/spinner";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Role, Roles } from "@/constants/role";
-import { shareJournal } from "@/app/api/journal";
-import { getQueryClient } from "@/components/providers/QueryProvider";
-import EditableTitle from "@/components/features/editor/EditableTitle";
-import Calendar from "@/components/ui/calendar/calendar";
-import { ErrorCode } from "@/constants/errors";
-import KiokeSidebar from "@/components/features/sidebar/KiokeSidebar";
-import { useSession } from "next-auth/react";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { useCurrentView } from "@/hooks/store/view";
+} from '@/components/ui/select';
+import { SidebarTrigger } from '@/components/ui/sidebar';
+import { RingSpinner } from '@/components/ui/spinner';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ErrorCode } from '@/constants/errors';
+import { Role, Roles } from '@/constants/role';
+import View from '@/constants/view';
+import {
+  useJournalQuery,
+  useToggleJournalBookmarkMutation,
+  useUpdateJournalMutation,
+} from '@/hooks/query/journal';
+import { useCreatePageMutation } from '@/hooks/query/page';
+import { useCurrentView } from '@/hooks/store/view';
+import { SearchUserResponseBody } from '@/types/server/user';
+import { emailSchema } from '@/utils/schema';
+import debounce from 'lodash/debounce';
+import {
+  ArrowLeft,
+  CalendarRange,
+  Ellipsis,
+  Heart,
+  List,
+  Plus,
+  TextIcon,
+  Trash2,
+  UserRoundPlus,
+} from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { notFound, redirect, useParams, useRouter } from 'next/navigation';
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
 
 enum JOURNAL_PREVIEW_OPTION {
-  LIST = "list",
-  CALENDAR = "calendar",
+  LIST = 'list',
+  CALENDAR = 'calendar',
 }
 
 interface UserSearchState {
@@ -70,11 +70,11 @@ const JournalPreviewOptionValues: {
 } = {
   [JOURNAL_PREVIEW_OPTION.LIST]: {
     icon: <List size={16} />,
-    title: "List",
+    title: 'List',
   },
   [JOURNAL_PREVIEW_OPTION.CALENDAR]: {
     icon: <CalendarRange size={16} />,
-    title: "Calendar",
+    title: 'Calendar',
   },
 };
 
@@ -102,7 +102,7 @@ export default function JournalPreview() {
   const queryClient = getQueryClient();
 
   const userSearchInputRef = useRef<HTMLInputElement | null>(null);
-  const [userSearchQuery, setUserSearchQuery] = useState("");
+  const [userSearchQuery, setUserSearchQuery] = useState('');
   const [inviteeRole, setInviteeRole] = useState<Role | null>(null);
   const [userSearchState, setUserSearchState] = useState<UserSearchState>({
     isFocused: false,
@@ -113,7 +113,7 @@ export default function JournalPreview() {
 
   const user = session?.data?.user;
   if (!user) {
-    redirect("/auth/login");
+    redirect('/auth/login');
   }
 
   const searchUserInputChangeHandler = useMemo(
@@ -121,7 +121,7 @@ export default function JournalPreview() {
       debounce(async (event: ChangeEvent<HTMLInputElement>) => {
         const query = event.target.value;
 
-        if (userSearchState.isFocused && query === "") {
+        if (userSearchState.isFocused && query === '') {
           setUserSearchState((state) => ({
             ...state,
             isFocused: false,
@@ -179,7 +179,7 @@ export default function JournalPreview() {
     try {
       if (user.userId) {
         await shareJournal(user.userId, journalId, inviteeRole);
-        queryClient.invalidateQueries({ queryKey: ["journals", journalId] });
+        queryClient.invalidateQueries({ queryKey: ['journals', journalId] });
       }
     } catch (e) {
       console.log(e);
@@ -191,7 +191,7 @@ export default function JournalPreview() {
   }
 
   if (isLoading || !journal) {
-    return "Loading...";
+    return 'Loading...';
   }
 
   return (
@@ -200,22 +200,22 @@ export default function JournalPreview() {
         <KiokeSidebar user={user} />
       </aside>
 
-      <header className="absolute w-full pt-3 px-3 flex justify-between">
-        <div className="flex items-center">
+      <header className='absolute w-full pt-3 px-3 flex justify-between'>
+        <div className='flex items-center'>
           <SidebarTrigger />
 
-          <Button variant="ghost" className="hover:cursor-not-allowed">
+          <Button variant='ghost' className='hover:cursor-not-allowed'>
             <ArrowLeft size={18} />
             <span>Back to shelf</span>
           </Button>
         </div>
 
-        <div className="flex items-center">
+        <div className='flex items-center'>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm">
+              <Button variant='ghost' size='sm'>
                 <UserRoundPlus size={18} />
-                <p className="text-sm font-semibold text-gray-600">Share</p>
+                <p className='text-sm font-semibold text-gray-600'>Share</p>
               </Button>
             </DropdownMenuTrigger>
 
@@ -233,21 +233,21 @@ export default function JournalPreview() {
                   e.preventDefault();
                 }
               }}
-              align="end"
+              align='end'
             >
-              <div className="rounded-xl w-[28rem]">
-                <div className="relative">
-                  <div className="flex">
+              <div className='rounded-xl w-[28rem]'>
+                <div className='relative'>
+                  <div className='flex'>
                     <Input
                       ref={userSearchInputRef}
-                      placeholder="Invite people by email"
+                      placeholder='Invite people by email'
                       value={userSearchQuery}
                       onChange={(event) => {
                         setUserSearchQuery(event.target.value);
                         searchUserInputChangeHandler(event);
                       }}
                       onKeyDown={(event) => {
-                        if (event.key === "Enter") {
+                        if (event.key === 'Enter') {
                           searchUserInputSubmitHandler();
                         }
                       }}
@@ -260,13 +260,13 @@ export default function JournalPreview() {
                     />
 
                     <Select
-                      value={inviteeRole?.toString() ?? ""}
+                      value={inviteeRole?.toString() ?? ''}
                       onValueChange={(role) => {
                         setInviteeRole(Role[role as keyof typeof Role]);
                       }}
                     >
-                      <SelectTrigger className="ml-1 text-xs w-28">
-                        <SelectValue placeholder="Select Role" />
+                      <SelectTrigger className='ml-1 text-xs w-28'>
+                        <SelectValue placeholder='Select Role' />
                       </SelectTrigger>
 
                       <SelectContent>
@@ -279,7 +279,7 @@ export default function JournalPreview() {
                     </Select>
 
                     <Button
-                      className="ml-1"
+                      className='ml-1'
                       onClick={searchUserInputSubmitHandler}
                     >
                       Invite
@@ -287,12 +287,12 @@ export default function JournalPreview() {
                   </div>
 
                   {userSearchState.isFocused && (
-                    <div className="absolute w-full mt-2 px-2">
-                      <div className="flex justify-between items-center">
-                        <div className="text-sm">
+                    <div className='absolute w-full mt-2 px-2'>
+                      <div className='flex justify-between items-center'>
+                        <div className='text-sm'>
                           Invite someone to join your journey.
                           {!userSearchState.isValidEmail && (
-                            <p className="text-xs">
+                            <p className='text-xs'>
                               Enter an email address to invite someone new.
                             </p>
                           )}
@@ -304,16 +304,16 @@ export default function JournalPreview() {
                       {!userSearchState.isLoading &&
                         userSearchState.isValidEmail &&
                         userSearchState.user && (
-                          <div className="mt-5 flex">
-                            <Avatar className="mr-2 h-8 w-8">
+                          <div className='mt-5 flex'>
+                            <Avatar className='mr-2 h-8 w-8'>
                               <AvatarFallback>{`${userSearchState.user.firstName[0]}${userSearchState.user.lastName[0]}`}</AvatarFallback>
                             </Avatar>
                             <div>
-                              <p className="text-sm">
-                                {userSearchState.user.firstName}{" "}
+                              <p className='text-sm'>
+                                {userSearchState.user.firstName}{' '}
                                 {userSearchState.user.lastName}
                               </p>
-                              <p className="text-xs">
+                              <p className='text-xs'>
                                 {userSearchState.user.email}
                               </p>
                             </div>
@@ -323,38 +323,38 @@ export default function JournalPreview() {
                   )}
                 </div>
 
-                <div className="h-[32rem] flex items-center justify-center">
+                <div className='h-[32rem] flex items-center justify-center'>
                   {!userSearchState.isFocused && (
-                    <div className="w-full self-start">
-                      {journal.users.length ? (
+                    <div className='w-full self-start'>
+                      {journal.users ? (
                         journal.users.map((user, index) => {
+                          // TODO - UserDTO here is from the user service; cannot use generated types.
                           return (
                             <div
                               key={index}
-                              className="w-4/5 mx-auto flex justify-between items-center py-2"
+                              className='w-4/5 mx-auto flex justify-between items-center py-2'
                             >
-                              <div className="flex">
-                                <Avatar className="mr-2 h-8 w-8">
-                                  <AvatarFallback>{`${user.firstName[0]}${user.lastName[0]}`}</AvatarFallback>
-                                </Avatar>
-                                <div>
-                                  <p className="text-sm">
-                                    {user.firstName} {user.lastName}
-                                  </p>
-                                  <p className="text-xs">{user.email}</p>
-                                </div>
-                              </div>
+                              {/* <div className='flex'> */}
+                              {/*   <Avatar className='mr-2 h-8 w-8'> */}
+                              {/*     <AvatarFallback>{`AA`}</AvatarFallback> */}
+                              {/*   </Avatar> */}
+                              {/*   <div> */}
+                              {/*     <p className='text-sm'> */}
+                              {/*     </p> */}
+                              {/*     <p className='text-xs'>{tem}</p> */}
+                              {/*   </div> */}
+                              {/* </div> */}
 
-                              <p>{Roles[user.role].title}</p>
+                              {/* <p>{Roles[user.role].title}</p> */}
                             </div>
                           );
                         })
                       ) : (
                         <>
-                          <p className="font-bold text-center">
+                          <p className='font-bold text-center'>
                             Share this moment.
                           </p>
-                          <p className="text-sm text-center">
+                          <p className='text-sm text-center'>
                             Invite your friends and family to your journey.
                           </p>
                         </>
@@ -373,7 +373,7 @@ export default function JournalPreview() {
             }}
           >
             {journal.bookmarked ? (
-              <Heart size={20} fill="black" />
+              <Heart size={20} fill='black' />
             ) : (
               <Heart size={20} />
             )}
@@ -381,15 +381,15 @@ export default function JournalPreview() {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant='ghost' size='icon'>
                 <Ellipsis size={18} />
               </Button>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align='end'>
               <DropdownMenuItem>
-                <div className="flex items-center text-red-500">
-                  <Trash2 size={16} className="mx-1" />
+                <div className='flex items-center text-red-500'>
+                  <Trash2 size={16} className='mx-1' />
                   Delete Journal
                 </div>
               </DropdownMenuItem>
@@ -398,8 +398,8 @@ export default function JournalPreview() {
         </div>
       </header>
 
-      <main className="w-full pt-16">
-        <section className="px-16">
+      <main className='w-full pt-16'>
+        <section className='px-16'>
           <EditableTitle
             content={journal.title}
             onSubmit={(title) => {
@@ -408,23 +408,23 @@ export default function JournalPreview() {
               }
             }}
           />
-          <p className="mt-5 italic">{journal.description}</p>
+          <p className='mt-5 italic'>{journal.description}</p>
 
-          <h2 className="text-xl mt-12">Pages</h2>
+          <h2 className='text-xl mt-12'>Pages</h2>
 
-          <Tabs defaultValue={JOURNAL_PREVIEW_OPTION.LIST} className="mt-2">
-            <div className="flex justify-between items-center">
-              <TabsList className="grid grid-cols-2">
+          <Tabs defaultValue={JOURNAL_PREVIEW_OPTION.LIST} className='mt-2'>
+            <div className='flex justify-between items-center'>
+              <TabsList className='grid grid-cols-2'>
                 {Object.entries(JournalPreviewOptionValues).map(
                   ([key, value]) => {
                     return (
                       <TabsTrigger
                         key={key}
                         value={key}
-                        className="w-full flex justify-center px-4"
+                        className='w-full flex justify-center px-4'
                       >
                         {value.icon}
-                        <p className="ml-1">{value.title}</p>
+                        <p className='ml-1'>{value.title}</p>
                       </TabsTrigger>
                     );
                   },
@@ -432,14 +432,14 @@ export default function JournalPreview() {
               </TabsList>
 
               <Button
-                variant="ghost"
-                size="sm"
+                variant='ghost'
+                size='sm'
                 onClick={() => {
                   createPage();
                 }}
               >
                 <Plus size={16} />
-                <p className="text-xs font-semibold text-gray-600">Add Page</p>
+                <p className='text-xs font-semibold text-gray-600'>Add Page</p>
               </Button>
             </div>
 
@@ -448,16 +448,16 @@ export default function JournalPreview() {
                 return (
                   <div
                     key={index}
-                    className="flex justify-between items-center my-2"
+                    className='flex justify-between items-center my-2'
                   >
                     <p
                       onClick={() => {
                         router.push(`/journal/${journalId}/${page.pageId}`);
                       }}
-                      className="flex items-center border-b border-b-transparent hover:border-b-black hover:cursor-pointer"
+                      className='flex items-center border-b border-b-transparent hover:border-b-black hover:cursor-pointer'
                     >
-                      <TextIcon size={16} className="mr-1" />
-                      {page.title === "" ? "Untitled" : page.title}
+                      <TextIcon size={16} className='mr-1' />
+                      {page.title === '' ? 'Untitled' : page.title}
                     </p>
                     <p>{page.createdAt.toDateString()}</p>
                   </div>

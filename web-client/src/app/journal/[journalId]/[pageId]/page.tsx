@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import EditableTitle from "@/components/features/editor/EditableTitle";
-import PageEditor from "@/components/features/editor/PageEditor";
-import { usePageQuery, useUpdatePageMutation } from "@/hooks/query/page";
-import { cn } from "@/lib/utils";
-import { ArrowLeft } from "lucide-react";
-import { redirect, useParams, useRouter } from "next/navigation";
-import Spinner from "./components/Spinner";
-import KiokeSidebar from "@/components/features/sidebar/KiokeSidebar";
-import { useSession } from "next-auth/react";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import Spinner from './components/Spinner';
+import EditableTitle from '@/components/features/editor/EditableTitle';
+import PageEditor from '@/components/features/editor/PageEditor';
+import KiokeSidebar from '@/components/features/sidebar/KiokeSidebar';
+import { SidebarTrigger } from '@/components/ui/sidebar';
+import { usePageQuery, useUpdatePageMutation } from '@/hooks/query/page';
+import { cn } from '@/lib/utils';
+import { ArrowLeft } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { redirect, useParams, useRouter } from 'next/navigation';
 
 export default function Page() {
   const session = useSession();
@@ -25,7 +25,7 @@ export default function Page() {
 
   const user = session?.data?.user;
   if (!user) {
-    redirect("/auth/login");
+    redirect('/auth/login');
   }
 
   if (!page) {
@@ -38,17 +38,17 @@ export default function Page() {
         <KiokeSidebar user={user} />
       </aside>
 
-      <header className="absolute w-full p-3 flex justify-between">
-        <div className="flex">
+      <header className='absolute w-full p-3 flex justify-between'>
+        <div className='flex'>
           <SidebarTrigger />
 
           <div
-            className="flex items-center justify-center hover:cursor-pointer"
+            className='flex items-center justify-center hover:cursor-pointer'
             onClick={() => {
               router.push(`/journal/${journalId}/preview`);
             }}
           >
-            <ArrowLeft size={15} className="mr-1" />
+            <ArrowLeft size={15} className='mr-1' />
             <span>Back to journal</span>
           </div>
         </div>
@@ -56,10 +56,10 @@ export default function Page() {
         <Spinner />
       </header>
 
-      <main className="w-full pt-16">
-        <div className={cn("bg-white max-sm:w-11/12 m-auto h-full px-16")}>
+      <main className='w-full pt-16'>
+        <div className={cn('bg-white max-sm:w-11/12 m-auto h-full px-16')}>
           <EditableTitle
-            content={page.title.length === 0 ? "Untitled" : page.title}
+            content={page.title.length === 0 ? 'Untitled' : page.title}
             onSubmit={(title) => {
               if (title !== page.title) {
                 updatePage(title);

@@ -1,11 +1,11 @@
-import { getShelf, getShelves, updateShelf } from "@/app/api/shelf";
-import { getQueryClient } from "@/components/providers/QueryProvider";
-import { Shelf } from "@/types/primitives/shelf";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { getShelf, getShelves, updateShelf } from '@/app/api/shelf';
+import { getQueryClient } from '@/components/providers/QueryProvider';
+import { Shelf } from '@/types/primitives/shelf';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 export const useShelvesQuery = () => {
   return useQuery({
-    queryKey: ["shelves"],
+    queryKey: ['shelves'],
     queryFn: getShelves,
     staleTime: 60 * 1000,
   });
@@ -13,7 +13,7 @@ export const useShelvesQuery = () => {
 
 export const useShelfQuery = (shelfId: string) => {
   return useQuery({
-    queryKey: ["shelves", shelfId],
+    queryKey: ['shelves', shelfId],
     queryFn: () => getShelf(shelfId),
     retry: false,
     staleTime: 60 * 1000,
@@ -27,10 +27,10 @@ export const useUpdateShelfMutation = (shelfId: string) => {
     mutationFn: (data: { name: string }) => updateShelf(shelfId, data.name),
     onMutate: async (variables) => {
       await queryClient.cancelQueries({
-        queryKey: ["shelves"],
+        queryKey: ['shelves'],
       });
 
-      queryClient.setQueryData(["shelves"], (old: Shelf[]) => {
+      queryClient.setQueryData(['shelves'], (old: Shelf[]) => {
         return old.map((shelf) => {
           return shelf.shelfId !== shelfId
             ? shelf
@@ -40,11 +40,11 @@ export const useUpdateShelfMutation = (shelfId: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["shelves", shelfId],
+        queryKey: ['shelves', shelfId],
       });
     },
     onError: (_, variables) => {
-      queryClient.setQueryData(["shelves"], (old: Shelf[]) => {
+      queryClient.setQueryData(['shelves'], (old: Shelf[]) => {
         return old.map((shelf) => {
           return shelf.shelfId !== shelfId
             ? shelf

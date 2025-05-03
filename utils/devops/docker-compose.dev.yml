@@ -1,0 +1,9 @@
+services:
+  prometheus:
+    container_name: prometheus
+    restart: unless-stopped
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./configuration/prometheus.yml:/etc/prometheus/prometheus.yml

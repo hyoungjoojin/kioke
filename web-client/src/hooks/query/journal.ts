@@ -1,30 +1,43 @@
 import {
-  getJournal,
-  moveJournal,
-  deleteJournal,
-  createJournal,
-  updateJournal,
   bookmarkJournal,
+  createJournal,
   deleteBookmark,
+  deleteJournal,
+  getJournal,
   getJournals,
-} from "@/app/api/journal";
-import { getQueryClient } from "@/components/providers/QueryProvider";
-import { useMutation, useQuery } from "@tanstack/react-query";
+  moveJournal,
+  updateJournal,
+} from '@/app/api/journal';
+import { getQueryClient } from '@/components/providers/QueryProvider';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
-export const useJournalsQuery = () => {
-  return useQuery({
-    queryKey: ["journals"],
+export function useGetJournals() {
+  const query = useQuery({
+    queryKey: ['journals'],
     queryFn: () => {
       return getJournals();
     },
-    retry: false,
-    staleTime: 60 * 1000,
   });
-};
+
+  return query;
+}
+
+export function useGetBookmarkedJournals() {
+  const query = useQuery({
+    queryKey: ['journals', 'bookmarked'],
+    queryFn: () => {
+      return getJournals({
+        bookmarked: true,
+      });
+    },
+  });
+
+  return query;
+}
 
 export const useJournalQuery = (jid: string) => {
   return useQuery({
-    queryKey: ["journals", jid],
+    queryKey: ['journals', jid],
     queryFn: () => {
       return getJournal(jid);
     },
@@ -44,7 +57,7 @@ export const useCreateJournalMutation = () => {
     }) => createJournal(data.shelfId, data.title, data.description),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["shelves"],
+        queryKey: ['shelves'],
       });
     },
   });
@@ -59,11 +72,11 @@ export const useToggleJournalBookmarkMutation = (journalId: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["shelves"],
+        queryKey: ['shelves'],
       });
 
       queryClient.invalidateQueries({
-        queryKey: ["journals", journalId],
+        queryKey: ['journals', journalId],
       });
     },
   });
@@ -76,7 +89,7 @@ export const useMoveJournalMutation = (jid: string) => {
     mutationFn: ({ shelfId }: { shelfId: string }) => moveJournal(jid, shelfId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["shelves"],
+        queryKey: ['shelves'],
       });
     },
   });
@@ -92,11 +105,11 @@ export const useUpdateJournalMutation = (journalId: string) => {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["journals", journalId],
+        queryKey: ['journals', journalId],
       });
 
       queryClient.invalidateQueries({
-        queryKey: ["shelves"],
+        queryKey: ['shelves'],
       });
     },
   });
@@ -109,7 +122,7 @@ export const useDeleteJournalMutation = (jid: string) => {
     mutationFn: () => deleteJournal(jid),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["shelves"],
+        queryKey: ['shelves'],
       });
     },
   });

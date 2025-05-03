@@ -1,4 +1,4 @@
-import { JournalPreview } from "../primitives/journal";
+import { JournalPreview } from '../primitives/journal';
 
 export type GetShelfResponseBody = {
   shelfId: string;

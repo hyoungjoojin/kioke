@@ -1,11 +1,9 @@
 package kioke.journal.service;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.Optional;
 import kioke.journal.constant.Permission;
 import kioke.journal.constant.Role;
-import kioke.journal.dto.data.journal.JournalPreviewDto;
 import kioke.journal.model.Journal;
 import kioke.journal.model.User;
 import kioke.journal.model.UserJournalMetadata;
@@ -22,12 +20,6 @@ public class UserJournalMetadataService {
 
   public UserJournalMetadataService(UserJournalMetadataRepository userJournalMetadataRepository) {
     this.userJournalMetadataRepository = userJournalMetadataRepository;
-  }
-
-  @Transactional(readOnly = true)
-  public List<JournalPreviewDto> getJournals(String userId, boolean findOnlyBookmarkedJournals) {
-    return userJournalMetadataRepository.findAllJournalIdsByUser(
-        userId, findOnlyBookmarkedJournals);
   }
 
   @Transactional

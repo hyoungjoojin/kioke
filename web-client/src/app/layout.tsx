@@ -1,22 +1,21 @@
-import type { Metadata } from "next";
-import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages } from "next-intl/server";
-import { ThemeProvider } from "@/components/providers/ThemeProvider";
-import QueryProvider from "@/components/providers/QueryProvider";
-import { StoreProvider } from "@/components/providers/StoreProvider";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import QueryProvider from '@/components/providers/QueryProvider';
+import { SessionProvider } from '@/components/providers/SessionProvider';
+import { StoreProvider } from '@/components/providers/StoreProvider';
+import { ThemeProvider } from '@/components/providers/ThemeProvider';
+import { SidebarProvider } from '@/components/ui/sidebar';
+import { auth } from '@/lib/auth';
+import '@/styles/globals.css';
 import {
-  dehydrate,
   HydrationBoundary,
   QueryClient,
-} from "@tanstack/react-query";
-import { SessionProvider } from "@/components/providers/SessionProvider";
-
-import "@/styles/globals.css";
-import { auth } from "@/lib/auth";
+  dehydrate,
+} from '@tanstack/react-query';
+import type { Metadata } from 'next';
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getMessages } from 'next-intl/server';
 
 export const metadata: Metadata = {
-  title: "kioke",
+  title: 'kioke',
 };
 
 export default async function RootLayout({
@@ -35,8 +34,8 @@ export default async function RootLayout({
       <body>
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
+            attribute='class'
+            defaultTheme='system'
             enableSystem
             disableTransitionOnChange
           >

@@ -1,7 +1,7 @@
-"use server";
+'use server';
 
-import KiokeError, { ErrorCode } from "@/constants/errors";
-import { KiokeAuthError, signIn } from "./";
+import { KiokeAuthError, signIn } from './';
+import KiokeError, { ErrorCode } from '@/constants/errors';
 
 export async function signInWithCredentials(
   email: string,
@@ -11,7 +11,7 @@ export async function signInWithCredentials(
   code: ErrorCode | null;
 }> {
   try {
-    await signIn("credentials", {
+    await signIn('credentials', {
       email,
       password,
       redirect: false,

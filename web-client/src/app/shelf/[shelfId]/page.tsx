@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import KiokeSidebar from "@/components/features/sidebar/KiokeSidebar";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { useCurrentView } from "@/hooks/store/view";
-import View from "@/constants/view";
-import { useSession } from "next-auth/react";
-import { redirect, useParams } from "next/navigation";
-import { useEffect } from "react";
-import { useShelfQuery, useUpdateShelfMutation } from "@/hooks/query/shelf";
-import JournalList from "./components/JournalList";
-import { Skeleton } from "@/components/ui/skeleton";
-import { JournalPreview } from "@/types/primitives/journal";
-import EditableTitle from "@/components/features/editor/EditableTitle";
-import { useSelectedShelfId } from "@/hooks/store/shelf";
+import JournalList from './components/JournalList';
+import EditableTitle from '@/components/features/editor/EditableTitle';
+import KiokeSidebar from '@/components/features/sidebar/KiokeSidebar';
+import { SidebarTrigger } from '@/components/ui/sidebar';
+import { Skeleton } from '@/components/ui/skeleton';
+import View from '@/constants/view';
+import { useShelfQuery, useUpdateShelfMutation } from '@/hooks/query/shelf';
+import { useSelectedShelfId } from '@/hooks/store/shelf';
+import { useCurrentView } from '@/hooks/store/view';
+import { JournalPreview } from '@/types/primitives/journal';
+import { useSession } from 'next-auth/react';
+import { redirect, useParams } from 'next/navigation';
+import { useEffect } from 'react';
 
 function ShelfTitle(props: {
   data: {
@@ -31,7 +31,7 @@ function ShelfTitle(props: {
   }
 
   if (isLoading || !data.name) {
-    return <Skeleton className="px-16 w-full h-9"></Skeleton>;
+    return <Skeleton className='px-16 w-full h-9'></Skeleton>;
   }
 
   return (
@@ -60,7 +60,7 @@ function ShelfJournalList(props: {
   }
 
   if (isLoading || !data.journals || data.isArchived === undefined) {
-    return <Skeleton className="px-16 w-full h-24"></Skeleton>;
+    return <Skeleton className='px-16 w-full h-24'></Skeleton>;
   }
 
   return (
@@ -88,7 +88,7 @@ export default function Shelf() {
 
   const user = session?.data?.user;
   if (!user) {
-    redirect("/auth/login");
+    redirect('/auth/login');
   }
 
   return (
@@ -97,12 +97,12 @@ export default function Shelf() {
         <KiokeSidebar user={user} />
       </aside>
 
-      <header className="absolute w-full pt-3 px-3">
+      <header className='absolute w-full pt-3 px-3'>
         <SidebarTrigger />
       </header>
 
-      <main className="w-full pt-16 px-3">
-        <section className="px-16 mb-10">
+      <main className='w-full pt-16 px-3'>
+        <section className='px-16 mb-10'>
           <ShelfTitle
             data={{
               name: shelf?.name,
@@ -113,7 +113,7 @@ export default function Shelf() {
           />
         </section>
 
-        <section className="pl-16 pr-16">
+        <section className='pl-16 pr-16'>
           <ShelfJournalList
             data={{
               journals: shelf?.journals,

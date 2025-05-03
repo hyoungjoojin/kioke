@@ -7,8 +7,8 @@ import kioke.journal.model.UserJournalMetadata;
 
 public interface UserJournalMetadataRepositoryCustom {
 
-  public Optional<UserJournalMetadata> findByUserIdAndJournalId(String userId, String journalId);
-
-  public List<JournalPreviewDto> findAllJournalIdsByUser(
+  public List<JournalPreviewDto> findAllJournalsByUser(
       String userId, boolean findOnlyBookmarkedJournals);
+
+  public Optional<UserJournalMetadata> findByUserIdAndJournalId(String userId, String journalId);
 }

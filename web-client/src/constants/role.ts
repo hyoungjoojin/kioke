@@ -1,7 +1,7 @@
 export enum Role {
-  AUTHOR = "AUTHOR",
-  EDITOR = "EDITOR",
-  READER = "READER",
+  AUTHOR = 'AUTHOR',
+  EDITOR = 'EDITOR',
+  READER = 'READER',
 }
 
 export const Roles: {
@@ -10,12 +10,12 @@ export const Roles: {
   };
 } = {
   [Role.AUTHOR]: {
-    title: "Author",
+    title: 'Author',
   },
   [Role.EDITOR]: {
-    title: "Editor",
+    title: 'Editor',
   },
   [Role.READER]: {
-    title: "Reader",
+    title: 'Reader',
   },
 };

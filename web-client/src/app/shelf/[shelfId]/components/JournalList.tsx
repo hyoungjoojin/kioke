@@ -1,70 +1,70 @@
-"use client";
+'use client';
 
+import SelectShelfCommand from '@/components/features/shelf/SelectShelfCommand';
+import { Button } from '@/components/ui/button';
 import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
-  TableCell,
-} from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { useRouter } from "next/navigation";
-import View from "@/constants/view";
-import {
-  Ellipsis,
-  Trash2,
-  SquareArrowRight,
-  Heart,
-  SquarePen,
-} from "lucide-react";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuGroup,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent,
+  DropdownMenuItem,
   DropdownMenuPortal,
-  DropdownMenuTrigger,
   DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-} from "@/components/ui/form";
-import { Separator } from "@/components/ui/separator";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-  DialogFooter,
-  DialogHeader,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { JSX, useState } from "react";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { KIOKE_ROUTES } from '@/constants/route';
+import View from '@/constants/view';
 import {
-  useMoveJournalMutation,
-  useDeleteJournalMutation,
-  useToggleJournalBookmarkMutation,
   useCreateJournalMutation,
-} from "@/hooks/query/journal";
-import SelectShelfCommand from "@/components/features/shelf/SelectShelfCommand";
-import { JournalPreview } from "@/types/primitives/journal";
-import { KIOKE_ROUTES } from "@/constants/route";
-import z from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { cn } from "@/lib/utils";
+  useDeleteJournalMutation,
+  useMoveJournalMutation,
+  useToggleJournalBookmarkMutation,
+} from '@/hooks/query/journal';
+import { cn } from '@/lib/utils';
+import { JournalPreview } from '@/types/primitives/journal';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  Ellipsis,
+  Heart,
+  SquareArrowRight,
+  SquarePen,
+  Trash2,
+} from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { JSX, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import z from 'zod';
 
 enum ModalType {
-  DELETE_JOURNAL = "delete",
+  DELETE_JOURNAL = 'delete',
 }
 
 type JournalListItemProps = JournalPreview & {
@@ -109,12 +109,12 @@ const JournalListItem = ({
             <DialogTitle>Delete journal?</DialogTitle>
             {isArchived ? (
               <DialogDescription>
-                Journal <span className="italic">{title}</span> and its pages
+                Journal <span className='italic'>{title}</span> and its pages
                 will be permanently deleted.
               </DialogDescription>
             ) : (
               <DialogDescription>
-                Journal <span className="italic">{title}</span> and its pages
+                Journal <span className='italic'>{title}</span> and its pages
                 will be moved to the archive.
               </DialogDescription>
             )}
@@ -123,8 +123,8 @@ const JournalListItem = ({
           <DialogFooter>
             <Button onClick={closeModal}>Cancel</Button>
             <Button
-              type="submit"
-              variant="destructive"
+              type='submit'
+              variant='destructive'
               onClick={async () => {
                 deleteJournal();
                 closeModal();
@@ -146,12 +146,12 @@ const JournalListItem = ({
             </div>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="center">
+          <DropdownMenuContent align='center'>
             <DropdownMenuGroup>
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger onSelect={() => {}}>
-                  <div className="flex items-center">
-                    <SquareArrowRight size={16} className="mx-1" />
+                  <div className='flex items-center'>
+                    <SquareArrowRight size={16} className='mx-1' />
                     Move to
                   </div>
                 </DropdownMenuSubTrigger>
@@ -172,8 +172,8 @@ const JournalListItem = ({
             <DropdownMenuItem
               onSelect={() => openModal(ModalType.DELETE_JOURNAL)}
             >
-              <div className="flex items-center text-red-500">
-                <Trash2 size={16} className="mx-1" />
+              <div className='flex items-center text-red-500'>
+                <Trash2 size={16} className='mx-1' />
                 Delete Journal
               </div>
             </DropdownMenuItem>
@@ -193,24 +193,24 @@ const JournalListItem = ({
       }}
     >
       <TableCell>
-        <p className="select-none">{title}</p>
+        <p className='select-none'>{title}</p>
       </TableCell>
 
       <TableCell>
-        <p className="select-none">{createdAt}</p>
+        <p className='select-none'>{createdAt}</p>
       </TableCell>
 
       <TableCell>
-        <div className="flex justify-start items-center">
+        <div className='flex justify-start items-center'>
           <p
             onClick={(e) => {
               toggleJournalBookmark(!bookmarked);
               e.stopPropagation();
             }}
-            className="select-none mr-3"
+            className='select-none mr-3'
           >
             {bookmarked ? (
-              <Heart size={20} fill="black" />
+              <Heart size={20} fill='black' />
             ) : (
               <Heart size={20} />
             )}
@@ -234,8 +234,8 @@ function CreateJournalButton({ shelfId }: { shelfId: string }) {
   const createJournalForm = useForm<z.infer<typeof CreateJournalFormSchema>>({
     resolver: zodResolver(CreateJournalFormSchema),
     defaultValues: {
-      title: "",
-      description: "",
+      title: '',
+      description: '',
     },
   });
 
@@ -255,16 +255,16 @@ function CreateJournalButton({ shelfId }: { shelfId: string }) {
     <Dialog>
       <DialogTrigger
         className={cn(
-          "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none",
-          "hover:bg-accent hover:text-accent-foreground text-black",
-          "h-9 px-1 py-2",
+          'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none',
+          'hover:bg-accent hover:text-accent-foreground text-black',
+          'h-9 px-1 py-2',
         )}
       >
         <SquarePen size={16} />
         <span>Add Journal</span>
       </DialogTrigger>
 
-      <DialogContent className="h-80">
+      <DialogContent className='h-80'>
         <DialogHeader>
           <DialogTitle>Add journal</DialogTitle>
           <DialogDescription>
@@ -272,38 +272,38 @@ function CreateJournalButton({ shelfId }: { shelfId: string }) {
           </DialogDescription>
         </DialogHeader>
 
-        <Separator className="my-2" />
+        <Separator className='my-2' />
 
         <Form {...createJournalForm}>
           <form onSubmit={createJournalForm.handleSubmit(formSubmitHandler)}>
             <FormField
-              name="title"
+              name='title'
               control={createJournalForm.control}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Title</FormLabel>
                   <FormControl>
-                    <Input placeholder="" {...field} />
+                    <Input placeholder='' {...field} />
                   </FormControl>
                 </FormItem>
               )}
             />
 
             <FormField
-              name="description"
+              name='description'
               control={createJournalForm.control}
               render={({ field }) => (
-                <FormItem className="my-2">
+                <FormItem className='my-2'>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Input placeholder="" {...field} />
+                    <Input placeholder='' {...field} />
                   </FormControl>
                 </FormItem>
               )}
             />
 
-            <div className="flex justify-end">
-              <Button type="submit">Add</Button>
+            <div className='flex justify-end'>
+              <Button type='submit'>Add</Button>
             </div>
           </form>
         </Form>
@@ -325,11 +325,11 @@ export default function JournalList({
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className="select-none">Title</TableHead>
+          <TableHead className='select-none'>Title</TableHead>
 
-          <TableHead className="select-none">Created At</TableHead>
+          <TableHead className='select-none'>Created At</TableHead>
 
-          <TableHead className="select-none">
+          <TableHead className='select-none'>
             {!isArchived && <CreateJournalButton shelfId={shelfId} />}
           </TableHead>
         </TableRow>

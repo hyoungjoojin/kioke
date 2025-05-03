@@ -16,6 +16,7 @@ import kioke.journal.model.Shelf;
 import kioke.journal.model.User;
 import kioke.journal.model.UserJournalMetadata;
 import kioke.journal.repository.JournalRepository;
+import kioke.journal.repository.UserJournalMetadataRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,27 +30,33 @@ public class JournalService {
   private final ShelfService shelfService;
 
   private final JournalRepository journalRepository;
+  private final UserJournalMetadataRepository userJournalMetadataRepository;
 
   public JournalService(
       UserService userService,
       UserJournalMetadataService userJournalMetadataService,
       ShelfService shelfService,
-      JournalRepository journalRepository) {
+      JournalRepository journalRepository,
+      UserJournalMetadataRepository userJournalMetadataRepository) {
     this.userService = userService;
     this.userJournalMetadataService = userJournalMetadataService;
     this.shelfService = shelfService;
     this.journalRepository = journalRepository;
+    this.userJournalMetadataRepository = userJournalMetadataRepository;
   }
 
   @Transactional(readOnly = true)
-  public List<JournalPreviewDto> getJournals(String userId, Boolean bookmarked) {
-    Objects.requireNonNull(userId, "User ID should not be null.");
+  public List<JournalPreviewDto> getJournals(String userId, boolean findOnlyBookmarkedJournals) {
+    if (userId == null) {
+      throw new IllegalArgumentException("User ID should not be null.");
+    }
 
-    boolean findOnlyBookmarkedJournals = bookmarked == null ? false : bookmarked;
-    List<JournalPreviewDto> journalPreviewDtos =
-        userJournalMetadataService.getJournals(userId, findOnlyBookmarkedJournals);
+    log.debug("start fetching journals from database");
+    List<JournalPreviewDto> journals =
+        userJournalMetadataRepository.findAllJournalsByUser(userId, findOnlyBookmarkedJournals);
+    log.debug("finished fetching journals from database");
 
-    return journalPreviewDtos;
+    return journals;
   }
 
   @Transactional(readOnly = true)

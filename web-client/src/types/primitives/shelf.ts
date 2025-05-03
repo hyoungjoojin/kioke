@@ -1,4 +1,4 @@
-import { JournalPreview } from "./journal";
+import { JournalPreview } from './journal';
 
 export interface Shelf {
   shelfId: string;

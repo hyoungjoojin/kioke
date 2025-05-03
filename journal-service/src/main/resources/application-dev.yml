@@ -25,3 +25,12 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:${SERVICE_DISCOVERY_PORT}/eureka
+
+kioke:
+  mock:
+    data-generator:
+      enabled: false
+
+logging:
+  level:
+    kioke: DEBUG

@@ -1,10 +1,10 @@
-import NextAuth from "next-auth";
-import Credentials from "next-auth/providers/credentials";
-import { CredentialsSignin } from "next-auth";
-import { z } from "zod";
-import { loginWithCredentials } from "@/app/api/auth";
-import { getMyInformation } from "@/app/api/user";
-import KiokeError from "@/constants/errors";
+import { loginWithCredentials } from '@/app/api/auth';
+import { getMyInformation } from '@/app/api/user';
+import KiokeError from '@/constants/errors';
+import NextAuth from 'next-auth';
+import { CredentialsSignin } from 'next-auth';
+import Credentials from 'next-auth/providers/credentials';
+import { z } from 'zod';
 
 export class KiokeAuthError extends CredentialsSignin {
   public error: KiokeError;
@@ -17,10 +17,10 @@ export class KiokeAuthError extends CredentialsSignin {
 
 export const LoginFormSchema = z.object({
   email: z.string().email({
-    message: "login.email.invalid",
+    message: 'login.email.invalid',
   }),
   password: z.string().nonempty({
-    message: "login.password.empty",
+    message: 'login.password.empty',
   }),
 });
 
@@ -28,16 +28,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   debug: false,
   providers: [
     Credentials({
-      id: "credentials",
-      name: "credentials",
+      id: 'credentials',
+      name: 'credentials',
       credentials: {
         email: {
-          label: "Email",
-          type: "text",
+          label: 'Email',
+          type: 'text',
         },
         password: {
-          label: "Password",
-          type: "password",
+          label: 'Password',
+          type: 'password',
         },
       },
       authorize: async (credentials) => {
@@ -83,9 +83,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return session;
     },
   },
-  session: { strategy: "jwt" },
+  session: { strategy: 'jwt' },
   pages: {
-    signIn: "/auth/login",
+    signIn: '/auth/login',
   },
   logger: {
     error(_, ...__) {},
