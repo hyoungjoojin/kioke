@@ -9,10 +9,10 @@ assignees: hyoungjoojin
 
 Add a brief summary of the feature request.
 
-**Problem**
+### Problem
 Describe the problem that you want to fix in kioke.
 
-**Solution**
+### Solution
 Describe the solution to the problem - not the implementation details, the feature itself.
 
 ## Implementation Details
