@@ -9,6 +9,10 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: Run unit tests
+      shell: bash
+      run: "./mvnw -f ${{ inputs.service }}/pom.xml test"
+
     - name: Run formatter for the service
       uses: axel-op/googlejavaformat-action@v4
       with:
