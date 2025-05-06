@@ -1,0 +1,15 @@
+name: ci-java-service
+description: Run CI scripts for a Java-based service
+
+inputs:
+  service:
+    description: The service to run CI scripts for
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Run formatters for the backend services
+      uses: axel-op/googlejavaformat-action@v3
+      with:
+        args: "--set-exit-if-changed"
