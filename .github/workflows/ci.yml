@@ -25,9 +25,22 @@ jobs:
       - name: Checkout branch
         uses: actions/checkout@v4
 
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 21
+          cache: maven
+          cache-dependency-path: '${{ matrix.service }}/pom.xml'
+
       - name: Run unit tests
         shell: bash
         run: |
+          echo "GITHUB_USERNAME=${{ github.actor }}" >> .env
+          echo "GITHUB_ACCESS_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> .env
+          source ./.envrc
+          mkdir -p ~/.m2
+          cp ./settings.xml ~/.m2/settings.xml
           echo "Running unit tests for ${{ matrix.service }}."
           ./mvnw -f ${{ matrix.service }}/pom.xml --no-transfer-progress test
 
