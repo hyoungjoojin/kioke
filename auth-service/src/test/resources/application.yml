@@ -1,0 +1,34 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;
+    driverClassName: org.h2.Driver
+    username: kioke
+    password: password
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: kioke
+    password: password
+
+eureka:
+  client:
+    enabled: false
+
+rabbitmq:
+  exchange:
+    user-registration:
+      name: user.registration
+  queue:
+    user-registration:
+      journal:
+        name: user.registration.journal
+      user:
+        name: user.registration.user
+      notification:
+        name: user.registration.notification
+
+security:
+  jwt:
+    expiration: 100000
