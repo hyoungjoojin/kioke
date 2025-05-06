@@ -9,7 +9,12 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Run formatters for the backend services
-      uses: axel-op/googlejavaformat-action@v3
+    - name: Run formatter for the service
+      uses: axel-op/googlejavaformat-action@v4
       with:
-        args: "--set-exit-if-changed"
+        args: "--replace"
+        skip-commit: true
+
+    - name: Print changes
+      shell: bash
+      run: git --no-pager diff --exit-code
