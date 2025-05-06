@@ -1,0 +1,64 @@
+name: ci
+
+on:
+  pull_request:
+
+jobs:
+  find-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      web-client: ${{ steps.filter.outputs.web-client }}
+    steps:
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            web-client:
+              - "web-client/**"
+
+  web-client:
+    name: web-client 
+    needs: find-changes
+    if: ${{ needs.find-changes.outputs.web-client == "true" }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+          cache-dependency-path: "web-client/pnpm-lock.yaml"
+
+      - name: Get pnpm cache directory path
+        id: pnpm-cache-dir-path
+        shell: bash
+        run: echo "dir=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Cache pnpm store
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.pnpm-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      - name: Install web client dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: "web-client"
+
+      - name: Run linters for the web client
+        run: pnpm run lint
+        working-directory: "web-client"
+
+      - name: Run formatters for the web client
+        run: pnpm run lint
+        working-directory: "web-client"
