@@ -39,6 +39,6 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run CI actions
-        uses: ./.github/actions/ci-backend-service
+        uses: ./.github/actions/ci-java-service
         with:
           service: journal-service
