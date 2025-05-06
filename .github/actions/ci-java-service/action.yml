@@ -14,7 +14,7 @@ runs:
       with:
         args: "--replace"
         skip-commit: true
-        files: "${{ github.event.inputs.service }}/**/*.java"
+        files: "${{ inputs.service }}/**/*.java"
 
     - name: Print changes
       shell: bash
