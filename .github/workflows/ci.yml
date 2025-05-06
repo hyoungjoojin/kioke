@@ -14,12 +14,12 @@ jobs:
         with:
           filters: |
             web-client:
-              - "web-client/**"
+              - 'web-client/**'
 
   web-client:
     name: web-client 
     needs: find-changes
-    if: ${{ needs.find-changes.outputs.web-client == "true" }}
+    if: ${{ needs.find-changes.outputs.web-client == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout branch
@@ -35,8 +35,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "pnpm"
-          cache-dependency-path: "web-client/pnpm-lock.yaml"
+          cache: 'pnpm'
+          cache-dependency-path: 'web-client/pnpm-lock.yaml'
 
       - name: Get pnpm cache directory path
         id: pnpm-cache-dir-path
@@ -53,12 +53,12 @@ jobs:
 
       - name: Install web client dependencies
         run: pnpm install --frozen-lockfile
-        working-directory: "web-client"
+        working-directory: 'web-client'
 
       - name: Run linters for the web client
         run: pnpm run lint
-        working-directory: "web-client"
+        working-directory: 'web-client'
 
       - name: Run formatters for the web client
         run: pnpm run lint
-        working-directory: "web-client"
+        working-directory: 'web-client'
