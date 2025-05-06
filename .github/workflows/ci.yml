@@ -4,24 +4,43 @@ on:
   pull_request:
 
 jobs:
-  # find-changes:
-  #   runs-on: ubuntu-latest
-  #   outputs:
-  #     journal-service: ${{ steps.filter.outputs.journal-service }}
-  #     web-client: ${{ steps.filter.outputs.web-client }}
-  #   steps:
-  #     - uses: dorny/paths-filter@v3
-  #       id: filter
-  #       with:
-  #         filters: |
-  #           journal-service:
-  #             - 'journal-service/**'
-  #           web-client:
-  #             - 'web-client/**'
+  find-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      commons: ${{ steps.filter.outputs.commons }}
+      api-gateway: ${{ steps.filter.outputs.api-gateway }}
+      service-discovery: ${{ steps.filter.outputs.service-discovery }}
+      auth-service: ${{ steps.filter.outputs.auth-service }}
+      user-service: ${{ steps.filter.outputs.user-service }}
+      journal-service: ${{ steps.filter.outputs.journal-service }}
+      notification-service: ${{ steps.filter.outputs.notification-service }}
+      web-client: ${{ steps.filter.outputs.web-client }}
+
+    steps:
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            commons:
+              - 'commons/**'
+            api-gateway:
+              - 'api-gateway/**'
+            service-discovery:
+              - 'service-discovery/**'
+            auth-service:
+              - 'auth-service/**'
+            user-service:
+              - 'user-service/**'
+            journal-service:
+              - 'journal-service/**'
+            notification-service:
+              - 'notification-service/**'
+            web-client:
+              - 'web-client/**'
 
   web-client:
-    # needs: find-changes
-    # if: ${{ needs.find-changes.outputs.web-client == 'true' }}
+    needs: find-changes
+    if: ${{ needs.find-changes.outputs.web-client == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout branch
@@ -30,9 +49,74 @@ jobs:
       - name: Run CI actions
         uses: ./.github/actions/ci-web-client
 
+  commons:
+    needs: find-changes
+    if: ${{ needs.find-changes.outputs.commons == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+
+      - name: Run CI actions
+        uses: ./.github/actions/ci-java-service
+        with:
+          service: commons
+
+  api-gateway:
+    needs: find-changes
+    if: ${{ needs.find-changes.outputs.api-gateway == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+
+      - name: Run CI actions
+        uses: ./.github/actions/ci-java-service
+        with:
+          service: api-gateway
+
+  service-discovery:
+    needs: find-changes
+    if: ${{ needs.find-changes.outputs.service-discovery == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+
+      - name: Run CI actions
+        uses: ./.github/actions/ci-java-service
+        with:
+          service: commons
+
+  auth-service:
+    needs: find-changes
+    if: ${{ needs.find-changes.outputs.auth-service == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+
+      - name: Run CI actions
+        uses: ./.github/actions/ci-java-service
+        with:
+          service: auth-service
+
+  user-service:
+    needs: find-changes
+    if: ${{ needs.find-changes.outputs.user-service == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+
+      - name: Run CI actions
+        uses: ./.github/actions/ci-java-service
+        with:
+          service: user-service
+
   journal-service:
-    # needs: find-changes
-    # if: ${{ needs.find-changes.outputs.journal-service == 'true' }}
+    needs: find-changes
+    if: ${{ needs.find-changes.outputs.journal-service == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout branch
@@ -42,3 +126,16 @@ jobs:
         uses: ./.github/actions/ci-java-service
         with:
           service: journal-service
+
+  notification-service:
+    needs: find-changes
+    if: ${{ needs.find-changes.outputs.notification-service == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+
+      - name: Run CI actions
+        uses: ./.github/actions/ci-java-service
+        with:
+          service: notification-service
