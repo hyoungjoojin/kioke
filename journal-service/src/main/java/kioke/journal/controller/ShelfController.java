@@ -12,8 +12,8 @@ import kioke.journal.dto.response.shelf.CreateShelfResponseBodyDto;
 import kioke.journal.dto.response.shelf.GetShelfResponseBodyDto;
 import kioke.journal.exception.shelf.ShelfNotFoundException;
 import kioke.journal.model.Shelf;
+import kioke.journal.service.JournalService;
 import kioke.journal.service.ShelfService;
-import kioke.journal.service.UserJournalMetadataService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,13 +31,12 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class ShelfController {
 
+  private final JournalService journalService;
   private final ShelfService shelfService;
-  private final UserJournalMetadataService userJournalMetadataService;
 
-  public ShelfController(
-      ShelfService shelfService, UserJournalMetadataService userJournalMetadataService) {
+  public ShelfController(JournalService journalService, ShelfService shelfService) {
+    this.journalService = journalService;
     this.shelfService = shelfService;
-    this.userJournalMetadataService = userJournalMetadataService;
   }
 
   @GetMapping
@@ -47,7 +46,7 @@ public class ShelfController {
   @PreAuthorize("isAuthenticated()")
   public List<GetShelfResponseBodyDto> getShelves(@AuthenticationPrincipal String userId) {
     List<Shelf> shelves = shelfService.getShelves(userId);
-    List<JournalPreviewDto> bookmarks = userJournalMetadataService.getJournals(userId, true);
+    List<JournalPreviewDto> bookmarks = journalService.getJournals(userId, true);
 
     return GetShelfResponseBodyDto.from(shelves, bookmarks);
   }
@@ -61,7 +60,7 @@ public class ShelfController {
       @AuthenticationPrincipal String userId, @PathVariable String shelfId)
       throws ShelfNotFoundException {
     Shelf shelf = shelfService.getShelfById(userId, shelfId);
-    List<JournalPreviewDto> bookmarks = userJournalMetadataService.getJournals(userId, true);
+    List<JournalPreviewDto> bookmarks = journalService.getJournals(userId, true);
 
     return GetShelfResponseBodyDto.from(shelf, bookmarks);
   }
