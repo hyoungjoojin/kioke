@@ -1,6 +1,6 @@
 import { getShelves } from '../api/shelf';
 import RecentlyViewedJournals from './components/RecentlyViewedJournals';
-import KiokeSidebar from '@/components/features/sidebar/KiokeSidebar';
+import KiokeSidebar from '@/components/sidebar/KiokeSidebar';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { auth } from '@/lib/auth';
 import { QueryClient } from '@tanstack/react-query';

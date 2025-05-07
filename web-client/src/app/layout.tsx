@@ -1,3 +1,4 @@
+import Modal from '@/components/modal';
 import QueryProvider from '@/components/providers/QueryProvider';
 import { SessionProvider } from '@/components/providers/SessionProvider';
 import { StoreProvider } from '@/components/providers/StoreProvider';
@@ -44,6 +45,7 @@ export default async function RootLayout({
                 <QueryProvider>
                   <SidebarProvider defaultOpen={false}>
                     <HydrationBoundary state={dehydrate(queryClient)}>
+                      <Modal />
                       {children}
                     </HydrationBoundary>
                   </SidebarProvider>

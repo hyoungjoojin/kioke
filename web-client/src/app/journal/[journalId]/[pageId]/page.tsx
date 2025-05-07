@@ -3,7 +3,7 @@
 import Spinner from './components/Spinner';
 import EditableTitle from '@/components/features/editor/EditableTitle';
 import PageEditor from '@/components/features/editor/PageEditor';
-import KiokeSidebar from '@/components/features/sidebar/KiokeSidebar';
+import KiokeSidebar from '@/components/sidebar/KiokeSidebar';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { usePageQuery, useUpdatePageMutation } from '@/hooks/query/page';
 import { cn } from '@/lib/utils';

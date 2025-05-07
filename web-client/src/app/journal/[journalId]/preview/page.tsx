@@ -3,8 +3,8 @@
 import { shareJournal } from '@/app/api/journal';
 import { searchUser } from '@/app/api/user';
 import EditableTitle from '@/components/features/editor/EditableTitle';
-import KiokeSidebar from '@/components/features/sidebar/KiokeSidebar';
 import { getQueryClient } from '@/components/providers/QueryProvider';
+import KiokeSidebar from '@/components/sidebar/KiokeSidebar';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import Calendar from '@/components/ui/calendar/calendar';
