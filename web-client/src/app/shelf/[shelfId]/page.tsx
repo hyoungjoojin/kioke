@@ -2,7 +2,7 @@
 
 import JournalList from './components/JournalList';
 import EditableTitle from '@/components/features/editor/EditableTitle';
-import KiokeSidebar from '@/components/features/sidebar/KiokeSidebar';
+import KiokeSidebar from '@/components/sidebar/KiokeSidebar';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Skeleton } from '@/components/ui/skeleton';
 import View from '@/constants/view';
