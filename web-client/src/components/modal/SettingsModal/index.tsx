@@ -1,17 +1,16 @@
 'use client';
 
-import { settingsSidebarData } from './sidebar';
-import { SettingsTabType, settingsTabData } from './tab';
+import { SettingsTab, settingsSidebarItems, settingsTabs } from './components';
 import { Button } from '@/components/ui/button';
-import { useModal } from '@/hooks/store/modal';
+import { useModalStore } from '@/hooks/store/modal';
 import { cn } from '@/lib/utils';
 import { X } from 'lucide-react/icons';
 import { useState } from 'react';
 
 export default function SettingsModal() {
-  const { closeModal } = useModal();
+  const { closeModal } = useModalStore();
 
-  const [tab, setTab] = useState<SettingsTabType>(SettingsTabType.ACCOUNT);
+  const [tab, setTab] = useState<SettingsTab>(SettingsTab.ACCOUNT);
 
   return (
     <div className='flex flex-col w-full h-full bg-gray-200 py-3 px-5'>
@@ -29,8 +28,8 @@ export default function SettingsModal() {
 
       <div className='flex w-full h-full'>
         <div className='w-1/4 md:w-56 h-full pr-2'>
-          {Object.values(SettingsTabType).map((key) => {
-            const settingsMenuItem = settingsSidebarData[key];
+          {Object.values(SettingsTab).map((key) => {
+            const settingsMenuItem = settingsSidebarItems[key];
 
             return (
               <Button
@@ -59,7 +58,7 @@ export default function SettingsModal() {
               'p-3',
             )}
           >
-            {settingsTabData[tab]}
+            {settingsTabs[tab]}
           </div>
         </div>
       </div>

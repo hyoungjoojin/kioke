@@ -1,18 +1,16 @@
 import { useBoundStore } from '@/components/providers/StoreProvider';
+import { useShallow } from 'zustand/react/shallow';
 
-export const useModal = () => {
-  const isOpen = useBoundStore((state) => state.open);
-  const type = useBoundStore((state) => state.type);
-
-  const { openModal, closeModal, toggleModal } = useBoundStore(
-    (state) => state.actions,
+export const useModalStore = () => {
+  return useBoundStore(
+    useShallow((state) => {
+      return {
+        open: state.open,
+        type: state.type,
+        openModal: state.actions.openModal,
+        closeModal: state.actions.closeModal,
+        toggleModal: state.actions.toggleModal,
+      };
+    }),
   );
-
-  return {
-    isOpen,
-    type,
-    openModal,
-    closeModal,
-    toggleModal,
-  };
 };

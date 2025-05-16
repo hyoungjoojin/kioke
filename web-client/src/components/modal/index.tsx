@@ -1,7 +1,7 @@
 'use client';
 
 import { ModalType } from '@/constants/modal';
-import { useModal } from '@/hooks/store/modal';
+import { useModalStore } from '@/hooks/store/modal';
 import { cn } from '@/lib/utils';
 import dynamic from 'next/dynamic';
 
@@ -18,9 +18,9 @@ function getModal(type: ModalType) {
 }
 
 export default function Modal() {
-  const { type, isOpen, closeModal } = useModal();
+  const { type, open, closeModal } = useModalStore();
 
-  if (!isOpen) {
+  if (!open) {
     return null;
   }
 
