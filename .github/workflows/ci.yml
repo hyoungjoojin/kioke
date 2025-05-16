@@ -1,0 +1,104 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  backend-services:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - commons
+          - api-gateway
+          - service-discovery
+          - auth-service
+          - user-service
+          - journal-service
+          - notification-service
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 21
+          cache: maven
+          cache-dependency-path: '${{ matrix.service }}/pom.xml'
+
+      - name: Run unit tests
+        shell: bash
+        run: |
+          echo "GH_USERNAME=${{ github.actor }}" >> .env
+          source ./.envrc
+          mkdir -p ~/.m2
+          cp ./settings.xml ~/.m2/settings.xml
+          echo "Running unit tests for ${{ matrix.service }}."
+          ./mvnw -f ${{ matrix.service }}/pom.xml --no-transfer-progress test
+        env:
+          GH_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run formatter for the service
+        uses: axel-op/googlejavaformat-action@v4
+        with:
+          args: "--replace"
+          skip-commit: true
+          files: "${{ matrix.service }}/**/*.java"
+
+      - name: Print changes
+        shell: bash
+        run: git --no-pager diff --exit-code
+
+  web-client:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+          cache-dependency-path: 'web-client/pnpm-lock.yaml'
+
+      - name: Get pnpm cache directory path
+        id: pnpm-cache-dir-path
+        shell: bash
+        run: echo "dir=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Cache pnpm store
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.pnpm-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      - name: Install web client dependencies
+        shell: bash
+        run: pnpm install --frozen-lockfile
+        working-directory: 'web-client'
+
+      - name: Run linters for the web client
+        shell: bash
+        run: pnpm run lint
+        working-directory: 'web-client'
+
+      - name: Run formatters for the web client
+        shell: bash
+        run: pnpm run format
+        working-directory: 'web-client'
