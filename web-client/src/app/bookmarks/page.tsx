@@ -1,5 +1,5 @@
 import BookmarksList from './components/BookmarksList';
-import KiokeSidebar from '@/components/features/sidebar/KiokeSidebar';
+import KiokeSidebar from '@/components/sidebar/KiokeSidebar';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
