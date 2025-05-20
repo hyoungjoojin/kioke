@@ -1,5 +1,4 @@
-import Icon from './Icon';
-import { IconName } from '@/constants/icons';
+import Icon, { IconName } from './Icon';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const meta = {

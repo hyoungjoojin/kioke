@@ -2,7 +2,6 @@
 
 import { Card, CardTitle } from '@/components/ui/card';
 import { useGetJournals } from '@/hooks/query/journal';
-import { Clock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export default function RecentlyViewedJournals() {
@@ -12,7 +11,6 @@ export default function RecentlyViewedJournals() {
   return (
     <>
       <h1 className='flex items-center mb-2'>
-        <Clock size={16} className='mr-1' />
         <span>Recently Viewed</span>
       </h1>
 

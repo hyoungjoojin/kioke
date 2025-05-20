@@ -38,17 +38,6 @@ import { useCurrentView } from '@/hooks/store/view';
 import { SearchUserResponseBody } from '@/types/server/user';
 import { emailSchema } from '@/utils/schema';
 import debounce from 'lodash/debounce';
-import {
-  ArrowLeft,
-  CalendarRange,
-  Ellipsis,
-  Heart,
-  List,
-  Plus,
-  TextIcon,
-  Trash2,
-  UserRoundPlus,
-} from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { notFound, redirect, useParams, useRouter } from 'next/navigation';
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
@@ -69,11 +58,11 @@ const JournalPreviewOptionValues: {
   [key in JOURNAL_PREVIEW_OPTION]: { icon: React.ReactNode; title: string };
 } = {
   [JOURNAL_PREVIEW_OPTION.LIST]: {
-    icon: <List size={16} />,
+    icon: null,
     title: 'List',
   },
   [JOURNAL_PREVIEW_OPTION.CALENDAR]: {
-    icon: <CalendarRange size={16} />,
+    icon: null,
     title: 'Calendar',
   },
 };
@@ -205,7 +194,6 @@ export default function JournalPreview() {
           <SidebarTrigger />
 
           <Button variant='ghost' className='hover:cursor-not-allowed'>
-            <ArrowLeft size={18} />
             <span>Back to shelf</span>
           </Button>
         </div>
@@ -214,7 +202,6 @@ export default function JournalPreview() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant='ghost' size='sm'>
-                <UserRoundPlus size={18} />
                 <p className='text-sm font-semibold text-gray-600'>Share</p>
               </Button>
             </DropdownMenuTrigger>
@@ -372,24 +359,17 @@ export default function JournalPreview() {
               e.stopPropagation();
             }}
           >
-            {journal.bookmarked ? (
-              <Heart size={20} fill='black' />
-            ) : (
-              <Heart size={20} />
-            )}
+            {journal.bookmarked ? null : null}
           </div>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant='ghost' size='icon'>
-                <Ellipsis size={18} />
-              </Button>
+              <Button variant='ghost' size='icon'></Button>
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align='end'>
               <DropdownMenuItem>
                 <div className='flex items-center text-red-500'>
-                  <Trash2 size={16} className='mx-1' />
                   Delete Journal
                 </div>
               </DropdownMenuItem>
@@ -438,7 +418,6 @@ export default function JournalPreview() {
                   createPage();
                 }}
               >
-                <Plus size={16} />
                 <p className='text-xs font-semibold text-gray-600'>Add Page</p>
               </Button>
             </div>
@@ -456,7 +435,6 @@ export default function JournalPreview() {
                       }}
                       className='flex items-center border-b border-b-transparent hover:border-b-black hover:cursor-pointer'
                     >
-                      <TextIcon size={16} className='mr-1' />
                       {page.title === '' ? 'Untitled' : page.title}
                     </p>
                     <p>{page.createdAt.toDateString()}</p>

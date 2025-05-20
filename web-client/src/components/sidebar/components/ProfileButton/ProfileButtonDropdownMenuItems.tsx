@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { ModalType } from '@/constants/modal';
 import { useModalStore } from '@/hooks/store/modal';
 import { DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
-import { LogOut, Settings } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 
 function ProfileButtonDropdownMenuItem(props: {
@@ -31,7 +30,7 @@ export function SettingsButton() {
 
   return (
     <ProfileButtonDropdownMenuItem
-      icon={<Settings className='h-4 w-4' />}
+      icon={null}
       content='Settings'
       onClick={() => {
         openModal(ModalType.SETTINGS);
@@ -43,7 +42,7 @@ export function SettingsButton() {
 export function LogoutButton() {
   return (
     <ProfileButtonDropdownMenuItem
-      icon={<LogOut className='h-4 w-4' />}
+      icon={null}
       content='Log out'
       onClick={() => {
         signOut({ redirectTo: '/', redirect: true });

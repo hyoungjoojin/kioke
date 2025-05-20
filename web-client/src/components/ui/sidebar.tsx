@@ -1,5 +1,6 @@
 'use client';
 
+import Icon, {IconName} from '@/components/utils/icon';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
@@ -15,7 +16,6 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import { Slot } from '@radix-ui/react-slot';
 import { VariantProps, cva } from 'class-variance-authority';
-import { AlignJustify } from 'lucide-react';
 import * as React from 'react';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
@@ -285,7 +285,7 @@ const SidebarTrigger = React.forwardRef<
       }}
       {...props}
     >
-      <AlignJustify size={20} />
+      <Icon name={IconName.MENU} />
       <span className='sr-only'>Toggle Sidebar</span>
     </Button>
   );

@@ -8,18 +8,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import Icon, { IconName } from '@/components/utils/icon';
 import { LOCALE_COOKIE_NAME } from '@/constants/cookie';
 import { AVAILABLE_LOCALES } from '@/constants/locale';
 import { setCookie } from 'cookies-next/client';
 import { useRouter } from 'next/navigation';
-import { CiGlobe } from 'react-icons/ci';
 
 export const SelectLanguage = () => {
   const router = useRouter();
 
   return (
     <div className='flex justify-center items-center'>
-      <CiGlobe size={24} className='mx-2' />
+      <Icon name={IconName.LANGUAGE} className='mx-2' />
 
       <Select
         onValueChange={(locale) => {

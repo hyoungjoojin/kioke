@@ -1,6 +1,22 @@
-import { IconName } from '@/constants/icons';
-
 type IconSize = 'xs' | 'sm' | 'md' | 'lg';
+
+export enum IconName {
+  HOME = 'home',
+  CLOSE = 'close',
+  UP = 'up',
+  DOWN = 'down',
+  LEFT = 'left',
+  RIGHT = 'right',
+  THEME = 'theme',
+  LIGHT_MODE = 'light-mode',
+  DARK_MODE = 'dark-mode',
+  MENU = 'menu',
+  BELL = 'bell',
+  LANGUAGE = 'language',
+  TRASH = 'trash',
+  HEART = 'heart',
+  ELLIPSIS = 'ellipsis',
+}
 
 interface IconProps extends React.SVGProps<SVGSVGElement> {
   name: IconName;

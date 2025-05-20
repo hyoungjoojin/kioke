@@ -10,7 +10,6 @@ import {
 import { cn } from '@/lib/utils';
 import { Journal } from '@/types/primitives/journal';
 import { groupBy } from 'lodash';
-import { ChevronLeft, ChevronRight, CircleDot } from 'lucide-react';
 import moment from 'moment';
 import { useRouter } from 'next/navigation';
 import { useCallback, useState } from 'react';
@@ -66,17 +65,15 @@ export default function Calendar({ journal }: CalendarProps) {
                 return (
                   <HoverCard key={page.pageId} openDelay={1} closeDelay={1}>
                     <HoverCardTrigger>
-                      <div className='flex items-center'>
-                        <CircleDot
-                          size={14}
-                          onClick={(event) => {
-                            router.push(
-                              `/journal/${journal.journalId}/${page.pageId}`,
-                            );
-                            event.stopPropagation();
-                          }}
-                          className='mx-1'
-                        />
+                      <div
+                        className='flex items-center'
+                        onClick={(event) => {
+                          router.push(
+                            `/journal/${journal.journalId}/${page.pageId}`,
+                          );
+                          event.stopPropagation();
+                        }}
+                      >
                         <span className='text-xs'>
                           {page.title === '' ? 'Untitled' : page.title}
                         </span>
@@ -112,9 +109,7 @@ export default function Calendar({ journal }: CalendarProps) {
                 return moment(date).subtract(1, 'month').toDate();
               });
             }}
-          >
-            <ChevronLeft size={18} />
-          </Button>
+          ></Button>
 
           <Button
             variant='ghost'
@@ -133,9 +128,7 @@ export default function Calendar({ journal }: CalendarProps) {
                 return moment(date).add(1, 'month').toDate();
               });
             }}
-          >
-            <ChevronRight size={18} />
-          </Button>
+          ></Button>
         </div>
       </div>
 

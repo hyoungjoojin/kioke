@@ -40,6 +40,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import Icon, {IconName} from '@/components/utils/icon';
 import { KIOKE_ROUTES } from '@/constants/route';
 import View from '@/constants/view';
 import {
@@ -51,13 +52,6 @@ import {
 import { cn } from '@/lib/utils';
 import { JournalPreview } from '@/types/primitives/journal';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Ellipsis,
-  Heart,
-  SquareArrowRight,
-  SquarePen,
-  Trash2,
-} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { JSX, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -142,7 +136,6 @@ const JournalListItem = ({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <div>
-              <Ellipsis size={15} />
             </div>
           </DropdownMenuTrigger>
 
@@ -151,7 +144,6 @@ const JournalListItem = ({
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger onSelect={() => {}}>
                   <div className='flex items-center'>
-                    <SquareArrowRight size={16} className='mx-1' />
                     Move to
                   </div>
                 </DropdownMenuSubTrigger>
@@ -173,7 +165,7 @@ const JournalListItem = ({
               onSelect={() => openModal(ModalType.DELETE_JOURNAL)}
             >
               <div className='flex items-center text-red-500'>
-                <Trash2 size={16} className='mx-1' />
+                <Icon name={IconName.TRASH} />
                 Delete Journal
               </div>
             </DropdownMenuItem>
@@ -210,9 +202,9 @@ const JournalListItem = ({
             className='select-none mr-3'
           >
             {bookmarked ? (
-              <Heart size={20} fill='black' />
+            null
             ) : (
-              <Heart size={20} />
+            null
             )}
           </p>
 
@@ -260,7 +252,6 @@ function CreateJournalButton({ shelfId }: { shelfId: string }) {
           'h-9 px-1 py-2',
         )}
       >
-        <SquarePen size={16} />
         <span>Add Journal</span>
       </DialogTrigger>
 
