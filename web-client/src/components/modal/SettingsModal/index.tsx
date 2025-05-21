@@ -4,7 +4,6 @@ import { SettingsTab, settingsSidebarItems, settingsTabs } from './components';
 import { Button } from '@/components/ui/button';
 import { useModalStore } from '@/hooks/store/modal';
 import { cn } from '@/lib/utils';
-import { X } from 'lucide-react/icons';
 import { useState } from 'react';
 
 export default function SettingsModal() {
@@ -22,7 +21,7 @@ export default function SettingsModal() {
             closeModal();
           }}
         >
-          <X size={18} />
+          X
         </Button>
       </div>
 

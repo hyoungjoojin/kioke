@@ -21,32 +21,25 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { Skeleton } from '@/components/ui/skeleton';
+import Icon, { IconName } from '@/components/utils/icon';
 import { KIOKE_ROUTES } from '@/constants/route';
 import View from '@/constants/view';
 import { useShelvesQuery } from '@/hooks/query/shelf';
 import { useSelectedShelfId } from '@/hooks/store/shelf';
 import { useCurrentView } from '@/hooks/store/view';
 import { cn } from '@/lib/utils';
-import {
-  AlignJustify,
-  Bell,
-  ChevronDown,
-  HeartIcon,
-  HomeIcon,
-  Library,
-} from 'lucide-react';
 import { User } from 'next-auth';
 import { useRouter } from 'next/navigation';
 
 const SIDEBAR_MENU_ITEMS = [
   {
     label: 'Home',
-    icon: <HomeIcon />,
+    icon: null,
     view: View.HOME,
   },
   {
     label: 'Bookmarks',
-    icon: <HeartIcon />,
+    icon: null,
     view: View.BOOKMARKS,
   },
 ];
@@ -69,7 +62,7 @@ export default function KiokeSidebar({ user }: { user: User }) {
 
           <div>
             <Button variant='ghost' className='hover:cursor-not-allowed'>
-              <Bell size={20} />
+              <Icon name={IconName.NOTIFICATIONS} />
             </Button>
             <Button
               variant='ghost'
@@ -77,7 +70,7 @@ export default function KiokeSidebar({ user }: { user: User }) {
                 setOpen(false);
               }}
             >
-              <AlignJustify size={20} />
+              <Icon name={IconName.MENU} />
             </Button>
           </div>
         </div>
@@ -122,7 +115,6 @@ export default function KiokeSidebar({ user }: { user: User }) {
             <SidebarGroupLabel asChild>
               <CollapsibleTrigger className='hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:cursor-not-allowed'>
                 <span className='text-sm text-black'>Shelves</span>
-                <ChevronDown className='ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180' />
               </CollapsibleTrigger>
             </SidebarGroupLabel>
 
@@ -157,7 +149,6 @@ export default function KiokeSidebar({ user }: { user: User }) {
                                   );
                                 }}
                               >
-                                <Library />
                                 <span>{shelf.name}</span>
                               </Button>
                             </SidebarMenuButton>

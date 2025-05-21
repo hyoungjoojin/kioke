@@ -11,7 +11,6 @@ import {
 import { useShelvesQuery } from '@/hooks/query/shelf';
 import { Shelf } from '@/types/primitives/shelf';
 import { CommandSeparator } from 'cmdk';
-import { Trash2 } from 'lucide-react';
 
 interface SelectShelfCommandProps {
   onSelect: (selectedShelf: Shelf, selectedShelfIndex: number) => void;
@@ -68,7 +67,6 @@ const SelectShelfCommand = ({
                     onSelect(shelves[archiveIndex], archiveIndex);
                   }}
                 >
-                  <Trash2 />
                   Archive
                 </CommandItem>
               )}

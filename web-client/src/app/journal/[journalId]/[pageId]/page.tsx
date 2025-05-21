@@ -7,7 +7,6 @@ import KiokeSidebar from '@/components/sidebar/KiokeSidebar';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { usePageQuery, useUpdatePageMutation } from '@/hooks/query/page';
 import { cn } from '@/lib/utils';
-import { ArrowLeft } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { redirect, useParams, useRouter } from 'next/navigation';
 
@@ -48,7 +47,6 @@ export default function Page() {
               router.push(`/journal/${journalId}/preview`);
             }}
           >
-            <ArrowLeft size={15} className='mr-1' />
             <span>Back to journal</span>
           </div>
         </div>

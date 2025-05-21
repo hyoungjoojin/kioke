@@ -1,6 +1,5 @@
 import { SettingsSidebarItem } from './sidebar';
 import { SettingsTab } from './tab';
-import { CircleUserRound, Palette } from 'lucide-react';
 
 export { SettingsTab } from './tab';
 
@@ -8,11 +7,11 @@ export const settingsSidebarItems: {
   [key in SettingsTab]: SettingsSidebarItem;
 } = {
   [SettingsTab.ACCOUNT]: {
-    icon: <CircleUserRound size={18} />,
+    icon: null,
     name: 'Account',
   },
   [SettingsTab.THEME]: {
-    icon: <Palette size={18} />,
+    icon: null,
     name: 'Theme',
   },
 };

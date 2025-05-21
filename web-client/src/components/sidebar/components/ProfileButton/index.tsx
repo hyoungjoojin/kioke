@@ -7,7 +7,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ChevronDown } from 'lucide-react';
 
 interface ProfileButtonProps {
   firstName: string;
@@ -28,8 +27,6 @@ export default function ProfileButton({
             </Avatar>
 
             <p className='text-sm'>{firstName}</p>
-
-            <ChevronDown size={16} />
           </div>
         </Button>
       </DropdownMenuTrigger>
