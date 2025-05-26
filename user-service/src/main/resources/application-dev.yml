@@ -25,3 +25,11 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:${SERVICE_DISCOVERY_PORT}/eureka
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /user-service/swagger-ui.html
+  api-docs:
+    enabled: true
+    path: /user-service/api-docs

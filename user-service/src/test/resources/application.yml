@@ -20,3 +20,13 @@ rabbitmq:
   queue:
     user-registration:
       name: user.registration.user
+
+# logging:
+#   level:
+#     root:
+#       DEBUG
+    # net:
+    #   ttddyy:
+    #     dsproxy:
+    #       listner:
+    #         DEBUG

@@ -17,3 +17,9 @@ rabbitmq:
   queue:
     user-registration:
       name: user.registration.user
+
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false
