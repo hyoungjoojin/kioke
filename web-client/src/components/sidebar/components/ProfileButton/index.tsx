@@ -1,3 +1,5 @@
+'use client';
+
 import { LogoutButton, SettingsButton } from './ProfileButtonDropdownMenuItems';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -7,26 +9,25 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useSession } from 'next-auth/react';
 
-interface ProfileButtonProps {
-  firstName: string;
-  lastName: string;
-}
+export default function ProfileButton() {
+  const session = useSession();
 
-export default function ProfileButton({
-  firstName,
-  lastName,
-}: ProfileButtonProps) {
+  if (!session.data?.user) {
+    return null;
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant='ghost'>
           <div className='flex items-center'>
             <Avatar>
-              <AvatarFallback>{`${firstName[0]}${lastName[0]}`}</AvatarFallback>
+              <AvatarFallback>AA</AvatarFallback>
             </Avatar>
 
-            <p className='text-sm'>{firstName}</p>
+            <p className='text-sm'>{session.data.user.name}</p>
           </div>
         </Button>
       </DropdownMenuTrigger>

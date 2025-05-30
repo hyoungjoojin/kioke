@@ -48,20 +48,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         const { email, password } = fields.data;
 
-        const { uid, accessToken } = await loginWithCredentials(
+        const { uid: userId, accessToken } = await loginWithCredentials(
           email,
           password,
         ).catch((error) => {
           throw new KiokeAuthError(error);
         });
 
-        const { firstName, lastName } = await getMyInformation(accessToken);
+        const { name } = await getMyInformation(accessToken);
 
         return {
-          uid,
+          userId,
           email,
-          firstName,
-          lastName,
+          name,
           accessToken,
         };
       },

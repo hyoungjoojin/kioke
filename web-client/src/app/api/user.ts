@@ -1,9 +1,9 @@
 import { HttpResponseBody } from '@/types/server';
 import {
-  GetMyInformationResponseBody,
   GetUserResponseBody,
   SearchUserResponseBody,
 } from '@/types/server/user';
+import { GetMyInformationResponseBodyDto } from '@/types/server/user/generated';
 import { kioke, processResponse, protectedKioke } from '@/utils/server';
 
 export const getMyInformation = async (accessToken: string) => {
@@ -13,7 +13,7 @@ export const getMyInformation = async (accessToken: string) => {
         Authorization: `Bearer ${accessToken}`,
       },
     })
-    .get<HttpResponseBody<GetMyInformationResponseBody>>('users/me')
+    .get<HttpResponseBody<GetMyInformationResponseBodyDto>>('users/me')
     .then((response) => processResponse(response));
 
   return response;

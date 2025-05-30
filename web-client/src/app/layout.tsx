@@ -34,12 +34,7 @@ export default async function RootLayout({
     <html lang={locale} suppressHydrationWarning>
       <body>
         <NextIntlClientProvider messages={messages}>
-          <ThemeProvider
-            attribute='class'
-            defaultTheme='system'
-            enableSystem
-            disableTransitionOnChange
-          >
+          <ThemeProvider>
             <SessionProvider session={session}>
               <StoreProvider>
                 <QueryProvider>
