@@ -1,15 +1,15 @@
 import { produce } from 'immer';
-import { StateCreator } from 'zustand';
+import { createStore } from 'zustand';
 
-interface ShelfState {
+type ShelfState = {
   selectedShelfId: string;
-}
+};
 
-interface ShelfActions {
+type ShelfActions = {
   setSelectedShelfId: (shelfId: string) => void;
-}
+};
 
-export type ShelfSlice = ShelfState & {
+type ShelfStore = ShelfState & {
   actions: ShelfActions;
 };
 
@@ -17,18 +17,19 @@ const initialState: ShelfState = {
   selectedShelfId: '',
 };
 
-export const createShelfSlice: StateCreator<ShelfSlice, [], [], ShelfSlice> = (
-  set,
-  _,
-) => ({
-  ...initialState,
-  actions: {
-    setSelectedShelfId: (shelfId: string) => {
-      set(
-        produce((state: ShelfSlice) => {
-          state.selectedShelfId = shelfId;
-        }),
-      );
+const createShelfStore = () => {
+  return createStore<ShelfStore>((set) => ({
+    ...initialState,
+    actions: {
+      setSelectedShelfId: (shelfId: string) => {
+        set(
+          produce((store: ShelfStore) => {
+            store.selectedShelfId = shelfId;
+          }),
+        );
+      },
     },
-  },
-});
+  }));
+};
+
+export { type ShelfStore, createShelfStore };

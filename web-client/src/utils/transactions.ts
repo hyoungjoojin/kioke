@@ -1,7 +1,7 @@
 'use client';
 
 import { updatePage } from '@/app/api/page';
-import { StoreApi } from '@/components/providers/StoreProvider';
+import { type StoreApi } from '@/components/providers/StoreProvider';
 import { TransactionStatus } from '@/store/transaction';
 import { groupBy } from 'lodash';
 import { Transaction } from 'prosemirror-state';
@@ -26,7 +26,7 @@ export class TransactionsManager {
   constructor(store: StoreApi) {
     this.transactions = this.loadTransactionsFromLocalStorage();
 
-    this.setStatus = store.getState().actions.setStatus;
+    this.setStatus = store.transactionStore.getState().actions.setStatus;
 
     this.autoSave();
 

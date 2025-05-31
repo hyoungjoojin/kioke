@@ -5,12 +5,12 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import Icon, { IconName } from '@/components/utils/icon';
-import { useModalStore } from '@/hooks/store/modal';
+import { useModalActions } from '@/hooks/store/modal';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 
 export default function SettingsModal() {
-  const { closeModal } = useModalStore();
+  const { closeModal } = useModalActions();
 
   const [tab, setTab] = useState<SettingsTab>(SettingsTab.ACCOUNT);
 

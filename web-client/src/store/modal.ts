@@ -1,19 +1,19 @@
 import { ModalType } from '@/constants/modal';
 import { produce } from 'immer';
-import { StateCreator } from 'zustand';
+import { createStore } from 'zustand';
 
-interface ModalState {
+type ModalState = {
   open: boolean;
   type: ModalType;
-}
+};
 
-interface ModalActions {
+type ModalActions = {
   openModal: (type: ModalType) => void;
   closeModal: () => void;
   toggleModal: () => void;
-}
+};
 
-export type ModalSlice = ModalState & {
+type ModalStore = ModalState & {
   actions: ModalActions;
 };
 
@@ -22,33 +22,34 @@ const initialState: ModalState = {
   type: ModalType.NULL,
 };
 
-export const createModalSlice: StateCreator<ModalSlice, [], [], ModalSlice> = (
-  set,
-  _,
-) => ({
-  ...initialState,
-  actions: {
-    openModal: (type: ModalType) => {
-      set(
-        produce((state: ModalSlice) => {
-          state.open = true;
-          state.type = type;
-        }),
-      );
+const createModalStore = () => {
+  return createStore<ModalStore>((set) => ({
+    ...initialState,
+    actions: {
+      openModal: (type: ModalType) => {
+        set(
+          produce((store: ModalStore) => {
+            store.open = true;
+            store.type = type;
+          }),
+        );
+      },
+      closeModal: () => {
+        set(
+          produce((store: ModalStore) => {
+            store.open = false;
+          }),
+        );
+      },
+      toggleModal: () => {
+        set(
+          produce((store: ModalStore) => {
+            store.open = !store.open;
+          }),
+        );
+      },
     },
-    closeModal: () => {
-      set(
-        produce((state: ModalSlice) => {
-          state.open = false;
-        }),
-      );
-    },
-    toggleModal: () => {
-      set(
-        produce((state: ModalSlice) => {
-          state.open = !state.open;
-        }),
-      );
-    },
-  },
-});
+  }));
+};
+
+export { type ModalStore, createModalStore };

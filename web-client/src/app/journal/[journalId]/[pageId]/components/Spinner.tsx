@@ -3,7 +3,7 @@ import { useTransactionStatus } from '@/hooks/store/transaction';
 import { TransactionStatus } from '@/store/transaction';
 
 export default function Spinner() {
-  const { status } = useTransactionStatus();
+  const status = useTransactionStatus();
 
   return (
     <div className='flex items-center justify-center'>

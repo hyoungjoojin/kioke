@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { ModalType } from '@/constants/modal';
-import { useModalStore } from '@/hooks/store/modal';
+import { useModalActions } from '@/hooks/store/modal';
 import { DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
 import { signOut } from 'next-auth/react';
 
@@ -26,7 +26,7 @@ function ProfileButtonDropdownMenuItem(props: {
 }
 
 export function SettingsButton() {
-  const { openModal } = useModalStore();
+  const { openModal } = useModalActions();
 
   return (
     <ProfileButtonDropdownMenuItem

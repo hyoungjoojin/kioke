@@ -1,18 +1,34 @@
 'use client';
 
-import createBoundStore, { type Store } from '@/store';
+import { createModalStore } from '@/store/modal';
+import { createPreferencesStore } from '@/store/preferences';
+import { createShelfStore } from '@/store/shelf';
+import { createTransactionStore } from '@/store/transaction';
+import { createViewStore } from '@/store/view';
 import { TransactionsManager } from '@/utils/transactions';
-import { createContext, useContext, useRef } from 'react';
-import { useStore } from 'zustand';
+import { createContext, useRef } from 'react';
 
-export type StoreApi = ReturnType<typeof createBoundStore>;
+type StoreApi = {
+  preferencesStore: ReturnType<typeof createPreferencesStore>;
+  modalStore: ReturnType<typeof createModalStore>;
+  shelfStore: ReturnType<typeof createShelfStore>;
+  transactionStore: ReturnType<typeof createTransactionStore>;
+  viewStore: ReturnType<typeof createViewStore>;
+};
 
-const StoreContext = createContext<StoreApi | undefined>(undefined);
+const StoreContext = createContext<StoreApi | null>(null);
 
-export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
-  const storeRef = useRef<StoreApi>(undefined);
+function StoreProvider({ children }: { children: React.ReactNode }) {
+  const storeRef = useRef<StoreApi | null>(null);
+
   if (!storeRef.current) {
-    storeRef.current = createBoundStore();
+    storeRef.current = {
+      preferencesStore: createPreferencesStore(),
+      modalStore: createModalStore(),
+      shelfStore: createShelfStore(),
+      transactionStore: createTransactionStore(),
+      viewStore: createViewStore(),
+    };
   }
 
   new TransactionsManager(storeRef.current);
@@ -22,15 +38,7 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
       {children}
     </StoreContext.Provider>
   );
-};
+}
 
-export const useBoundStore = <T,>(selector: (store: Store) => T): T => {
-  const storeContext = useContext(StoreContext);
-  if (!storeContext) {
-    throw new Error(
-      'useBoundStore must be used within a StoreProvider component.',
-    );
-  }
-
-  return useStore(storeContext, selector);
-};
+export default StoreProvider;
+export { type StoreApi, StoreContext };

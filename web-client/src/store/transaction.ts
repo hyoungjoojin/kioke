@@ -1,21 +1,21 @@
 import { produce } from 'immer';
-import { StateCreator } from 'zustand';
+import { createStore } from 'zustand';
 
-export enum TransactionStatus {
+enum TransactionStatus {
   SAVING = 'saving',
   SAVED = 'saved',
   ERROR = 'error',
 }
 
-interface TransactionState {
+type TransactionState = {
   status: TransactionStatus;
-}
+};
 
-interface TransactionActions {
+type TransactionActions = {
   setStatus: (status: TransactionStatus) => void;
-}
+};
 
-export type TransactionSlice = TransactionState & {
+type TransactionStore = TransactionState & {
   actions: TransactionActions;
 };
 
@@ -23,20 +23,19 @@ const initialState: TransactionState = {
   status: TransactionStatus.SAVED,
 };
 
-export const createTransactionSlice: StateCreator<
-  TransactionSlice,
-  [],
-  [],
-  TransactionSlice
-> = (set, _) => ({
-  ...initialState,
-  actions: {
-    setStatus: (status: TransactionStatus) => {
-      set(
-        produce((state: TransactionSlice) => {
-          state.status = status;
-        }),
-      );
+const createTransactionStore = () => {
+  return createStore<TransactionStore>((set) => ({
+    ...initialState,
+    actions: {
+      setStatus: (status: TransactionStatus) => {
+        set(
+          produce((store: TransactionStore) => {
+            store.status = status;
+          }),
+        );
+      },
     },
-  },
-});
+  }));
+};
+
+export { TransactionStatus, type TransactionStore, createTransactionStore };

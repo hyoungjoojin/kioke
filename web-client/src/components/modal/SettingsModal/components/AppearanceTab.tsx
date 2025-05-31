@@ -1,12 +1,15 @@
 'use client';
 
 import Theme, { getThemeDisplayName } from '@/constants/theme';
-import usePreferencesStore from '@/hooks/store/preferences';
+import {
+  usePreferencesActions,
+  usePreferredTheme,
+} from '@/hooks/store/preferences';
 import { cn } from '@/lib/utils';
-import { useTheme } from 'next-themes';
 
 export default function AppearanceTab() {
-  const { preferences, setTheme } = usePreferencesStore();
+  const preferredTheme = usePreferredTheme();
+  const { setTheme } = usePreferencesActions();
 
   return (
     <>
@@ -31,7 +34,7 @@ export default function AppearanceTab() {
                   setTheme(theme);
                 }}
               >
-                {theme === preferences.theme && <span>V</span>}
+                {theme === preferredTheme && <span>V</span>}
                 {getThemeDisplayName(theme)}
               </div>
             );

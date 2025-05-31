@@ -1,7 +1,7 @@
 import Modal from '@/components/modal';
 import QueryProvider from '@/components/providers/QueryProvider';
 import { SessionProvider } from '@/components/providers/SessionProvider';
-import { StoreProvider } from '@/components/providers/StoreProvider';
+import StoreProvider from '@/components/providers/StoreProvider';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { auth } from '@/lib/auth';

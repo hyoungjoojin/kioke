@@ -1,16 +1,16 @@
 import View from '@/constants/view';
 import { produce } from 'immer';
-import { StateCreator } from 'zustand';
+import { createStore } from 'zustand';
 
-interface ViewState {
+type ViewState = {
   currentView: View;
-}
+};
 
-interface ViewActions {
+type ViewActions = {
   setCurrentView: (view: View) => void;
-}
+};
 
-export type ViewSlice = ViewState & {
+type ViewStore = ViewState & {
   actions: ViewActions;
 };
 
@@ -18,18 +18,19 @@ const initialState: ViewState = {
   currentView: View.HOME,
 };
 
-export const createViewSlice: StateCreator<ViewSlice, [], [], ViewSlice> = (
-  set,
-  _,
-) => ({
-  ...initialState,
-  actions: {
-    setCurrentView: (view: View) => {
-      set(
-        produce((state) => {
-          state.currentView = view;
-        }),
-      );
+const createViewStore = () => {
+  return createStore<ViewStore>((set) => ({
+    ...initialState,
+    actions: {
+      setCurrentView: (view: View) => {
+        set(
+          produce((store: ViewStore) => {
+            store.currentView = view;
+          }),
+        );
+      },
     },
-  },
-});
+  }));
+};
+
+export { type ViewStore, createViewStore };

@@ -1,70 +1,36 @@
 import Theme from '@/constants/theme';
 import { produce } from 'immer';
-import { StateCreator } from 'zustand';
+import { createStore } from 'zustand';
 
-interface KiokePreferences {
+type PreferencesState = {
   theme: Theme;
-}
+};
 
-interface PreferencesState {
-  current: KiokePreferences;
-  snapshot: KiokePreferences | null;
-}
-
-interface PreferencesActions {
-  commit: () => void;
-  rollback: () => void;
+type PreferencesActions = {
   setTheme: (theme: Theme) => void;
-}
+};
 
-export type PreferencesSlice = PreferencesState & {
+type PreferencesStore = PreferencesState & {
   actions: PreferencesActions;
 };
 
 const initialState: PreferencesState = {
-  current: {
-    theme: Theme.SYSTEM,
-  },
-  snapshot: null,
+  theme: Theme.SYSTEM,
 };
 
-export const createPreferencesSlice: StateCreator<
-  PreferencesSlice,
-  [],
-  [],
-  PreferencesSlice
-> = (set, _) => ({
-  ...initialState,
-  actions: {
-    commit: () => {
-      set(
-        produce((slice: PreferencesSlice) => {
-          if (slice.snapshot !== null) {
-            slice.snapshot = null;
-          }
-        }),
-      );
+const createPreferencesStore = () => {
+  return createStore<PreferencesStore>((set) => ({
+    ...initialState,
+    actions: {
+      setTheme: (theme: Theme) => {
+        set(
+          produce((store: PreferencesStore) => {
+            store.theme = theme;
+          }),
+        );
+      },
     },
-    rollback: () => {
-      set(
-        produce((slice: PreferencesSlice) => {
-          if (slice.snapshot !== null) {
-            slice.current = slice.snapshot;
-            slice.snapshot = null;
-          }
-        }),
-      );
-    },
-    setTheme: (theme: Theme) => {
-      set(
-        produce((slice: PreferencesSlice) => {
-          if (slice.snapshot === null) {
-            slice.snapshot = slice.current;
-          }
+  }));
+};
 
-          slice.current.theme = theme;
-        }),
-      );
-    },
-  },
-});
+export { type PreferencesStore, createPreferencesStore };
