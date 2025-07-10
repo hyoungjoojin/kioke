@@ -1,9 +1,0 @@
-spring:
-  devtools:
-    restart:
-      enabled: true
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:${SERVICE_DISCOVERY_PORT}/eureka
