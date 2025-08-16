@@ -28,6 +28,10 @@ export default function ProfileAvatar() {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent side='bottom' align='end'>
+        <DropdownMenuItem icon={IconName.BELL}>
+          {t('header.profile.notifications')}
+        </DropdownMenuItem>
+
         <DropdownMenuItem
           icon={IconName.SETTINGS}
           onClick={() => {
