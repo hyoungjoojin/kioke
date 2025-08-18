@@ -1,21 +1,21 @@
 import kioke from '@/app/api';
 import type { KiokeError } from '@/constant/error';
 import { MimeType } from '@/constant/mime';
-import type { Profile } from '@/types/profile';
+import type { MyProfile } from '@/types/profile';
 import type { Result } from 'neverthrow';
 
 interface GetMyProfileResponseBody {
-  isOnboarded: boolean;
   email: string;
   name: string;
-  profileImage: string;
+  onboarded: boolean;
+  createdAt: Date;
 }
 
 function url() {
   return '/users/me';
 }
 
-export async function getMyProfile(): Promise<Result<Profile, KiokeError>> {
+export async function getMyProfile(): Promise<Result<MyProfile, KiokeError>> {
   return kioke<GetMyProfileResponseBody>(url(), {
     method: 'GET',
     headers: {
