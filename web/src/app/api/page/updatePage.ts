@@ -2,26 +2,27 @@ import kioke from '@/app/api';
 import { MimeType } from '@/constant/mime';
 
 interface UpdatePagePathParams {
-  pageId: string;
+  id: string;
 }
 
-export interface UpdatePageRequestBody {
+export interface UpdatePageRequest {
+  journalId: string;
   title?: string;
   content?: string;
   date?: Date;
 }
 
-function url({ pageId }: UpdatePagePathParams) {
-  return `/pages/${pageId}`;
+function url({ id }: UpdatePagePathParams) {
+  return `/pages/${id}`;
 }
 
 export async function updatePage(
   pathParams: UpdatePagePathParams,
-  requestBody: UpdatePageRequestBody,
+  body: UpdatePageRequest,
 ) {
   return kioke<void>(url(pathParams), {
-    method: 'PUT',
-    body: JSON.stringify(requestBody),
+    method: 'PATCH',
+    body: JSON.stringify(body),
     headers: {
       'Content-Type': MimeType.APPLICATION_JSON,
     },

@@ -2,79 +2,79 @@ package io.kioke.feature.journal.service;
 
 import io.kioke.constant.Permission;
 import io.kioke.exception.AccessDeniedException;
+import io.kioke.exception.collection.CollectionNotFoundException;
 import io.kioke.exception.journal.JournalNotFoundException;
+import io.kioke.feature.collection.service.CollectionService;
 import io.kioke.feature.journal.domain.Journal;
 import io.kioke.feature.journal.dto.JournalDto;
 import io.kioke.feature.journal.dto.request.CreateJournalRequestDto;
 import io.kioke.feature.journal.dto.request.UpdateJournalRequestDto;
 import io.kioke.feature.journal.repository.JournalRepository;
+import io.kioke.feature.journal.util.JournalMapper;
 import io.kioke.feature.user.domain.User;
 import io.kioke.feature.user.dto.UserDto;
-import java.util.List;
+import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class JournalService {
 
-  private final JournalAuthService journalAuthService;
-  private final JournalCollectionService journalCollectionService;
-
+  private final JournalPermissionService journalPermissionService;
+  private final CollectionService collectionService;
   private final JournalRepository journalRepository;
+  private final JournalMapper journalMapper;
 
   public JournalService(
-      JournalAuthService journalAuthService,
-      JournalCollectionService journalCollectionService,
-      JournalRepository journalRepository) {
-    this.journalAuthService = journalAuthService;
-    this.journalCollectionService = journalCollectionService;
+      JournalPermissionService journalPermissionService,
+      CollectionService collectionService,
+      JournalRepository journalRepository,
+      JournalMapper journalMapper) {
+    this.journalPermissionService = journalPermissionService;
+    this.collectionService = collectionService;
     this.journalRepository = journalRepository;
+    this.journalMapper = journalMapper;
+  }
+
+  @Transactional(rollbackFor = Exception.class)
+  public JournalDto createJournal(UserDto userDto, CreateJournalRequestDto request)
+      throws AccessDeniedException, CollectionNotFoundException {
+    User user = User.builder().userId(userDto.userId()).build();
+
+    Journal journal = Journal.builder().author(user).title(request.title()).build();
+    journal = journalRepository.save(journal);
+
+    collectionService.addEntryToCollection(user, journal, request.collectionId());
+    return journalMapper.toDto(journal);
   }
 
   @Transactional(readOnly = true)
   public JournalDto getJournal(UserDto user, String journalId)
       throws JournalNotFoundException, AccessDeniedException {
-    JournalDto journal =
-        journalRepository
-            .findByJournalId(journalId)
-            .orElseThrow(() -> new JournalNotFoundException());
+    Journal journal =
+        journalRepository.findById(journalId).orElseThrow(() -> new JournalNotFoundException());
 
-    journalAuthService.checkPermissions(user, journal, Permission.READ);
-    return journal;
-  }
+    journalPermissionService.checkPermissions(
+        User.builder().userId(user.userId()).build(), journal, Set.of(Permission.READ));
 
-  @Transactional
-  public JournalDto createJournal(UserDto userDto, CreateJournalRequestDto request) {
-    User user = new User();
-    user.setUserId(userDto.userId());
-
-    Journal journal = new Journal();
-    journal.setAuthor(user);
-    journal.setTitle(request.title());
-    journal.setDescription("");
-    journal.setIsPublic(false);
-    journal = journalRepository.saveAndFlush(journal);
-
-    JournalDto journalDto = new JournalDto(journal.getJournalId());
-    journalAuthService.setPermissions(
-        userDto, journalDto, List.of(Permission.READ, Permission.EDIT, Permission.DELETE));
-
-    journalCollectionService.addJournal(userDto, journalDto, request.collectionId());
-    return journalDto;
+    return journalMapper.toDto(journal);
   }
 
   @Transactional
   public void updateJournal(UserDto user, String journalId, UpdateJournalRequestDto request)
       throws JournalNotFoundException, AccessDeniedException {
-    journalAuthService.checkPermissions(user, new JournalDto(journalId), Permission.EDIT);
+    Journal journal =
+        journalRepository.findById(journalId).orElseThrow(() -> new JournalNotFoundException());
 
-    Journal journal = journalRepository.getReferenceById(journalId);
+    journalPermissionService.checkPermissions(
+        User.builder().userId(user.userId()).build(), journal, Set.of(Permission.EDIT));
+
     if (request.title() != null) {
-      journal.setTitle(request.title());
+      journal.changeTitle(request.title());
     }
 
     if (request.description() != null) {
-      journal.setDescription(request.description());
+      journal.changeDescription(request.description());
     }
 
     journalRepository.save(journal);

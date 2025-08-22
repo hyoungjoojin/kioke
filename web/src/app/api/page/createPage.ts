@@ -4,13 +4,13 @@ import { MimeType } from '@/constant/mime';
 import type { Page } from '@/types/page';
 import type { Result } from 'neverthrow';
 
-export interface CreatePageRequestBody {
+export interface CreatePageRequest {
   journalId: string;
   title: string;
   date: Date;
 }
 
-interface CreatePageResponseBody {
+interface CreatePageResponse {
   pageId: string;
 }
 
@@ -19,20 +19,21 @@ function url() {
 }
 
 export async function createPage(
-  requestBody: CreatePageRequestBody,
+  body: CreatePageRequest,
 ): Promise<Result<Page, KiokeError>> {
-  return kioke<CreatePageResponseBody>(url(), {
+  return kioke<CreatePageResponse>(url(), {
     method: 'POST',
+    body: JSON.stringify(body),
     headers: {
       'Content-Type': MimeType.APPLICATION_JSON,
     },
   }).then((response) =>
     response.map((data) => ({
       pageId: data.pageId,
-      journalId: requestBody.journalId,
-      title: requestBody.title,
+      journalId: body.journalId,
+      title: body.title,
       content: '',
-      date: requestBody.date,
+      date: body.date,
     })),
   );
 }

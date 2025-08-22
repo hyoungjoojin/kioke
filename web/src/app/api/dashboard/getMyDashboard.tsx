@@ -1,10 +1,11 @@
 import kioke from '@/app/api';
 import type { DashboardWidgetType } from '@/constant/dashboard';
 import type { KiokeError } from '@/constant/error';
+import { MimeType } from '@/constant/mime';
 import type { Dashboard } from '@/types/dashboard';
 import type { Result } from 'neverthrow';
 
-interface GetDashboardResponseBody {
+interface GetDashboardResponse {
   widgets: {
     id: string;
     type: DashboardWidgetType;
@@ -19,7 +20,10 @@ function url() {
 }
 
 export async function getMyDashboard(): Promise<Result<Dashboard, KiokeError>> {
-  return kioke<GetDashboardResponseBody>(url(), {
+  return kioke<GetDashboardResponse>(url(), {
     method: 'GET',
+    headers: {
+      'Content-Type': MimeType.APPLICATION_JSON,
+    },
   });
 }

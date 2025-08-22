@@ -14,6 +14,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -39,11 +40,11 @@ public class Journal {
   @Column(name = "DESCRIPTION", nullable = false)
   private String description;
 
-  @OneToMany(mappedBy = "journal")
-  private List<Page> pages;
-
   @Column(name = "IS_PUBLIC", nullable = false)
   private boolean isPublic;
+
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "journal")
+  private List<Page> pages;
 
   @CreatedDate
   @Column(name = "CREATED_AT")
@@ -53,39 +54,77 @@ public class Journal {
   @Column(name = "LAST_MODIFIED_AT")
   private Instant lastModifiedAt;
 
+  protected Journal() {}
+
+  private Journal(String journalId) {
+    this.journalId = journalId;
+  }
+
+  private Journal(User author, String title) {
+    this.author = author;
+    this.title = title;
+    this.description = "";
+    this.isPublic = false;
+    this.pages = new ArrayList<>();
+  }
+
   public String getJournalId() {
     return journalId;
   }
 
-  public void setJournalId(String journalId) {
-    this.journalId = journalId;
-  }
-
-  public void setAuthor(User author) {
-    this.author = author;
+  public User getAuthor() {
+    return author;
   }
 
   public String getTitle() {
     return title;
   }
 
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
   public String getDescription() {
     return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
   }
 
   public boolean getIsPublic() {
     return isPublic;
   }
 
-  public void setIsPublic(boolean isPublic) {
-    this.isPublic = isPublic;
+  public List<Page> getPages() {
+    return pages;
+  }
+
+  public static Journal from(String journalId) {
+    return new Journal(journalId);
+  }
+
+  public static JournalBuilder builder() {
+    return new JournalBuilder();
+  }
+
+  public static class JournalBuilder {
+
+    private User author;
+    private String title;
+
+    public JournalBuilder author(User author) {
+      this.author = author;
+      return this;
+    }
+
+    public JournalBuilder title(String title) {
+      this.title = title;
+      return this;
+    }
+
+    public Journal build() {
+      return new Journal(author, title);
+    }
+  }
+
+  public void changeTitle(String title) {
+    this.title = title;
+  }
+
+  public void changeDescription(String description) {
+    this.description = description;
   }
 }

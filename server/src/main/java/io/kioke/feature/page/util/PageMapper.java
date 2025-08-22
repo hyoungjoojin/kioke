@@ -5,11 +5,13 @@ import io.kioke.feature.page.dto.PageDto;
 import io.kioke.feature.page.dto.response.CreatePageResponseDto;
 import io.kioke.feature.page.dto.response.GetPageResponseDto;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface PageMapper {
 
-  public PageDto toPageDto(String journalId, Page page);
+  @Mapping(source = "page.journal.journalId", target = "journalId")
+  public PageDto toDto(Page page);
 
   public GetPageResponseDto toGetPageResponse(PageDto page);
 

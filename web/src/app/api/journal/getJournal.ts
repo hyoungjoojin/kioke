@@ -8,12 +8,12 @@ interface GetJournalPathParams {
   journalId: string;
 }
 
-interface GetJournalResponseBody {
-  journalId: string;
+interface GetJournalResponse {
+  id: string;
   title: string;
   description: string;
   pages: {
-    pageId: string;
+    id: string;
     title: string;
     date: Date;
   }[];
@@ -26,7 +26,7 @@ function url({ journalId }: GetJournalPathParams) {
 export async function getJournal(
   pathParams: GetJournalPathParams,
 ): Promise<Result<Journal, KiokeError>> {
-  return kioke<GetJournalResponseBody>(url(pathParams), {
+  return kioke<GetJournalResponse>(url(pathParams), {
     method: 'GET',
     headers: {
       'Content-Type': MimeType.APPLICATION_JSON,

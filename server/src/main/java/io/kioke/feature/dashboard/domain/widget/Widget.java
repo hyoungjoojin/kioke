@@ -25,7 +25,7 @@ public class Widget {
   @GeneratedValue(strategy = GenerationType.UUID)
   private String widgetId;
 
-  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "DASHBOARD_ID", nullable = false)
   private Dashboard dashboard;
 
@@ -39,27 +39,79 @@ public class Widget {
   @Column(name = "POSITION_Y", nullable = false)
   private int y;
 
-  @OneToOne(cascade = CascadeType.PERSIST)
+  @OneToOne(cascade = CascadeType.MERGE)
   @JoinColumn(name = "CONTENT")
   private WidgetContent content;
 
-  public void setDashboard(Dashboard dashboard) {
+  protected Widget() {}
+
+  private Widget(Dashboard dashboard, WidgetType type, int x, int y, WidgetContent content) {
     this.dashboard = dashboard;
-  }
-
-  public void setType(WidgetType type) {
     this.type = type;
-  }
-
-  public void setX(int x) {
     this.x = x;
-  }
-
-  public void setY(int y) {
     this.y = y;
+    this.content = content;
   }
 
-  public void setContent(WidgetContent content) {
-    this.content = content;
+  public String getWidgetId() {
+    return widgetId;
+  }
+
+  public Dashboard getDashboard() {
+    return dashboard;
+  }
+
+  public WidgetType getType() {
+    return type;
+  }
+
+  public int getX() {
+    return x;
+  }
+
+  public int getY() {
+    return y;
+  }
+
+  public WidgetContent getContent() {
+    return content;
+  }
+
+  public static WidgetBuilder builder() {
+    return new WidgetBuilder();
+  }
+
+  public static class WidgetBuilder {
+
+    private Dashboard dashboard;
+    private WidgetType type;
+    private int x;
+    private int y;
+    private WidgetContent content;
+
+    public WidgetBuilder dashboard(Dashboard dashboard) {
+      this.dashboard = dashboard;
+      return this;
+    }
+
+    public WidgetBuilder type(WidgetType type) {
+      this.type = type;
+      return this;
+    }
+
+    public WidgetBuilder position(int x, int y) {
+      this.x = x;
+      this.y = y;
+      return this;
+    }
+
+    public WidgetBuilder content(WidgetContent content) {
+      this.content = content;
+      return this;
+    }
+
+    public Widget build() {
+      return new Widget(dashboard, type, x, y, content);
+    }
   }
 }

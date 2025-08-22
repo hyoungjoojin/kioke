@@ -4,13 +4,13 @@ import { MimeType } from '@/constant/mime';
 import type { Journal } from '@/types/journal';
 import type { Result } from 'neverthrow';
 
-export interface CreateJournalRequestBody {
+export interface CreateJournalRequest {
   collectionId: string;
   title: string;
 }
 
-interface CreateJournalResponseBody {
-  journalId: string;
+interface CreateJournalResponse {
+  id: string;
 }
 
 function url() {
@@ -18,18 +18,18 @@ function url() {
 }
 
 export async function createJournal(
-  requestBody: CreateJournalRequestBody,
+  body: CreateJournalRequest,
 ): Promise<Result<Journal, KiokeError>> {
-  return kioke<CreateJournalResponseBody>(url(), {
+  return kioke<CreateJournalResponse>(url(), {
     method: 'POST',
-    body: JSON.stringify(requestBody),
+    body: JSON.stringify(body),
     headers: {
       'Content-Type': MimeType.APPLICATION_JSON,
     },
   }).then((response) =>
     response.map((data) => ({
-      journalId: data.journalId,
-      title: requestBody.title,
+      id: data.id,
+      title: body.title,
       description: '',
       pages: [],
     })),

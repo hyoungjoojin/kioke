@@ -27,23 +27,53 @@ public class User {
   @Column(name = "EMAIL", unique = true, nullable = false)
   private String email;
 
-  @CreatedDate
   @Column(name = "CREATED_AT")
+  @CreatedDate
   private Instant createdAt;
+
+  @Column(name = "IS_DELETED", nullable = false)
+  private boolean deleted;
+
+  @Column(name = "DELETED_AT")
+  private Instant deletedAt;
+
+  protected User() {}
+
+  private User(String userId, String email) {
+    this.userId = userId;
+    this.email = email;
+    this.deleted = false;
+  }
 
   public String getUserId() {
     return userId;
   }
 
-  public void setUserId(String userId) {
-    this.userId = userId;
-  }
-
   public String getEmail() {
-    return this.email;
+    return email;
   }
 
-  public void setEmail(String email) {
-    this.email = email;
+  public static UserBuilder builder() {
+    return new UserBuilder();
+  }
+
+  public static class UserBuilder {
+
+    private String userId;
+    private String email;
+
+    public UserBuilder userId(String userId) {
+      this.userId = userId;
+      return this;
+    }
+
+    public UserBuilder email(String email) {
+      this.email = email;
+      return this;
+    }
+
+    public User build() {
+      return new User(userId, email);
+    }
   }
 }

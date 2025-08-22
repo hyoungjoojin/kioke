@@ -1,7 +1,7 @@
 package io.kioke.feature.page.controller;
 
 import io.kioke.annotation.AuthenticatedUser;
-import io.kioke.exception.AccessDeniedException;
+import io.kioke.exception.auth.AccessDeniedException;
 import io.kioke.exception.journal.JournalNotFoundException;
 import io.kioke.exception.page.PageNotFoundException;
 import io.kioke.feature.page.dto.PageDto;
@@ -15,9 +15,9 @@ import io.kioke.feature.user.dto.UserDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,20 +26,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class PageController {
 
   private final PageService pageService;
-
   private final PageMapper pageMapper;
 
   public PageController(PageService pageService, PageMapper pageMapper) {
     this.pageService = pageService;
     this.pageMapper = pageMapper;
-  }
-
-  @GetMapping("/pages/{pageId}")
-  @ResponseStatus(HttpStatus.OK)
-  public GetPageResponseDto getPage(@AuthenticatedUser UserDto user, @PathVariable String pageId)
-      throws JournalNotFoundException, PageNotFoundException, AccessDeniedException {
-    PageDto page = pageService.getPage(user, pageId);
-    return pageMapper.toGetPageResponse(page);
   }
 
   @PostMapping("/pages")
@@ -51,7 +42,15 @@ public class PageController {
     return pageMapper.toCreatePageResponse(page);
   }
 
-  @PutMapping("/pages/{pageId}")
+  @GetMapping("/pages/{pageId}")
+  @ResponseStatus(HttpStatus.OK)
+  public GetPageResponseDto getPage(@AuthenticatedUser UserDto user, @PathVariable String pageId)
+      throws JournalNotFoundException, PageNotFoundException, AccessDeniedException {
+    PageDto page = pageService.getPage(user, pageId);
+    return pageMapper.toGetPageResponse(page);
+  }
+
+  @PatchMapping("/pages/{pageId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void updatePage(
       @AuthenticatedUser UserDto user,

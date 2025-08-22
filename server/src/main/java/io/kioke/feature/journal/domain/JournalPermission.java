@@ -14,7 +14,7 @@ import jakarta.persistence.Table;
 @Table(name = "JOURNAL_PERMISSION_TABLE")
 public class JournalPermission {
 
-  @EmbeddedId private JournalPermissionId id;
+  @EmbeddedId private JournalPermissionId id = new JournalPermissionId();
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @MapsId(value = "userId")
@@ -35,23 +35,30 @@ public class JournalPermission {
   @Column(name = "CAN_DELETE", nullable = false)
   private boolean canDelete;
 
-  public void setUser(User user) {
+  protected JournalPermission() {}
+
+  private JournalPermission(
+      User user, Journal journal, boolean canRead, boolean canEdit, boolean canDelete) {
     this.user = user;
-  }
-
-  public void setJournal(Journal journal) {
     this.journal = journal;
-  }
-
-  public void setCanRead(boolean canRead) {
     this.canRead = canRead;
-  }
-
-  public void setCanEdit(boolean canEdit) {
     this.canEdit = canEdit;
+    this.canDelete = canDelete;
   }
 
-  public void setCanDelete(boolean canDelete) {
-    this.canDelete = canDelete;
+  public boolean canRead() {
+    return canRead;
+  }
+
+  public boolean canEdit() {
+    return canEdit;
+  }
+
+  public boolean canDelete() {
+    return canDelete;
+  }
+
+  public static JournalPermission ofEmpty() {
+    return new JournalPermission(null, null, false, false, false);
   }
 }

@@ -32,7 +32,7 @@ public class Profile {
   private String name;
 
   @Column(name = "IS_ONBOARDED", nullable = false)
-  private Boolean onboarded;
+  private boolean onboarded;
 
   @Column(name = "CREATED_AT")
   @CreatedDate
@@ -42,51 +42,42 @@ public class Profile {
   @LastModifiedDate
   private Instant lastModifiedAt;
 
+  protected Profile() {}
+
+  private Profile(String userId) {
+    this.userId = userId;
+    this.onboarded = false;
+  }
+
   public String getUserId() {
     return userId;
-  }
-
-  public void setUserId(String userId) {
-    this.userId = userId;
-  }
-
-  public User getUser() {
-    return user;
-  }
-
-  public void setUser(User user) {
-    this.user = user;
   }
 
   public String getName() {
     return name;
   }
 
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public Boolean isOnboarded() {
+  public boolean isOnboarded() {
     return onboarded;
-  }
-
-  public void setOnboarded(boolean onboarded) {
-    this.onboarded = onboarded;
   }
 
   public Instant getCreatedAt() {
     return createdAt;
   }
 
-  public void setCreatedAt(Instant createdAt) {
-    this.createdAt = createdAt;
-  }
-
   public Instant getLastModifiedAt() {
     return lastModifiedAt;
   }
 
-  public void setLastModifiedAt(Instant lastModifiedAt) {
-    this.lastModifiedAt = lastModifiedAt;
+  public static Profile from(String userId) {
+    return new Profile(userId);
+  }
+
+  public void changeName(String name) {
+    this.name = name;
+  }
+
+  public void setOnboardingStatus(boolean onboarded) {
+    this.onboarded = onboarded;
   }
 }

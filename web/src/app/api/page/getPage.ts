@@ -5,7 +5,7 @@ import type { Page } from '@/types/page';
 import type { Result } from 'neverthrow';
 
 interface GetPagePathParams {
-  pageId: string;
+  id: string;
 }
 
 interface GetPageResponseBody {
@@ -16,8 +16,8 @@ interface GetPageResponseBody {
   date: Date;
 }
 
-function url({ pageId }: GetPagePathParams) {
-  return `/pages/${pageId}`;
+function url({ id }: GetPagePathParams) {
+  return `/pages/${id}`;
 }
 
 export async function getPage(

@@ -2,6 +2,7 @@ package io.kioke.feature.journal.controller;
 
 import io.kioke.annotation.AuthenticatedUser;
 import io.kioke.exception.AccessDeniedException;
+import io.kioke.exception.collection.CollectionNotFoundException;
 import io.kioke.exception.journal.JournalNotFoundException;
 import io.kioke.feature.journal.dto.JournalDto;
 import io.kioke.feature.journal.dto.request.CreateJournalRequestDto;
@@ -14,9 +15,9 @@ import io.kioke.feature.user.dto.UserDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,12 +26,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class JournalController {
 
   private final JournalService journalService;
-
   private final JournalMapper journalMapper;
 
   public JournalController(JournalService journalService, JournalMapper journalMapper) {
     this.journalService = journalService;
     this.journalMapper = journalMapper;
+  }
+
+  @PostMapping("/journals")
+  @ResponseStatus(HttpStatus.CREATED)
+  public CreateJournalResponseDto createJournal(
+      @AuthenticatedUser UserDto user, @RequestBody @Validated CreateJournalRequestDto requestBody)
+      throws AccessDeniedException, CollectionNotFoundException {
+    JournalDto journal = journalService.createJournal(user, requestBody);
+    return journalMapper.toCreateJournalResponse(journal);
   }
 
   @GetMapping("/journals/{journalId}")
@@ -42,16 +51,7 @@ public class JournalController {
     return journalMapper.toGetJournalResponse(journal);
   }
 
-  @PostMapping("/journals")
-  @ResponseStatus(HttpStatus.CREATED)
-  public CreateJournalResponseDto createJournal(
-      @AuthenticatedUser UserDto user,
-      @RequestBody @Validated CreateJournalRequestDto requestBody) {
-    JournalDto journal = journalService.createJournal(user, requestBody);
-    return journalMapper.toCreateJournalResponse(journal);
-  }
-
-  @PutMapping("/journals/{journalId}")
+  @PatchMapping("/journals/{journalId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void updateJournal(
       @AuthenticatedUser UserDto user,

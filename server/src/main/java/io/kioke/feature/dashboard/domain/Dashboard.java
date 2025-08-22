@@ -1,12 +1,10 @@
 package io.kioke.feature.dashboard.domain;
 
-import io.kioke.feature.dashboard.constant.ViewerType;
 import io.kioke.feature.dashboard.domain.widget.Widget;
 import io.kioke.feature.user.domain.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -30,26 +29,30 @@ public class Dashboard {
   @JoinColumn(name = "USER_ID", nullable = false)
   private User user;
 
-  @Column(name = "VIEWER_TYPE", nullable = false)
-  @Enumerated(EnumType.STRING)
-  private ViewerType viewerType;
-
-  @OneToMany(mappedBy = "dashboard", orphanRemoval = true)
+  @OneToMany(mappedBy = "dashboard", orphanRemoval = true, cascade = CascadeType.MERGE)
   private List<Widget> widgets;
+
+  protected Dashboard() {}
+
+  private Dashboard(User user) {
+    this.user = user;
+    this.widgets = new ArrayList<>();
+  }
+
+  public String getId() {
+    return id;
+  }
 
   public List<Widget> getWidgets() {
     return widgets;
   }
 
-  public void setUser(User user) {
-    this.user = user;
-  }
-
-  public void setViewerType(ViewerType viewerType) {
-    this.viewerType = viewerType;
+  public static Dashboard from(User user) {
+    return new Dashboard(user);
   }
 
   public void setWidgets(List<Widget> widgets) {
-    this.widgets = widgets;
+    this.widgets.clear();
+    this.widgets.addAll(widgets);
   }
 }

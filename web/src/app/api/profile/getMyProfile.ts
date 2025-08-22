@@ -4,7 +4,7 @@ import { MimeType } from '@/constant/mime';
 import type { MyProfile } from '@/types/profile';
 import type { Result } from 'neverthrow';
 
-interface GetMyProfileResponseBody {
+interface GetMyProfileResponse {
   email: string;
   name: string;
   onboarded: boolean;
@@ -16,7 +16,7 @@ function url() {
 }
 
 export async function getMyProfile(): Promise<Result<MyProfile, KiokeError>> {
-  return kioke<GetMyProfileResponseBody>(url(), {
+  return kioke<GetMyProfileResponse>(url(), {
     method: 'GET',
     headers: {
       'Content-Type': MimeType.APPLICATION_JSON,

@@ -31,6 +31,13 @@ const eslintConfig = [
       'no-console': 'error',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-empty-object-type': 'off',
+      '@typescript-eslint/consistent-type-imports': 'error',
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: ['..*'],
+        },
+      ],
     },
   },
 ];

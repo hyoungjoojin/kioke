@@ -5,7 +5,7 @@ import logger from '@/lib/logger';
 import { getSession } from '@/lib/session';
 import env from '@/util/env';
 import { parseErrorResponse, parseResponse } from '@/util/server';
-import type { Result} from 'neverthrow';
+import type { Result } from 'neverthrow';
 import { err, ok } from 'neverthrow';
 
 const BACKEND_URL = env.NEXT_PUBLIC_BACKEND_URL;
@@ -18,7 +18,7 @@ async function kioke<T>(
 
   const headers = {
     ...(isBrowser()
-      ? { credentials: 'include' }
+      ? { Credentials: 'include' }
       : { Cookie: `${SESSION_COOKIE_KEY}=${(await getSession())?.id || ''}` }),
     ...options?.headers,
   };

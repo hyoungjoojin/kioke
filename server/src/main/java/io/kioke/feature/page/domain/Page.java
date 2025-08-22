@@ -8,7 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
@@ -29,12 +28,20 @@ public class Page {
   @Column(name = "TITLE")
   private String title;
 
-  @Lob
-  @Column(name = "CONTENT", columnDefinition = "jsonb")
+  @Column(name = "CONTENT")
   private String content;
 
   @Column(name = "DATE")
   private LocalDateTime date;
+
+  protected Page() {}
+
+  private Page(Journal journal, String title, LocalDateTime date) {
+    this.journal = journal;
+    this.title = title;
+    this.content = "";
+    this.date = date;
+  }
 
   public String getPageId() {
     return pageId;
@@ -56,23 +63,45 @@ public class Page {
     return date;
   }
 
-  public void setPageId(String pageId) {
-    this.pageId = pageId;
+  public static PageBuilder builder() {
+    return new PageBuilder();
   }
 
-  public void setJournal(Journal journal) {
-    this.journal = journal;
+  public static class PageBuilder {
+
+    private Journal journal;
+    private String title;
+    private LocalDateTime date;
+
+    public PageBuilder journal(Journal journal) {
+      this.journal = journal;
+      return this;
+    }
+
+    public PageBuilder title(String title) {
+      this.title = title;
+      return this;
+    }
+
+    public PageBuilder date(LocalDateTime date) {
+      this.date = date;
+      return this;
+    }
+
+    public Page build() {
+      return new Page(journal, title, date);
+    }
   }
 
-  public void setTitle(String title) {
+  public void changeTitle(String title) {
     this.title = title;
   }
 
-  public void setContent(String content) {
+  public void changeContent(String content) {
     this.content = content;
   }
 
-  public void setDate(LocalDateTime date) {
+  public void changeDate(LocalDateTime date) {
     this.date = date;
   }
 }
