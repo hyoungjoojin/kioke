@@ -8,7 +8,8 @@ import { useModal, useModalActions } from '@/store/modal';
 import { AnimatePresence, motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
-import { ComponentType, useRef } from 'react';
+import type { ComponentType} from 'react';
+import { useRef } from 'react';
 
 export const enum ModalType {
   SETTINGS,

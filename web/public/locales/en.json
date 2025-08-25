@@ -1,0 +1,171 @@
+{
+  "header": {
+    "links": {
+      "home": "home",
+      "journals": "journals",
+      "friends": "friends"
+    },
+    "profile": {
+      "settings": "Settings",
+      "notifications": "Notifications",
+      "sign-out": "Sign Out"
+    },
+    "edit-layout": {
+      "groups": {
+        "journals": {
+          "name": "Journals",
+          "journal-list": {
+            "name": "Journal List",
+            "title": "Journal List",
+            "description": "Show a list of journals in a collection"
+          }
+        }
+      },
+      "actions": {
+        "insert": "Insert",
+        "save": "Save"
+      }
+    }
+  },
+  "dashboard": {
+    "menu": {
+      "settings": "Settings",
+      "signout": "Sign Out"
+    },
+    "context-menu": {
+      "edit-layout": "Edit Layout",
+      "save-layout": "Save",
+      "exit-layout": "Exit"
+    }
+  },
+  "journal-collections": {
+    "title": "My Collections",
+    "sidebar": {
+      "add-new-journal": "Add"
+    },
+    "trash": {
+      "title": "Archive"
+    }
+  },
+  "journal": {
+    "header": {
+      "share": {
+        "trigger": "Share",
+        "user-search": {
+          "placeholder": "Invite people by email or name"
+        }
+      }
+    },
+    "main": {
+      "title": {
+        "empty": "Untitled"
+      },
+      "tabs": {
+        "list": "List",
+        "calendar": "Calendar"
+      }
+    },
+    "list": {
+      "item": {
+        "title": {
+          "empty": "Untitled"
+        },
+        "actions": {
+          "change-date": "Change Date",
+          "delete": "Delete Page"
+        }
+      }
+    }
+  },
+  "social": {
+    "tabs": {
+      "friends": {
+        "name": "Friends"
+      },
+      "feed": { "name": "Feed" },
+      "search": { "name": "Search" }
+    }
+  },
+  "onboarding": {
+    "create-profile": {
+      "title": "Create your kioke profile",
+      "description": "",
+      "form": {
+        "fields": {
+          "name": "Name"
+        },
+        "continue": "Continue"
+      }
+    },
+    "finished": {
+      "title": "You're all set up to use kioke.",
+      "description": "Now you can begin your journey towards new possibilities.",
+      "previous": "Previous",
+      "continue": "Continue"
+    }
+  },
+  "modal": {
+    "settings": {
+      "title": "Settings",
+      "tabs": {
+        "account": {
+          "name": "Account"
+        },
+        "theme": {
+          "name": "Theme"
+        },
+        "notifications": {
+          "name": "Notifications"
+        }
+      }
+    }
+  },
+  "signin": {
+    "title": "Capture this moment with kioke.",
+    "description": "Sign in to your kioke account and start journaling.",
+    "form": {
+      "fields": {
+        "email": "Email",
+        "password": "Password"
+      },
+      "error": {
+        "invalid-email": "Enter a valid email",
+        "empty-field": "This field should not be empty"
+      },
+      "submit": "Sign in with email"
+    },
+    "signup": {
+      "1": "Not a member? ",
+      "2": "Sign up",
+      "3": " now."
+    }
+  },
+  "signup": {
+    "title": "Embark on a whole new journey with kioke.",
+    "description": "Create a new kioke account to start journaling.",
+    "form": {
+      "fields": {
+        "email": "Email",
+        "password": "Password",
+        "verify-password": "Verify Password"
+      },
+      "error": {
+        "invalid-email": "Enter a valid email",
+        "empty-field": "This field should not be empty",
+        "unmatching-password": "The passwords do not match"
+      },
+      "submit": "Sign up with email"
+    }
+  },
+  "default-values": {
+    "initial-journal-collection": "Default Collection",
+    "initial-journal-title": "Untitled"
+  },
+  "error": {
+    "network-failed": "Network Failed",
+    "bad-credentials": "Bad Credentials",
+    "unknown-error": "Unknown Error",
+    "file-too-large": "File too large. Please upload an image smaller than {size}.",
+    "unsupported-file-type": "Unsupported File Type"
+  }
+}

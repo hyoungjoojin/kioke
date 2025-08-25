@@ -1,7 +1,7 @@
 import kioke from '@/app/api';
-import type { KiokeError } from '@/constant/error';
 import { MimeType } from '@/constant/mime';
 import type { Collection } from '@/types/collection';
+import type KiokeError from '@/util/error';
 import type { Result } from 'neverthrow';
 
 interface GetCollectionPathParams {

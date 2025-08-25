@@ -8,6 +8,7 @@ interface UpdateJournalPathParams {
 export interface UpdateJournalRequest {
   title?: string;
   description?: string;
+  isPublic?: boolean;
 }
 
 function url({ id }: UpdateJournalPathParams) {

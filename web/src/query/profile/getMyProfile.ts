@@ -1,6 +1,6 @@
 import { getMyProfile } from '@/app/api/profile';
-import type { KiokeError } from '@/constant/error';
 import type { MyProfile } from '@/types/profile';
+import type KiokeError from '@/util/error';
 import { unwrap } from '@/util/result';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';

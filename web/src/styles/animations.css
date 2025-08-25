@@ -1,0 +1,19 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@keyframes wiggle {
+  0% {
+    transform: rotate(-0.3deg);
+    animation-timing-function: ease-in;
+  }
+
+  50% {
+    transform: rotate(0.3deg);
+    animation-timing-function: ease-out;
+  }
+}
+
+.wiggle {
+  animation: wiggle 0.3s infinite;
+  transform-origin: 50% 10%;
+}

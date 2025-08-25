@@ -1,7 +1,8 @@
 import kioke from '@/app/api';
-import type { KiokeError } from '@/constant/error';
 import { MimeType } from '@/constant/mime';
+import type { Role } from '@/constant/role';
 import type { Journal } from '@/types/journal';
+import type KiokeError from '@/util/error';
 import type { Result } from 'neverthrow';
 
 interface GetJournalPathParams {
@@ -16,6 +17,12 @@ interface GetJournalResponse {
     id: string;
     title: string;
     date: Date;
+  }[];
+  isPublic: boolean;
+  role: Role;
+  collaborators: {
+    userId: string;
+    role: Role;
   }[];
 }
 

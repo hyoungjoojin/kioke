@@ -1,10 +1,11 @@
 import kioke from '@/app/api';
-import type { KiokeError } from '@/constant/error';
 import { MimeType } from '@/constant/mime';
 import type { MyProfile } from '@/types/profile';
+import type KiokeError from '@/util/error';
 import type { Result } from 'neverthrow';
 
 interface GetMyProfileResponse {
+  userId: string;
   email: string;
   name: string;
   onboarded: boolean;
