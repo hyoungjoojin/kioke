@@ -1,0 +1,30 @@
+services:
+  database:
+    container_name: database
+    restart: unless-stopped
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: kioke
+      POSTGRES_PASSWORD: password
+    volumes:
+      - kioke-data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+  redis:
+    container_name: redis
+    restart: unless-stopped
+    image: redis:8.0.3-alpine
+    ports:
+      - 6379:6379
+
+  observability:
+    container_name: observability
+    image: grafana/otel-lgtm
+    ports:
+      - 3030:3000 # Grafana
+      - 4317:4317 # OLTP gRPC Receiver
+      - 4318:4318 # OLTP HTTP Receiver
+
+volumes:
+  kioke-data:
