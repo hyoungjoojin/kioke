@@ -1,5 +1,5 @@
 import { type UpdatePageRequest, updatePage } from '@/app/api/page';
-import type { KiokeError } from '@/constant/error';
+import type KiokeError from '@/util/error';
 import { unwrap } from '@/util/result';
 import { useMutation } from '@tanstack/react-query';
 

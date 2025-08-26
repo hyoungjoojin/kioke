@@ -1,6 +1,8 @@
 'use client';
 
+import { useTransaction } from '@/components/provider/TransactionProvider';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Spinner } from '@/components/ui/spinner';
 import { Routes } from '@/constant/routes';
 import { useJournalQuery } from '@/query/journal';
 import { usePageQuery } from '@/query/page';
@@ -17,10 +19,11 @@ export default function PageTitle() {
       enabled: isPageReady,
     },
   );
+  const { status } = useTransaction();
 
   return (
     <>
-      <div className='h-10 flex items-center'>
+      <div className='h-10 flex items-center gap-3'>
         {journal ? (
           <Link
             className='hover:underline hover:cursor-pointer'
@@ -31,8 +34,9 @@ export default function PageTitle() {
         ) : (
           <Skeleton className='h-full w-36' />
         )}
-      </div>
 
+        {status === 'saving' && <Spinner />}
+      </div>
       <div className='text-4xl mt-2 mb-5'>
         {(page && page.title) || 'Untitled'}
       </div>

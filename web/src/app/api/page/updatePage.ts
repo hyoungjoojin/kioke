@@ -6,7 +6,6 @@ interface UpdatePagePathParams {
 }
 
 export interface UpdatePageRequest {
-  journalId: string;
   title?: string;
   content?: string;
   date?: Date;
@@ -17,14 +16,20 @@ function url({ id }: UpdatePagePathParams) {
 }
 
 export async function updatePage(
-  pathParams: UpdatePagePathParams,
-  body: UpdatePageRequest,
+  request: UpdatePagePathParams & UpdatePageRequest,
 ) {
-  return kioke<void>(url(pathParams), {
-    method: 'PATCH',
-    body: JSON.stringify(body),
-    headers: {
-      'Content-Type': MimeType.APPLICATION_JSON,
+  const { id, ...body } = request;
+
+  return kioke<void>(
+    url({
+      id,
+    }),
+    {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+      headers: {
+        'Content-Type': MimeType.APPLICATION_JSON,
+      },
     },
-  });
+  );
 }

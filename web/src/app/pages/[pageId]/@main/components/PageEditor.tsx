@@ -1,5 +1,6 @@
 'use client';
 
+import { useTransaction } from '@/components/provider/TransactionProvider';
 import { Button } from '@/components/ui/button';
 import Icon, { IconName } from '@/components/ui/icon';
 import {
@@ -8,9 +9,8 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { usePageQuery, useUpdatePageMutation } from '@/query/page';
-import type { EditorEvents } from '@tiptap/react';
-import { EditorContent, useEditor } from '@tiptap/react';
+import { usePageQuery } from '@/query/page';
+import { EditorContent, type EditorEvents, useEditor } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react/menus';
 import StarterKit from '@tiptap/starter-kit';
 import { debounce } from 'lodash';
@@ -22,16 +22,16 @@ interface PageEditorProps {
 
 export default function PageEditor({ pageId }: PageEditorProps) {
   const { data: page } = usePageQuery({ id: pageId });
-  const { mutate: updatePage } = useUpdatePageMutation({ id: pageId });
+  const { addTransaction } = useTransaction();
 
   const editor = useEditor({
     extensions: [StarterKit],
     content: '',
     immediatelyRender: false,
     onTransaction: debounce(({}: EditorEvents['transaction']) => {
-      if (editor && page) {
-        updatePage({
-          journalId: page.journalId,
+      if (editor && pageId) {
+        addTransaction({
+          pageId,
           content: JSON.stringify(editor.getJSON()),
         });
       }
