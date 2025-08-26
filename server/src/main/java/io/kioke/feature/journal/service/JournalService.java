@@ -1,36 +1,38 @@
 package io.kioke.feature.journal.service;
 
-import io.kioke.constant.Permission;
-import io.kioke.exception.AccessDeniedException;
+import io.kioke.exception.auth.AccessDeniedException;
 import io.kioke.exception.collection.CollectionNotFoundException;
 import io.kioke.exception.journal.JournalNotFoundException;
 import io.kioke.feature.collection.service.CollectionService;
+import io.kioke.feature.journal.constant.Role;
 import io.kioke.feature.journal.domain.Journal;
 import io.kioke.feature.journal.dto.JournalDto;
+import io.kioke.feature.journal.dto.JournalRoleDto;
 import io.kioke.feature.journal.dto.request.CreateJournalRequestDto;
 import io.kioke.feature.journal.dto.request.UpdateJournalRequestDto;
 import io.kioke.feature.journal.repository.JournalRepository;
 import io.kioke.feature.journal.util.JournalMapper;
 import io.kioke.feature.user.domain.User;
 import io.kioke.feature.user.dto.UserDto;
-import java.util.Set;
+import java.util.Collections;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class JournalService {
 
-  private final JournalPermissionService journalPermissionService;
+  private final JournalRoleService journalRoleService;
   private final CollectionService collectionService;
   private final JournalRepository journalRepository;
   private final JournalMapper journalMapper;
 
   public JournalService(
-      JournalPermissionService journalPermissionService,
+      JournalRoleService journalRoleService,
       CollectionService collectionService,
       JournalRepository journalRepository,
       JournalMapper journalMapper) {
-    this.journalPermissionService = journalPermissionService;
+    this.journalRoleService = journalRoleService;
     this.collectionService = collectionService;
     this.journalRepository = journalRepository;
     this.journalMapper = journalMapper;
@@ -45,29 +47,38 @@ public class JournalService {
     journal = journalRepository.save(journal);
 
     collectionService.addEntryToCollection(user, journal, request.collectionId());
-    return journalMapper.toDto(journal);
+    journalRoleService.setRole(user, journal, Role.AUTHOR);
+    return journalMapper.toDto(journal, Role.AUTHOR, Collections.emptyList());
   }
 
   @Transactional(readOnly = true)
-  public JournalDto getJournal(UserDto user, String journalId)
-      throws JournalNotFoundException, AccessDeniedException {
+  public JournalDto getJournal(UserDto userDto, String journalId) throws JournalNotFoundException {
+    User user = User.builder().userId(userDto.userId()).build();
     Journal journal =
         journalRepository.findById(journalId).orElseThrow(() -> new JournalNotFoundException());
 
-    journalPermissionService.checkPermissions(
-        User.builder().userId(user.userId()).build(), journal, Set.of(Permission.READ));
+    Role role = journalRoleService.getRole(user, journal);
+    if (!journal.getIsPublic() && !role.canRead()) {
+      throw new JournalNotFoundException();
+    }
 
-    return journalMapper.toDto(journal);
+    List<JournalRoleDto> collaborators =
+        (role.equals(Role.AUTHOR) ? journalRoleService.getRoles(journal) : Collections.emptyList());
+
+    return journalMapper.toDto(journal, role, collaborators);
   }
 
   @Transactional
-  public void updateJournal(UserDto user, String journalId, UpdateJournalRequestDto request)
+  public void updateJournal(UserDto userDto, String journalId, UpdateJournalRequestDto request)
       throws JournalNotFoundException, AccessDeniedException {
+    User user = User.builder().userId(userDto.userId()).build();
     Journal journal =
         journalRepository.findById(journalId).orElseThrow(() -> new JournalNotFoundException());
 
-    journalPermissionService.checkPermissions(
-        User.builder().userId(user.userId()).build(), journal, Set.of(Permission.EDIT));
+    Role role = journalRoleService.getRole(user, journal);
+    if (!role.canEdit()) {
+      throw new AccessDeniedException();
+    }
 
     if (request.title() != null) {
       journal.changeTitle(request.title());
@@ -75,6 +86,10 @@ public class JournalService {
 
     if (request.description() != null) {
       journal.changeDescription(request.description());
+    }
+
+    if (request.isPublic() != null) {
+      journal.setIsPublic(request.isPublic());
     }
 
     journalRepository.save(journal);

@@ -127,4 +127,8 @@ public class Journal {
   public void changeDescription(String description) {
     this.description = description;
   }
+
+  public void setIsPublic(boolean isPublic) {
+    this.isPublic = isPublic;
+  }
 }

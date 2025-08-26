@@ -1,7 +1,7 @@
 package io.kioke.feature.journal.controller;
 
 import io.kioke.annotation.AuthenticatedUser;
-import io.kioke.exception.AccessDeniedException;
+import io.kioke.exception.auth.AccessDeniedException;
 import io.kioke.exception.collection.CollectionNotFoundException;
 import io.kioke.exception.journal.JournalNotFoundException;
 import io.kioke.feature.journal.dto.JournalDto;
@@ -46,7 +46,7 @@ public class JournalController {
   @ResponseStatus(HttpStatus.OK)
   public GetJournalResponseDto getJournal(
       @AuthenticatedUser UserDto user, @PathVariable String journalId)
-      throws JournalNotFoundException, AccessDeniedException {
+      throws JournalNotFoundException {
     JournalDto journal = journalService.getJournal(user, journalId);
     return journalMapper.toGetJournalResponse(journal);
   }

@@ -1,11 +1,10 @@
 package io.kioke.feature.page.service;
 
-import io.kioke.constant.Permission;
 import io.kioke.exception.auth.AccessDeniedException;
 import io.kioke.exception.journal.JournalNotFoundException;
 import io.kioke.exception.page.PageNotFoundException;
 import io.kioke.feature.journal.domain.Journal;
-import io.kioke.feature.journal.service.JournalPermissionService;
+import io.kioke.feature.journal.service.JournalRoleService;
 import io.kioke.feature.journal.service.JournalService;
 import io.kioke.feature.page.domain.Page;
 import io.kioke.feature.page.dto.PageDto;
@@ -15,7 +14,6 @@ import io.kioke.feature.page.repository.PageRepository;
 import io.kioke.feature.page.util.PageMapper;
 import io.kioke.feature.user.domain.User;
 import io.kioke.feature.user.dto.UserDto;
-import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,17 +21,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class PageService {
 
   private final JournalService journalService;
-  private final JournalPermissionService journalPermissionService;
+  private final JournalRoleService journalRoleService;
   private final PageRepository pageRepository;
   private final PageMapper pageMapper;
 
   public PageService(
       JournalService journalService,
-      JournalPermissionService journalPermissionService,
+      JournalRoleService journalRoleService,
       PageRepository pageRepository,
       PageMapper pageMapper) {
     this.journalService = journalService;
-    this.journalPermissionService = journalPermissionService;
+    this.journalRoleService = journalRoleService;
     this.pageRepository = pageRepository;
     this.pageMapper = pageMapper;
   }
@@ -54,22 +52,27 @@ public class PageService {
   }
 
   @Transactional(readOnly = true)
-  public PageDto getPage(UserDto user, String pageId)
-      throws JournalNotFoundException, PageNotFoundException, AccessDeniedException {
+  public PageDto getPage(UserDto userDto, String pageId)
+      throws JournalNotFoundException, PageNotFoundException {
+    User user = User.builder().userId(userDto.userId()).build();
     Page page = pageRepository.findById(pageId).orElseThrow(() -> new PageNotFoundException());
 
-    journalPermissionService.checkPermissions(
-        User.builder().userId(user.userId()).build(), page.getJournal(), Set.of(Permission.READ));
+    if (!journalRoleService.getRole(user, page.getJournal()).canRead()) {
+      throw new JournalNotFoundException();
+    }
 
     return pageMapper.toDto(page);
   }
 
   @Transactional
-  public void updatePage(UserDto user, String pageId, UpdatePageRequestDto request)
-      throws JournalNotFoundException, AccessDeniedException, PageNotFoundException {
+  public void updatePage(UserDto userDto, String pageId, UpdatePageRequestDto request)
+      throws AccessDeniedException, PageNotFoundException {
+    User user = User.builder().userId(userDto.userId()).build();
     Page page = pageRepository.findById(pageId).orElseThrow(() -> new PageNotFoundException());
-    journalPermissionService.checkPermissions(
-        User.builder().userId(user.userId()).build(), page.getJournal(), Set.of(Permission.EDIT));
+
+    if (!journalRoleService.getRole(user, page.getJournal()).canEdit()) {
+      throw new AccessDeniedException();
+    }
 
     if (request.title() != null) {
       page.changeTitle(request.title());
