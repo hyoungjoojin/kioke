@@ -17,16 +17,16 @@ import { v4 as uuidv4 } from 'uuid';
 export default function DashboardEditorToolbar() {
   const t = useTranslations();
 
-  const { dashboardDraft } = useDashboard();
-  const { updateDashboardDraft } = useDashboardActions();
-  const { mutate: updateDashboard, isPending: isUpdateDashboardPending } =
-    useUpdateDashboardMutation();
-
   const [selectedWidget, setSelectedWidget] = useState<{
     type: DashboardWidgetType;
     group: string;
     tag: string;
   } | null>(null);
+
+  const { dashboardDraft } = useDashboard();
+  const { updateDashboardDraft } = useDashboardActions();
+  const { mutate: updateDashboard, isPending: isUpdateDashboardPending } =
+    useUpdateDashboardMutation();
 
   const handleInsertWidgetButtonClick = async () => {
     if (!selectedWidget) {
