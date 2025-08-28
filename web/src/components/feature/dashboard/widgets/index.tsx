@@ -1,9 +1,15 @@
 import {
-  JournalList,
-  JournalListEdit,
-  JournalListInitial,
-  JournalListPreview,
-} from './JournalList';
+  JournalCollectionWidget,
+  JournalCollectionWidgetDefaultContent,
+  JournalCollectionWidgetEditModal,
+  JournalCollectionWidgetPreview,
+} from './JournalCollection';
+import {
+  SingleJournalWidget,
+  SingleJournalWidgetDefaultContent,
+  SingleJournalWidgetEditModal,
+  SingleJournalWidgetPreview,
+} from './SingleJournal';
 import { DashboardWidgetType } from '@/constant/dashboard';
 import type { ComponentType } from 'react';
 
@@ -12,14 +18,20 @@ const Widgets: {
     main: ComponentType<any>;
     preview: ComponentType<any>;
     edit: ComponentType<any>;
-    initial: () => Promise<any>;
+    default: () => Promise<any>;
   };
 } = {
-  [DashboardWidgetType.JOURNAL_LIST]: {
-    main: JournalList,
-    preview: JournalListPreview,
-    edit: JournalListEdit,
-    initial: JournalListInitial,
+  [DashboardWidgetType.JOURNAL_COLLECTION]: {
+    main: JournalCollectionWidget,
+    preview: JournalCollectionWidgetPreview,
+    edit: JournalCollectionWidgetEditModal,
+    default: JournalCollectionWidgetDefaultContent,
+  },
+  [DashboardWidgetType.SINGLE_JOURNAL]: {
+    main: SingleJournalWidget,
+    preview: SingleJournalWidgetPreview,
+    edit: SingleJournalWidgetEditModal,
+    default: SingleJournalWidgetDefaultContent,
   },
 };
 

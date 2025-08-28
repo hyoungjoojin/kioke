@@ -1,8 +1,8 @@
 import kioke from '@/app/api';
 import type { DashboardWidgetType } from '@/constant/dashboard';
-import type { KiokeError } from '@/constant/error';
 import { MimeType } from '@/constant/mime';
 import type { Dashboard } from '@/types/dashboard';
+import type KiokeError from '@/util/error';
 import type { Result } from 'neverthrow';
 
 interface GetDashboardResponse {

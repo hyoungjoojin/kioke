@@ -34,7 +34,7 @@ export default function DashboardEditorToolbar() {
     }
 
     const id = uuidv4().toString();
-    const content = await Widgets[selectedWidget.type].initial();
+    const content = await Widgets[selectedWidget.type].default();
 
     updateDashboardDraft((current) => {
       return {
@@ -169,8 +169,12 @@ const widgetGroups: WidgetGroup[] = [
     name: 'journals',
     widgets: [
       {
-        name: 'journal-list',
-        type: DashboardWidgetType.JOURNAL_LIST,
+        name: 'journal-collection',
+        type: DashboardWidgetType.JOURNAL_COLLECTION,
+      },
+      {
+        name: 'single-journal',
+        type: DashboardWidgetType.SINGLE_JOURNAL,
       },
     ],
   },

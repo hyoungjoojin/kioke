@@ -54,13 +54,16 @@ public class DashboardService {
     List<Widget> widgets =
         request.widgets().stream()
             .map(
-                widget ->
-                    Widget.builder()
-                        .dashboard(dashboard)
-                        .type(widget.type())
-                        .position(widget.x(), widget.y())
-                        .content(widget.content())
-                        .build())
+                widget -> {
+                  System.out.println(widget.content());
+
+                  return Widget.builder()
+                      .dashboard(dashboard)
+                      .type(widget.type())
+                      .position(widget.x(), widget.y())
+                      .content(widget.content())
+                      .build();
+                })
             .collect(Collectors.toList());
 
     dashboard.setWidgets(widgets);

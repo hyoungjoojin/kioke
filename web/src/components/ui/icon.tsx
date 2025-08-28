@@ -13,6 +13,7 @@ export const enum IconName {
   PAINT = 'paint',
   BELL = 'bell',
   DOTS = 'dots',
+  DANGER = 'danger',
 }
 
 type IconSize = 'sm' | 'md' | 'lg' | number;

@@ -1,5 +1,6 @@
 export const enum DashboardWidgetType {
-  JOURNAL_LIST = 'JOURNAL_LIST',
+  JOURNAL_COLLECTION = 'JOURNAL_COLLECTION',
+  SINGLE_JOURNAL = 'SINGLE_JOURNAL',
 }
 
 export const DashboardWidgetDimensions: Record<
@@ -9,7 +10,8 @@ export const DashboardWidgetDimensions: Record<
     h: number;
   }
 > = {
-  [DashboardWidgetType.JOURNAL_LIST]: { w: 2, h: 5 },
+  [DashboardWidgetType.JOURNAL_COLLECTION]: { w: 2, h: 5 },
+  [DashboardWidgetType.SINGLE_JOURNAL]: { w: 2, h: 3 },
 };
 
 export const DEFAULT_DASHBOARD_LAYOUT_CONFIGURATION = {

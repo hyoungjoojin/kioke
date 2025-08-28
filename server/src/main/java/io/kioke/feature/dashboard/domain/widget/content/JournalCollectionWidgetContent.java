@@ -6,8 +6,8 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "JOURNAL_LIST_WIDGET_CONTENT_TABLE")
-public class JournalListWidgetContent extends WidgetContent {
+@Table(name = "JOURNAL_COLLECTION_WIDGET_CONTENT_TABLE")
+public class JournalCollectionWidgetContent extends WidgetContent {
 
   @NotNull
   @Column(name = "COLLECTION_ID", nullable = false)

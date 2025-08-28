@@ -14,10 +14,15 @@
       "groups": {
         "journals": {
           "name": "Journals",
-          "journal-list": {
-            "name": "Journal List",
-            "title": "Journal List",
+          "journal-collection": {
+            "name": "Journal Collection",
+            "title": "Journal Collection",
             "description": "Show a list of journals in a collection"
+          },
+          "single-journal": {
+            "name": "Single Journal",
+            "title": "Single Journal",
+            "description": "Show a single journal"
           }
         }
       },
@@ -36,6 +41,19 @@
       "edit-layout": "Edit Layout",
       "save-layout": "Save",
       "exit-layout": "Exit"
+    },
+    "widgets": {
+      "journal-collection": {
+        "add-journal": "Add",
+        "edit": {
+          "title": "Journal List Widget",
+          "description": "Displays the journals inside a journal collection",
+          "form": {
+            "collection": "Journal Collection",
+            "submit": "Update"
+          }
+        }
+      }
     }
   },
   "journal-collections": {

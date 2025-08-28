@@ -20,6 +20,7 @@ import {
 import { useCollectionsQuery } from '@/query/collection';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SelectTrigger } from '@radix-ui/react-select';
+import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 
@@ -28,7 +29,8 @@ const FormSchema = z.object({
 });
 type FormSchemaType = z.infer<typeof FormSchema>;
 
-export default function JournalListEdit() {
+export default function JournalCollectionWidgetEditModal() {
+  const t = useTranslations('dashboard.widgets.journal-collection.edit');
   const { data: collections } = useCollectionsQuery();
 
   const form = useForm<FormSchemaType>({
@@ -40,10 +42,8 @@ export default function JournalListEdit() {
   return (
     <>
       <DialogHeader>
-        <DialogTitle>Journal List Widget</DialogTitle>
-        <DialogDescription>
-          Displays the journals inside a journal collection
-        </DialogDescription>
+        <DialogTitle>{t('title')}</DialogTitle>
+        <DialogDescription>{t('description')}</DialogDescription>
       </DialogHeader>
 
       <Form {...form}>
@@ -53,7 +53,7 @@ export default function JournalListEdit() {
             name='collection'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Journal Collection</FormLabel>
+                <FormLabel>{t('form.collection')}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
@@ -78,7 +78,7 @@ export default function JournalListEdit() {
             )}
           />
 
-          <Button type='submit'>Submit</Button>
+          <Button type='submit'>{t('form.submit')}</Button>
         </form>
       </Form>
     </>

@@ -124,7 +124,12 @@ function WidgetWrapper({
         )}
       >
         {isEditing ? (
-          <Widget.preview {...widget.content} />
+          <div className='flex flex-col'>
+            <div className='self-end'>
+              <WidgetPreviewControls id={widget.id} type={widget.type} />
+            </div>
+            <Widget.preview {...widget.content} />
+          </div>
         ) : (
           <AnimatePresence>
             <motion.div
@@ -133,13 +138,13 @@ function WidgetWrapper({
               exit={{ opacity: 0 }}
               className='h-full w-full'
             >
-              <Widget.main {...widget.content} />
+              <div className='h-full w-full flex flex-col items-center justify-center'>
+                <Widget.main {...widget.content} />
+              </div>
             </motion.div>
           </AnimatePresence>
         )}
       </div>
-
-      {isEditing && <WidgetPreviewControls id={widget.id} type={widget.type} />}
     </div>
   );
 }
@@ -158,7 +163,7 @@ function WidgetPreviewControls({
   const Widget = Widgets[type];
 
   return (
-    <div className='absolute top-3 right-3 fg-muted flex gap-1'>
+    <div className='flex'>
       <Dialog
         open={isDialogOpen}
         onOpenChange={(open) => {
