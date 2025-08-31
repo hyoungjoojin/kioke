@@ -1,2 +1,2 @@
-export * from './BasicJournalTypeContent';
-export * from './ShortJournalTypeContent';
+export * from './BasicJournalContent';
+export * from './ShortJournalContent';

@@ -18,8 +18,8 @@ export default function BasicJournalPageEditor({ pageId }: EditorProps) {
     extensions: [StarterKit],
     content: '',
     immediatelyRender: false,
-    onTransaction: debounce(({}: EditorEvents['transaction']) => {
-      if (editor && page) {
+    onTransaction: debounce(({ editor }: EditorEvents['transaction']) => {
+      if (page) {
         addTransaction({
           pageId,
           content: JSON.stringify(editor.getJSON()),

@@ -8,13 +8,11 @@ import { Routes } from '@/constant/routes';
 import { useJournalQuery } from '@/query/journal';
 import Link from 'next/link';
 
-interface BasicJournalTypeContentProps {
+interface BasicJournalContentProps {
   journalId: string;
 }
 
-export function BasicJournalTypeContent({
-  journalId,
-}: BasicJournalTypeContentProps) {
+export function BasicJournalContent({ journalId }: BasicJournalContentProps) {
   const { data: journal, isPending } = useJournalQuery({ journalId });
 
   if (isPending) {
