@@ -1,12 +1,15 @@
 package io.kioke.feature.user.domain;
 
+import io.kioke.feature.profile.domain.Profile;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import org.springframework.data.annotation.CreatedDate;
@@ -37,6 +40,9 @@ public class User {
   @Column(name = "DELETED_AT")
   private Instant deletedAt;
 
+  @OneToOne(fetch = FetchType.LAZY)
+  private Profile profile;
+
   protected User() {}
 
   private User(String userId, String email) {
@@ -51,6 +57,14 @@ public class User {
 
   public String getEmail() {
     return email;
+  }
+
+  public Profile getProfile() {
+    return profile;
+  }
+
+  public static User of(String userId) {
+    return builder().userId(userId).build();
   }
 
   public static UserBuilder builder() {

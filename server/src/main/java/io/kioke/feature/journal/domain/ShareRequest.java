@@ -82,6 +82,10 @@ public class ShareRequest {
     return role;
   }
 
+  public Instant getCreatedAt() {
+    return createdAt;
+  }
+
   public static ShareRequestBuilder builder() {
     return new ShareRequestBuilder();
   }

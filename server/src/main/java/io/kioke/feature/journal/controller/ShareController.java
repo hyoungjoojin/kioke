@@ -4,7 +4,6 @@ import io.kioke.annotation.AuthenticatedUser;
 import io.kioke.exception.auth.AccessDeniedException;
 import io.kioke.exception.journal.JournalNotFoundException;
 import io.kioke.feature.journal.dto.request.ShareJournalRequestDto;
-import io.kioke.feature.journal.service.JournalService;
 import io.kioke.feature.journal.service.ShareService;
 import io.kioke.feature.user.dto.UserDto;
 import org.springframework.http.HttpStatus;
@@ -21,11 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ShareController {
 
-  private final JournalService journalService;
   private final ShareService shareService;
 
-  public ShareController(JournalService journalService, ShareService shareService) {
-    this.journalService = journalService;
+  public ShareController(ShareService shareService) {
     this.shareService = shareService;
   }
 
