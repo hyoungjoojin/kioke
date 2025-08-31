@@ -43,7 +43,8 @@ public class JournalService {
       throws AccessDeniedException, CollectionNotFoundException {
     User user = User.builder().userId(userDto.userId()).build();
 
-    Journal journal = Journal.builder().author(user).title(request.title()).build();
+    Journal journal =
+        Journal.builder().type(request.type()).author(user).title(request.title()).build();
     journal = journalRepository.save(journal);
 
     collectionService.addEntryToCollection(user, journal, request.collectionId());
@@ -81,11 +82,11 @@ public class JournalService {
     }
 
     if (request.title() != null) {
-      journal.changeTitle(request.title());
+      journal.setTitle(request.title());
     }
 
     if (request.description() != null) {
-      journal.changeDescription(request.description());
+      journal.setDescription(request.description());
     }
 
     if (request.isPublic() != null) {

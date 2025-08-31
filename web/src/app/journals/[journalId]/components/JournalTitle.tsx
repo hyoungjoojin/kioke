@@ -32,9 +32,9 @@ export default function JournalTitle({ journalId }: { journalId: string }) {
           />
         )}
 
-        <div className='flex items-center'>
+        <div className='flex items-center gap-2'>
           <ShareJournalButton journalId={journalId} />
-          <JournalActions />
+          <JournalActions journalId={journalId} />
         </div>
       </div>
 

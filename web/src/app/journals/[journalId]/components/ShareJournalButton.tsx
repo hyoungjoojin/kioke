@@ -1,11 +1,11 @@
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { Switch } from '@/components/ui/switch';
 import { useJournalQuery, useUpdateJournalMutation } from '@/query/journal';
 import { useTranslations } from 'next-intl';
@@ -26,37 +26,35 @@ export default function ShareJournalButton({
     });
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+    <Popover>
+      <PopoverTrigger asChild>
         <Button variant='outline'>Share</Button>
-      </DropdownMenuTrigger>
+      </PopoverTrigger>
 
-      <DropdownMenuContent align='end'>
-        <div className='h-96 w-96 flex flex-col'>
-          <div className='grow'>
-            <Input
-              type='text'
-              placeholder={t('journal.header.share.user-search.placeholder')}
-            />
+      <PopoverContent className='h-96 flex flex-col' align='end'>
+        <div className='grow'>
+          <Input
+            type='text'
+            placeholder={t('journal.header.share.user-search.placeholder')}
+          />
 
-            <div></div>
-          </div>
-
-          <div className='self-end flex m-2 gap-1'>
-            <Switch
-              id='journal-visibility-toggle'
-              checked={journal?.isPublic}
-              disabled={isPending || isUpdateJournalPending}
-              onCheckedChange={(checked) => {
-                updateJournal({
-                  isPublic: checked,
-                });
-              }}
-            />
-            <Label htmlFor='journal-visibility-toggle'>Public</Label>
-          </div>
+          <div></div>
         </div>
-      </DropdownMenuContent>
-    </DropdownMenu>
+
+        <div className='self-end flex m-2 gap-1'>
+          <Switch
+            id='journal-visibility-toggle'
+            checked={journal?.isPublic}
+            disabled={isPending || isUpdateJournalPending}
+            onCheckedChange={(checked) => {
+              updateJournal({
+                isPublic: checked,
+              });
+            }}
+          />
+          <Label htmlFor='journal-visibility-toggle'>Public</Label>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }

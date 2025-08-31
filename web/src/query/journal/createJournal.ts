@@ -12,20 +12,16 @@ type TError = KiokeError;
 type TVariables = CreateJournalRequest;
 type TContext = void;
 
-type QueryParams = {
-  collectionId: string;
-};
-
-function useCreateJournalMutation(params: QueryParams) {
+function useCreateJournalMutation() {
   const queryClient = getQueryClient();
 
   return useMutation<TData, TError, TVariables, TContext>({
     mutationFn: async (requestBody) =>
       createJournal(requestBody).then((result) => unwrap(result)),
-    onSuccess: async () => {
+    onSuccess: async (_data, variables) => {
       await queryClient.invalidateQueries({
         queryKey: getCollectionQueryKey({
-          id: params.collectionId,
+          id: variables.collectionId,
         }),
       });
 

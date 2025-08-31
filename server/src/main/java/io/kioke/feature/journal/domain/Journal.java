@@ -1,10 +1,13 @@
 package io.kioke.feature.journal.domain;
 
+import io.kioke.feature.journal.constant.JournalType;
 import io.kioke.feature.page.domain.Page;
 import io.kioke.feature.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,6 +32,10 @@ public class Journal {
   @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "JOURNAL_ID")
   private String journalId;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "JOURNAL_TYPE", nullable = false)
+  private JournalType type;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "AUTHOR_ID", nullable = false)
@@ -60,7 +67,8 @@ public class Journal {
     this.journalId = journalId;
   }
 
-  private Journal(User author, String title) {
+  private Journal(JournalType journalType, User author, String title) {
+    this.type = journalType;
     this.author = author;
     this.title = title;
     this.description = "";
@@ -70,6 +78,10 @@ public class Journal {
 
   public String getJournalId() {
     return journalId;
+  }
+
+  public JournalType getType() {
+    return type;
   }
 
   public User getAuthor() {
@@ -102,8 +114,14 @@ public class Journal {
 
   public static class JournalBuilder {
 
+    private JournalType type;
     private User author;
     private String title;
+
+    public JournalBuilder type(JournalType type) {
+      this.type = type;
+      return this;
+    }
 
     public JournalBuilder author(User author) {
       this.author = author;
@@ -116,15 +134,19 @@ public class Journal {
     }
 
     public Journal build() {
-      return new Journal(author, title);
+      return new Journal(type, author, title);
     }
   }
 
-  public void changeTitle(String title) {
+  public void setType(JournalType type) {
+    this.type = type;
+  }
+
+  public void setTitle(String title) {
     this.title = title;
   }
 
-  public void changeDescription(String description) {
+  public void setDescription(String description) {
     this.description = description;
   }
 

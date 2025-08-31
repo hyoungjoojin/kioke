@@ -208,10 +208,12 @@ function DropdownMenuSub({
 function DropdownMenuSubTrigger({
   className,
   inset,
+  icon,
   children,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.SubTrigger> & {
   inset?: boolean;
+  icon?: IconName;
 }) {
   return (
     <DropdownMenuPrimitive.SubTrigger
@@ -223,7 +225,10 @@ function DropdownMenuSubTrigger({
       )}
       {...props}
     >
-      {children}
+      <div className='flex items-center justify-center gap-2'>
+        {icon && <Icon name={icon} size='sm' />}
+        {children}
+      </div>
       <ChevronRightIcon className='ml-auto size-4' />
     </DropdownMenuPrimitive.SubTrigger>
   );

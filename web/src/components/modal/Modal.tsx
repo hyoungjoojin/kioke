@@ -1,14 +1,14 @@
 'use client';
 
-import { Button } from '../ui/button';
-import { IconName } from '../ui/icon';
+import { Button } from '@/components/ui/button';
+import { IconName } from '@/components/ui/icon';
 import { useClickOutside } from '@/hooks/useClickOutside';
 import { cn } from '@/lib/utils';
 import { useModal, useModalActions } from '@/store/modal';
 import { AnimatePresence, motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
-import type { ComponentType} from 'react';
+import type { ComponentType } from 'react';
 import { useRef } from 'react';
 
 export const enum ModalType {

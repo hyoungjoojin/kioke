@@ -1,8 +1,10 @@
 'use client';
 
 import ProfileAvatar from '@/components/feature/profile/ProfileAvatar';
+import { useTransaction } from '@/components/provider/TransactionProvider';
 import { Button } from '@/components/ui/button';
 import { IconName } from '@/components/ui/icon';
+import { Spinner } from '@/components/ui/spinner';
 import { Routes } from '@/constant/routes';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
@@ -41,6 +43,8 @@ interface BaseHeaderProps {
 export default function BaseHeader({ selectedTab }: BaseHeaderProps) {
   const t = useTranslations();
 
+  const { status } = useTransaction();
+
   return (
     <div className='flex justify-between items-center'>
       <div className='flex gap-5'>
@@ -65,6 +69,7 @@ export default function BaseHeader({ selectedTab }: BaseHeaderProps) {
       </div>
 
       <div className='flex items-center'>
+        {status === 'idle' ? null : status === 'saving' ? <Spinner /> : null}
         <Link href={Routes.NOTIFICATIONS}>
           <Button variant='ghost' icon={IconName.BELL} />
         </Link>

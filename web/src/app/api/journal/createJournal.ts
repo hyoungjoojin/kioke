@@ -1,11 +1,14 @@
 import kioke from '@/app/api';
-import type { KiokeError } from '@/constant/error';
+import type { JournalType } from '@/constant/journal';
 import { MimeType } from '@/constant/mime';
+import { Role } from '@/constant/role';
 import type { Journal } from '@/types/journal';
+import type KiokeError from '@/util/error';
 import type { Result } from 'neverthrow';
 
 export interface CreateJournalRequest {
   collectionId: string;
+  type: JournalType;
   title: string;
 }
 
@@ -29,9 +32,13 @@ export async function createJournal(
   }).then((response) =>
     response.map((data) => ({
       id: data.id,
+      type: body.type,
       title: body.title,
       description: '',
       pages: [],
+      isPublic: false,
+      role: Role.AUTHOR,
+      collaborators: [],
     })),
   );
 }

@@ -7,7 +7,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { IconName } from '@/components/ui/icon';
 
-export default function JournalActionsButton() {
+interface JournalActionsButtonProps {
+  journalId: string;
+}
+
+export default function JournalActionsButton({
+  journalId,
+}: JournalActionsButtonProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

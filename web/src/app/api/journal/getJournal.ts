@@ -1,4 +1,5 @@
 import kioke from '@/app/api';
+import type { JournalType } from '@/constant/journal';
 import { MimeType } from '@/constant/mime';
 import type { Role } from '@/constant/role';
 import type { Journal } from '@/types/journal';
@@ -11,6 +12,7 @@ interface GetJournalPathParams {
 
 interface GetJournalResponse {
   id: string;
+  type: JournalType;
   title: string;
   description: string;
   pages: {
@@ -38,5 +40,13 @@ export async function getJournal(
     headers: {
       'Content-Type': MimeType.APPLICATION_JSON,
     },
-  });
+  }).then((response) =>
+    response.map((data) => ({
+      ...data,
+      pages: data.pages.map((page) => ({
+        ...page,
+        date: new Date(page.date),
+      })),
+    })),
+  );
 }
