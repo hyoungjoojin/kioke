@@ -1,4 +1,3 @@
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 
 interface BaseLayoutProps {
@@ -16,11 +15,7 @@ export default function BaseLayout({ header, main }: BaseLayoutProps) {
       )}
     >
       <header className={'h-12 md:h-15 lg:h-20'}>{header}</header>
-      <main className=''>
-        <ScrollArea className='grow h-full max-h-screen overflow-y-auto'>
-          {main}
-        </ScrollArea>
-      </main>
+      <main className='h-full'>{main}</main>
     </div>
   );
 }

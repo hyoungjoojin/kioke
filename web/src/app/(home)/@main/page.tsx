@@ -63,7 +63,6 @@ export default function Home() {
 
   return (
     <ResponsiveGridLayout
-      className='min-h-full'
       layouts={gridLayouts}
       breakpoints={breakpoints}
       cols={columns}
@@ -72,7 +71,6 @@ export default function Home() {
       isDraggable={isEditing}
       isDroppable={isEditing}
       compactType={null}
-      verticalCompact={false}
       allowOverlap={false}
       margin={margin}
       rowHeight={rowHeight}
@@ -126,7 +124,11 @@ function WidgetWrapper({
         {isEditing ? (
           <div className='flex flex-col'>
             <div className='self-end'>
-              <WidgetPreviewControls id={widget.id} type={widget.type} />
+              <WidgetPreviewControls
+                id={widget.id}
+                type={widget.type}
+                content={widget.content}
+              />
             </div>
             <Widget.preview {...widget.content} />
           </div>
@@ -151,9 +153,11 @@ function WidgetWrapper({
 
 function WidgetPreviewControls({
   id,
+  content,
   type,
 }: {
   id: string;
+  content: any;
   type: DashboardWidgetType;
 }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -182,7 +186,25 @@ function WidgetPreviewControls({
         </DialogTrigger>
 
         <DialogContent>
-          <Widget.edit />
+          <Widget.edit
+            content={content}
+            onSubmit={(content) => {
+              updateDashboardDraft((dashboard) => ({
+                widgets: dashboard.widgets.map((widget) => {
+                  if (widget.id !== id) {
+                    return widget;
+                  }
+
+                  return {
+                    ...widget,
+                    content,
+                  };
+                }),
+              }));
+
+              setIsDialogOpen(false);
+            }}
+          />
         </DialogContent>
       </Dialog>
 

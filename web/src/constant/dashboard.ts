@@ -30,5 +30,5 @@ export const DEFAULT_DASHBOARD_LAYOUT_CONFIGURATION = {
     xs: 0,
   },
   margin: [5, 5] as [number, number],
-  rowHeight: 75,
+  rowHeight: 50,
 };

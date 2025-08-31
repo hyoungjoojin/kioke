@@ -1,10 +1,4 @@
-import HomeContextMenu from './components/HomeContextMenu';
 import BaseLayout from '@/components/layout/BaseLayout';
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuTrigger,
-} from '@/components/ui/context-menu';
 import { getQueryClient } from '@/lib/query';
 import { myProfileQueryOptions } from '@/query/profile';
 import { handleError } from '@/util/error';
@@ -25,16 +19,8 @@ export default async function HomeLayout({
     .catch((error) => handleError(error));
 
   return (
-    <ContextMenu>
-      <ContextMenuTrigger>
-        <HydrationBoundary state={dehydrate(queryClient)}>
-          <BaseLayout header={header} main={main} />
-        </HydrationBoundary>
-      </ContextMenuTrigger>
-
-      <ContextMenuContent>
-        <HomeContextMenu />
-      </ContextMenuContent>
-    </ContextMenu>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <BaseLayout header={header} main={main} />
+    </HydrationBoundary>
   );
 }

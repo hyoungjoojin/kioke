@@ -9,12 +9,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import Icon, { IconName } from '@/components/ui/icon';
+import { useDashboardActions } from '@/store/dashboard';
 import { useModalActions } from '@/store/modal';
 import { useTranslations } from 'next-intl';
 
 export default function ProfileAvatar() {
   const t = useTranslations();
   const { openModal } = useModalActions();
+  const { setIsEditingDraft } = useDashboardActions();
 
   return (
     <DropdownMenu>
@@ -28,6 +30,15 @@ export default function ProfileAvatar() {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent side='bottom' align='end'>
+        <DropdownMenuItem
+          icon={IconName.EDIT}
+          onClick={() => {
+            setIsEditingDraft(true);
+          }}
+        >
+          Edit Dashboard
+        </DropdownMenuItem>
+
         <DropdownMenuItem
           icon={IconName.SETTINGS}
           onClick={() => {
