@@ -59,4 +59,9 @@ public class AuthController {
     profileService.createProfile(user);
     dashboardService.createDashboard(user);
   }
+
+  @PostMapping("/auth/signout")
+  public void signOut(HttpServletRequest request) {
+    sessionService.destroySession(request);
+  }
 }

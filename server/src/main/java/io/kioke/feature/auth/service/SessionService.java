@@ -22,4 +22,12 @@ public class SessionService {
 
     return session;
   }
+
+  public void destroySession(HttpServletRequest request) {
+    HttpSession session = request.getSession(false);
+
+    if (session != null) {
+      session.invalidate();
+    }
+  }
 }

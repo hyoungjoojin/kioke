@@ -19,3 +19,8 @@ export const getSession = cache(async (): Promise<Session | null> => {
     id: session,
   };
 });
+
+export const destroySession = cache(async () => {
+  const cookieJar = await cookies();
+  cookieJar.delete(SESSION_COOKIE_KEY);
+});
