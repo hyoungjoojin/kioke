@@ -53,6 +53,10 @@ public class Profile {
     return userId;
   }
 
+  public User getUser() {
+    return user;
+  }
+
   public String getName() {
     return name;
   }

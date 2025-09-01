@@ -38,6 +38,7 @@
     "@tiptap/react": "^3.0.7",
     "@tiptap/starter-kit": "^3.0.7",
     "@tiptap/suggestion": "^3.3.0",
+    "@uidotdev/usehooks": "^2.4.1",
     "class-variance-authority": "^0.7.1",
     "client-only": "^0.0.1",
     "clsx": "^2.1.1",

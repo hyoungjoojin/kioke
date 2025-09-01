@@ -9,6 +9,8 @@ import {
   ReactNodeViewRenderer,
   mergeAttributes,
 } from '@tiptap/react';
+import { default as NextImage } from 'next/image';
+import type { ChangeEvent } from 'react';
 
 export const ImageNode = Node.create({
   name: 'image',
@@ -40,7 +42,20 @@ export const ImageNode = Node.create({
 });
 
 function Image({ node, updateAttributes }: NodeViewProps) {
-  const src = node.attrs.src;
+  const src = node.attrs.src as string;
+
+  const fileUploadHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = e.target.files;
+    if (!selectedFiles || selectedFiles.length === 0) {
+      return;
+    }
+
+    const fileToUpload = selectedFiles[0];
+
+    updateAttributes({
+      src: URL.createObjectURL(fileToUpload),
+    });
+  };
 
   if (!src) {
     return (
@@ -54,7 +69,11 @@ function Image({ node, updateAttributes }: NodeViewProps) {
               </TabsList>
 
               <TabsContent value='upload'>
-                <Input type='file' />
+                <Input
+                  type='file'
+                  accept='image/*'
+                  onChange={fileUploadHandler}
+                />
               </TabsContent>
 
               <TabsContent value='link'></TabsContent>
@@ -66,5 +85,11 @@ function Image({ node, updateAttributes }: NodeViewProps) {
     );
   }
 
-  return <>image</>;
+  return (
+    <NodeViewWrapper>
+      <div className='flex justify-center'>
+        <NextImage src={src} height={500} width={500} alt='' />
+      </div>
+    </NodeViewWrapper>
+  );
 }

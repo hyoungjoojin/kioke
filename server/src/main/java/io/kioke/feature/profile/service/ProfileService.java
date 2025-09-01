@@ -6,7 +6,8 @@ import io.kioke.feature.profile.dto.request.UpdateProfileRequestDto;
 import io.kioke.feature.profile.repository.ProfileRepository;
 import io.kioke.feature.profile.util.ProfileMapper;
 import io.kioke.feature.user.dto.UserDto;
-import io.kioke.feature.user.service.UserService;
+import java.util.Collections;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,13 +19,10 @@ public class ProfileService {
 
   private static final Logger logger = LoggerFactory.getLogger(ProfileService.class);
 
-  private final UserService userService;
   private final ProfileRepository profileRepository;
   private final ProfileMapper profileMapper;
 
-  public ProfileService(
-      UserService userService, ProfileRepository profileRepository, ProfileMapper profileMapper) {
-    this.userService = userService;
+  public ProfileService(ProfileRepository profileRepository, ProfileMapper profileMapper) {
     this.profileRepository = profileRepository;
     this.profileMapper = profileMapper;
   }
@@ -48,13 +46,16 @@ public class ProfileService {
             .findById(user.userId())
             .orElseThrow(() -> new IllegalStateException("User profile does not exist"));
 
-    String email =
-        userService
-            .findById(user.userId())
-            .orElseThrow(() -> new IllegalStateException("User profile does not exist"))
-            .getEmail();
+    return profileMapper.toDto(profile);
+  }
 
-    return profileMapper.toDto(profile, email);
+  @Transactional(readOnly = true)
+  public List<ProfileDto> searchProfiles(String query) {
+    if (query.length() < 2) {
+      return Collections.emptyList();
+    }
+
+    return profileRepository.findByQuery(query).stream().map(profileMapper::toDto).toList();
   }
 
   @Transactional
