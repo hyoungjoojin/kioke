@@ -59,7 +59,9 @@ export const CommandPaletteExtension =
               [
                 {
                   title: 'Image',
-                  command: ({ editor }) => {},
+                  command: ({ editor }) => {
+                    editor.chain().insertContent({ type: 'image' }).run();
+                  },
                 },
               ] as CommandPaletteItemProps[]
             )

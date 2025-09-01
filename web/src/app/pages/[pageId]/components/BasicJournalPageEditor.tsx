@@ -3,10 +3,12 @@
 import type { EditorProps } from '.';
 import PageTitle from './PageTitle';
 import { EditorBubbleMenu } from '@/components/feature/editor/EditorMenu';
-import { CommandPaletteExtension } from '@/components/feature/editor/extensions';
+import {
+  CommandPaletteExtension,
+  ImageNode,
+} from '@/components/feature/editor/extensions';
 import { useTransaction } from '@/components/provider/TransactionProvider';
 import { usePageQuery } from '@/query/page';
-import Image from '@tiptap/extension-image';
 import { EditorContent, type EditorEvents, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { debounce } from 'lodash';
@@ -17,13 +19,7 @@ export default function BasicJournalPageEditor({ pageId }: EditorProps) {
   const { addTransaction } = useTransaction();
 
   const editor = useEditor({
-    extensions: [
-      StarterKit,
-      CommandPaletteExtension,
-      Image.configure({
-        inline: false,
-      }),
-    ],
+    extensions: [StarterKit, CommandPaletteExtension, ImageNode],
     content: '',
     immediatelyRender: false,
     onTransaction: debounce(({ editor }: EditorEvents['transaction']) => {
