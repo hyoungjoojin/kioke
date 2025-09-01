@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import Icon, { IconName } from '@/components/ui/icon';
+import { Input } from '@/components/ui/input';
 import {
   Popover,
   PopoverContent,
@@ -13,7 +14,7 @@ interface EditorMenuProps {
   editor: Editor;
 }
 
-export default function EditorMenu({ editor }: EditorMenuProps) {
+export function EditorBubbleMenu({ editor }: EditorMenuProps) {
   return (
     <BubbleMenu editor={editor} options={{ placement: 'bottom' }}>
       <div className='flex gap-1 justify-center items-center'>
@@ -25,19 +26,34 @@ export default function EditorMenu({ editor }: EditorMenuProps) {
               </Button>
             </PopoverTrigger>
             <PopoverContent>
-              <Tabs defaultValue='upload'>
-                <TabsList>
-                  <TabsTrigger value='upload'>Upload Image</TabsTrigger>
-                  <TabsTrigger value='link'>Link</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value='upload'></TabsContent>
-                <TabsContent value='link'></TabsContent>
-              </Tabs>
+              <ImageSelectionContent editor={editor} />
             </PopoverContent>
           </Popover>
         </div>
       </div>
     </BubbleMenu>
+  );
+}
+
+export function EditorDropdownMenu() {
+  return <div></div>;
+}
+
+function ImageSelectionContent({ editor }: { editor: Editor }) {
+  return (
+    <>
+      <Tabs defaultValue='upload'>
+        <TabsList>
+          <TabsTrigger value='upload'>Upload Image</TabsTrigger>
+          <TabsTrigger value='link'>Link</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value='upload'>
+          <Button onClick={() => {}}>Click here</Button>
+          <Input type='file' />
+        </TabsContent>
+        <TabsContent value='link'></TabsContent>
+      </Tabs>
+    </>
   );
 }
