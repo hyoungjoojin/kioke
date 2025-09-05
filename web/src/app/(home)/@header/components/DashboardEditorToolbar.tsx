@@ -23,8 +23,8 @@ export default function DashboardEditorToolbar() {
     tag: string;
   } | null>(null);
 
-  const { dashboardDraft } = useDashboard();
-  const { updateDashboardDraft } = useDashboardActions();
+  const { draft } = useDashboard();
+  const { updateDraft } = useDashboardActions();
   const { mutate: updateDashboard, isPending: isUpdateDashboardPending } =
     useUpdateDashboardMutation();
 
@@ -36,7 +36,7 @@ export default function DashboardEditorToolbar() {
     const id = uuidv4().toString();
     const content = await Widgets[selectedWidget.type].default();
 
-    updateDashboardDraft((current) => {
+    updateDraft((current) => {
       return {
         widgets: [
           ...current.widgets,
@@ -53,9 +53,9 @@ export default function DashboardEditorToolbar() {
   };
 
   const handleSaveButtonClick = () => {
-    if (dashboardDraft) {
+    if (draft) {
       updateDashboard({
-        widgets: dashboardDraft.widgets,
+        widgets: draft.widgets,
       });
     }
   };

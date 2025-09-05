@@ -10,6 +10,7 @@ import io.kioke.feature.user.dto.UserDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -29,7 +30,15 @@ public class DashboardController {
   @GetMapping("/dashboards/me")
   @ResponseStatus(HttpStatus.OK)
   public GetDashboardResponseDto getMyDashboard(@AuthenticatedUser UserDto user) {
-    DashboardDto dashboard = dashboardService.getDashboard(user);
+    DashboardDto dashboard = dashboardService.getDashboard(user, user.userId());
+    return dashboardMapper.toGetDashboardResponse(dashboard);
+  }
+
+  @GetMapping("/dashboards/{userId}")
+  @ResponseStatus(HttpStatus.OK)
+  public GetDashboardResponseDto getDashboard(
+      @AuthenticatedUser UserDto authenticatedUser, @PathVariable String userId) {
+    DashboardDto dashboard = dashboardService.getDashboard(authenticatedUser, userId);
     return dashboardMapper.toGetDashboardResponse(dashboard);
   }
 

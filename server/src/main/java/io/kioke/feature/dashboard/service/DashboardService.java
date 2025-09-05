@@ -8,6 +8,7 @@ import io.kioke.feature.dashboard.repository.DashboardRepository;
 import io.kioke.feature.dashboard.util.DashboardMapper;
 import io.kioke.feature.user.domain.User;
 import io.kioke.feature.user.dto.UserDto;
+import io.kioke.feature.visitor.service.VisitorService;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -20,11 +21,15 @@ public class DashboardService {
 
   private static final Logger logger = LoggerFactory.getLogger(DashboardService.class);
 
+  private final VisitorService visitorService;
   private final DashboardRepository dashboardRepository;
   private final DashboardMapper dashboardMapper;
 
   public DashboardService(
-      DashboardRepository dashboardRepository, DashboardMapper dashboardMapper) {
+      VisitorService visitorService,
+      DashboardRepository dashboardRepository,
+      DashboardMapper dashboardMapper) {
+    this.visitorService = visitorService;
     this.dashboardRepository = dashboardRepository;
     this.dashboardMapper = dashboardMapper;
   }
@@ -37,11 +42,21 @@ public class DashboardService {
   }
 
   @Transactional(readOnly = true)
-  public DashboardDto getDashboard(UserDto user) {
-    return dashboardRepository
-        .findByUser(User.builder().userId(user.userId()).build())
-        .map(dashboardMapper::toDto)
-        .orElseThrow(() -> new IllegalStateException("Dashboard does not exist"));
+  public DashboardDto getDashboard(UserDto requesterDto, String userId) {
+    User requester = User.builder().userId(requesterDto.userId()).build();
+    User targetUser = User.builder().userId(userId).build();
+
+    DashboardDto dashboardDto =
+        dashboardRepository
+            .findByUser(targetUser)
+            .map(dashboardMapper::toDto)
+            .orElseThrow(() -> new IllegalStateException("Dashboard does not exist"));
+
+    if (!requesterDto.userId().equals(userId)) {
+      visitorService.markAsVisited(requester, targetUser);
+    }
+
+    return dashboardDto;
   }
 
   @Transactional(rollbackFor = Exception.class)

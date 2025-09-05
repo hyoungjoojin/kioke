@@ -11,15 +11,12 @@ import {
 } from '@/components/ui/dropdown-menu';
 import Icon, { IconName } from '@/components/ui/icon';
 import { destroySession } from '@/lib/session';
+import { useMyDashboardQuery } from '@/query/dashboard';
 import { useDashboardActions } from '@/store/dashboard';
 import { useModalActions } from '@/store/modal';
 import { useTranslations } from 'next-intl';
 
 export default function ProfileAvatar() {
-  const t = useTranslations();
-  const { openModal } = useModalActions();
-  const { setIsEditingDraft } = useDashboardActions();
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -32,27 +29,48 @@ export default function ProfileAvatar() {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent side='bottom' align='end'>
-        <DropdownMenuItem
-          icon={IconName.EDIT}
-          onClick={() => {
-            setIsEditingDraft(true);
-          }}
-        >
-          Edit Dashboard
-        </DropdownMenuItem>
-
-        <DropdownMenuItem
-          icon={IconName.SETTINGS}
-          onClick={() => {
-            openModal(ModalType.SETTINGS);
-          }}
-        >
-          {t('header.profile.settings')}
-        </DropdownMenuItem>
-
+        <EditDashboard />
+        <Settings />
         <SignOut />
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+function EditDashboard() {
+  const { setIsEditingDraft, setDraft } = useDashboardActions();
+  const { data: dashboard } = useMyDashboardQuery();
+
+  if (!dashboard) {
+    return null;
+  }
+
+  return (
+    <DropdownMenuItem
+      icon={IconName.EDIT}
+      onClick={() => {
+        setIsEditingDraft(true);
+        setDraft(dashboard);
+      }}
+    >
+      Edit Dashboard
+    </DropdownMenuItem>
+  );
+}
+
+function Settings() {
+  const t = useTranslations();
+  const { openModal } = useModalActions();
+
+  return (
+    <DropdownMenuItem
+      icon={IconName.SETTINGS}
+      onClick={() => {
+        openModal(ModalType.SETTINGS);
+      }}
+    >
+      {t('header.profile.settings')}
+    </DropdownMenuItem>
   );
 }
 

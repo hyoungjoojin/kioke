@@ -1,8 +1,8 @@
 import { getMyDashboard } from '@/app/api/dashboard';
-import type { KiokeError } from '@/constant/error';
 import type { Dashboard } from '@/types/dashboard';
+import type KiokeError from '@/util/error';
 import { unwrap } from '@/util/result';
-import type { UseQueryOptions} from '@tanstack/react-query';
+import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
 type TData = Dashboard;

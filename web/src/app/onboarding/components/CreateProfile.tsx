@@ -1,4 +1,4 @@
-import { OnboardingContentProps } from '../page';
+import type { OnboardingContentProps } from '../page';
 import { updateProfile } from '@/app/api/profile';
 import ImageSelector from '@/components/feature/image/ImageSelector';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';

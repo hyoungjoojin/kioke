@@ -15,7 +15,7 @@ export default function BaseLayout({ header, main }: BaseLayoutProps) {
       )}
     >
       <header className={'h-12 md:h-15 lg:h-20'}>{header}</header>
-      <main className='h-full'>{main}</main>
+      <main className='h-full pt-5'>{main}</main>
     </div>
   );
 }

@@ -6,21 +6,21 @@ import type { StateCreator } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
 
 interface DashboardState {
-  isEditingDashboard: boolean;
-  currentDashboardState: Dashboard | null;
+  isEditing: boolean;
+  draft: Dashboard | undefined;
 }
 
 interface DashboardActions {
   setIsEditingDashboard: (isEditing: boolean) => void;
-  initDashboardDraft: (dashboard: Dashboard) => void;
+  setDashboardDraft: (dashboard: Dashboard) => void;
   updateDashboardDraft: (callback: (current: Dashboard) => Dashboard) => void;
 }
 
 export type DashboardSlice = DashboardState & DashboardActions;
 
 const initial: DashboardState = {
-  isEditingDashboard: false,
-  currentDashboardState: null,
+  isEditing: false,
+  draft: undefined,
 };
 
 export const createDashboardSlice: StateCreator<
@@ -33,22 +33,22 @@ export const createDashboardSlice: StateCreator<
   setIsEditingDashboard(isEditing) {
     set(
       produce((state: DashboardSlice) => {
-        state.isEditingDashboard = isEditing;
+        state.isEditing = isEditing;
       }),
     );
   },
-  initDashboardDraft(dashboard) {
+  setDashboardDraft(dashboard) {
     set(
       produce((state: DashboardSlice) => {
-        state.currentDashboardState = dashboard;
+        state.draft = dashboard;
       }),
     );
   },
   updateDashboardDraft(callback) {
     set(
       produce((state: DashboardSlice) => {
-        if (state.currentDashboardState) {
-          state.currentDashboardState = callback(state.currentDashboardState);
+        if (state.draft) {
+          state.draft = callback(state.draft);
         }
       }),
     );
@@ -58,8 +58,8 @@ export const createDashboardSlice: StateCreator<
 export const useDashboard = () => {
   return useBoundStore(
     useShallow((store) => ({
-      isEditing: store.isEditingDashboard,
-      dashboardDraft: store.currentDashboardState,
+      isEditing: store.isEditing,
+      draft: store.draft,
     })),
   );
 };
@@ -67,8 +67,8 @@ export const useDashboard = () => {
 export const useDashboardActions = () => {
   return useBoundStore(
     useShallow((store) => ({
-      initDashboard: store.initDashboardDraft,
-      updateDashboardDraft: store.updateDashboardDraft,
+      setDraft: store.setDashboardDraft,
+      updateDraft: store.updateDashboardDraft,
       setIsEditingDraft: store.setIsEditingDashboard,
     })),
   );
