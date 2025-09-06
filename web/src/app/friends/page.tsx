@@ -14,6 +14,11 @@ const tabs = [
     icon: IconName.EDIT,
     content: dynamic(() => import('./components/FeedTab')),
   },
+  {
+    value: 'search',
+    icon: IconName.SEARCH,
+    content: dynamic(() => import('./components/SearchTab')),
+  },
 ];
 
 export default async function FriendsMain() {

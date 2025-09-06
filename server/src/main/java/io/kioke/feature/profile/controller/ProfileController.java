@@ -10,7 +10,6 @@ import io.kioke.feature.profile.service.ProfileService;
 import io.kioke.feature.profile.util.ProfileMapper;
 import io.kioke.feature.user.dto.UserDto;
 import java.util.List;
-import java.util.Set;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,14 +36,6 @@ public class ProfileController {
       throws UserNotFoundException {
     ProfileDto profile = profileService.getProfile(user);
     return profileMapper.toGetProfileResponse(profile);
-  }
-
-  @GetMapping("/users")
-  @ResponseStatus(HttpStatus.OK)
-  public void getProfiles(
-      @AuthenticatedUser UserDto user,
-      @RequestParam(value = "userId", required = true) Set<String> userIds) {
-    // TODO:
   }
 
   @GetMapping("/users/search")

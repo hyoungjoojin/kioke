@@ -22,7 +22,7 @@ function options(query: string): QueryOptions {
   };
 }
 
-function useSearchProfileQuery(query: string, custom?: Partial<QueryOptions>) {
+function useSearchProfilesQuery(query: string, custom?: Partial<QueryOptions>) {
   return useQuery({
     ...options(query),
     ...custom,
@@ -30,7 +30,7 @@ function useSearchProfileQuery(query: string, custom?: Partial<QueryOptions>) {
 }
 
 export {
-  useSearchProfileQuery,
+  useSearchProfilesQuery,
   key as searchProfileQueryKey,
   options as searchProfileQueryOptions,
 };

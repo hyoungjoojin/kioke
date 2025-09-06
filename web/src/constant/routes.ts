@@ -11,4 +11,7 @@ export const Routes = {
   },
   FRIENDS: '/friends',
   NOTIFICATIONS: '/notifications',
+  USER: (userId: string) => {
+    return `/users/${userId}`;
+  },
 };

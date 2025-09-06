@@ -13,9 +13,6 @@ public interface ProfileRepository extends JpaRepository<Profile, String> {
   @Query("SELECT p from Profile p JOIN FETCH p.user WHERE p.userId = :userId")
   public Optional<Profile> findById(String userId);
 
-  @Query(
-      "SELECT p from Profile p JOIN FETCH p.user "
-          + "WHERE (p.user.email LIKE CONCAT(:query, '%') OR p.name LIKE CONCAT(:query, '%')) "
-          + "AND p.onboarded = TRUE")
+  @Query("SELECT p from Profile p JOIN FETCH p.user " + "WHERE p.user.email = :query")
   public List<Profile> findByQuery(String query);
 }

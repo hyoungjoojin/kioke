@@ -98,7 +98,7 @@
   "social": {
     "tabs": {
       "friends": {
-        "name": "Friends"
+        "name": "My Friends"
       },
       "feed": { "name": "Feed" },
       "search": { "name": "Search" }

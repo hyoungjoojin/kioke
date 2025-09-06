@@ -6,7 +6,6 @@ import io.kioke.feature.profile.dto.request.UpdateProfileRequestDto;
 import io.kioke.feature.profile.repository.ProfileRepository;
 import io.kioke.feature.profile.util.ProfileMapper;
 import io.kioke.feature.user.dto.UserDto;
-import java.util.Collections;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,10 +50,6 @@ public class ProfileService {
 
   @Transactional(readOnly = true)
   public List<ProfileDto> searchProfiles(String query) {
-    if (query.length() < 2) {
-      return Collections.emptyList();
-    }
-
     return profileRepository.findByQuery(query).stream().map(profileMapper::toDto).toList();
   }
 
