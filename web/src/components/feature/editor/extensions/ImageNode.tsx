@@ -1,6 +1,12 @@
+import { getImage } from '@/app/api/image/getImage';
+import { uploadImage } from '@/app/api/image/uploadImage';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/spinner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import logger from '@/lib/logger';
+import { cn } from '@/lib/utils';
+import { unwrap } from '@/util/result';
 import {
   Node,
   NodeViewContent,
@@ -10,7 +16,12 @@ import {
   mergeAttributes,
 } from '@tiptap/react';
 import { default as NextImage } from 'next/image';
-import type { ChangeEvent } from 'react';
+import { type ChangeEvent, useEffect, useState } from 'react';
+
+interface ImageNodeAttributes {
+  mediaId: string | null;
+  src: string | null;
+}
 
 export const ImageNode = Node.create({
   name: 'image',
@@ -18,11 +29,11 @@ export const ImageNode = Node.create({
   content: 'inline*',
   addAttributes() {
     return {
-      src: {
+      mediaId: {
         default: null,
       },
-      count: {
-        default: 0,
+      src: {
+        default: null,
       },
     };
   },
@@ -42,9 +53,42 @@ export const ImageNode = Node.create({
 });
 
 function Image({ node, updateAttributes }: NodeViewProps) {
-  const src = node.attrs.src as string;
+  const [isLoading, setIsLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [imageSource, setImageSource] = useState<string | null>(null);
 
-  const fileUploadHandler = (e: ChangeEvent<HTMLInputElement>) => {
+  const { mediaId, src } = node.attrs as ImageNodeAttributes;
+
+  useEffect(() => {
+    if (src) {
+      setImageSource(src);
+      return;
+    }
+
+    if (!mediaId) {
+      setImageSource(null);
+      return;
+    }
+
+    const fetchUrl = async () => {
+      setIsLoading(true);
+      await getImage(mediaId)
+        .then((result) => unwrap(result))
+        .then((url) => {
+          setImageSource(url);
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          logger.error(error);
+          return '';
+        });
+    };
+
+    fetchUrl();
+  }, [src, mediaId, imageSource]);
+
+  const fileUploadHandler = async (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = e.target.files;
     if (!selectedFiles || selectedFiles.length === 0) {
       return;
@@ -55,9 +99,27 @@ function Image({ node, updateAttributes }: NodeViewProps) {
     updateAttributes({
       src: URL.createObjectURL(fileToUpload),
     });
+
+    setIsUploading(true);
+
+    await uploadImage(fileToUpload)
+      .then((response) => unwrap(response))
+      .then((mediaId) => {
+        updateAttributes({
+          src: null,
+          mediaId,
+        });
+      })
+      .catch((error) => {
+        logger.error(error);
+        setIsError(true);
+        setIsUploading(false);
+      });
+
+    setIsUploading(false);
   };
 
-  if (!src) {
+  if (!imageSource) {
     return (
       <NodeViewWrapper>
         <Card className='my-1'>
@@ -87,8 +149,39 @@ function Image({ node, updateAttributes }: NodeViewProps) {
 
   return (
     <NodeViewWrapper>
-      <div className='flex justify-center'>
-        <NextImage src={src} height={500} width={500} alt='' />
+      <div>
+        {isUploading && (
+          <div className='absolute w-full h-full flex items-center justify-center z-99'>
+            <div className='bg-background p-1 rounded-lg flex items-center gap-2'>
+              <Spinner />
+              <span className='text-sm'>Uploading Image</span>
+            </div>
+          </div>
+        )}
+
+        <div
+          className={cn(
+            'h-full w-full flex justify-center',
+            isUploading && 'backdrop-blur-xl',
+          )}
+        >
+          {isError ? (
+            <div>Failed to load image</div>
+          ) : isLoading ? (
+            <div>Loading...</div>
+          ) : imageSource ? (
+            <NextImage
+              src={imageSource}
+              height={500}
+              width={500}
+              alt=''
+              onError={() => {
+                setIsUploading(false);
+                setIsError(true);
+              }}
+            />
+          ) : null}
+        </div>
       </div>
     </NodeViewWrapper>
   );
