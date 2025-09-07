@@ -1,8 +1,8 @@
 import { myProfileQueryKey } from './getMyProfile';
 import type { UpdateProfileRequest } from '@/app/api/profile';
 import { updateProfile } from '@/app/api/profile';
-import type { KiokeError } from '@/constant/error';
 import { getQueryClient } from '@/lib/query';
+import type KiokeError from '@/util/error';
 import { unwrap } from '@/util/result';
 import { useMutation } from '@tanstack/react-query';
 
