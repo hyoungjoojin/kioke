@@ -6,6 +6,7 @@ import { EditorBubbleMenu } from '@/components/feature/editor/EditorMenu';
 import {
   CommandPaletteExtension,
   ImageNode,
+  MapNode,
 } from '@/components/feature/editor/extensions';
 import { useTransaction } from '@/components/provider/TransactionProvider';
 import { usePageQuery } from '@/query/page';
@@ -19,7 +20,7 @@ export default function BasicJournalPageEditor({ pageId }: EditorProps) {
   const { addTransaction } = useTransaction();
 
   const editor = useEditor({
-    extensions: [StarterKit, CommandPaletteExtension, ImageNode],
+    extensions: [StarterKit, CommandPaletteExtension, ImageNode, MapNode],
     content: '',
     immediatelyRender: false,
     onTransaction: debounce(({ editor }: EditorEvents['transaction']) => {

@@ -63,6 +63,12 @@ export const CommandPaletteExtension =
                     editor.chain().insertContent({ type: 'image' }).run();
                   },
                 },
+                {
+                  title: 'Map',
+                  command: ({ editor }) => {
+                    editor.chain().insertContent({ type: 'map' }).run();
+                  },
+                },
               ] as CommandPaletteItemProps[]
             )
               .filter((item) => {
