@@ -11,11 +11,14 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { ErrorCode } from '@/constant/error';
 import { Routes } from '@/constant/routes';
+import logger from '@/lib/logger';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { redirect } from 'next/navigation';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import z from 'zod';
 
 const SignUpFormSchema = z
@@ -54,6 +57,22 @@ export default function SignUpForm() {
   });
 
   const signUpFormSubmitHandler = async (credentials: SignUpFormSchemaType) => {
+    await signUp(credentials).then((result) =>
+      result
+        .map((_) => {
+          redirect(Routes.SIGN_IN);
+        })
+        .mapErr((error) => {
+          logger.debug(error);
+
+          switch (error.code) {
+            case ErrorCode.NETWORK_REQUEST_FAILED:
+              toast.error(t('error.network-failed'));
+              break;
+          }
+        }),
+    );
+
     const result = await signUp(credentials);
     if (result.isOk()) {
       redirect(Routes.HOME);
@@ -83,7 +102,7 @@ export default function SignUpForm() {
           />
         </div>
 
-        <div className='mb-5'>
+        <div className='mb-5 flex flex-col gap-5'>
           <FormField
             name='password'
             control={signUpForm.control}
@@ -92,6 +111,24 @@ export default function SignUpForm() {
                 <FormItem>
                   <FormLabel>
                     {t('signup.form.fields.password')}
+                    <FormMessage t={t} />
+                  </FormLabel>
+                  <FormControl>
+                    <Input type='password' placeholder='' {...field} />
+                  </FormControl>
+                </FormItem>
+              );
+            }}
+          />
+
+          <FormField
+            name='verifyPassword'
+            control={signUpForm.control}
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>
+                    {t('signup.form.fields.verify-password')}
                     <FormMessage t={t} />
                   </FormLabel>
                   <FormControl>

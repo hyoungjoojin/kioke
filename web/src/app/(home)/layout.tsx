@@ -6,6 +6,9 @@ import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 
 import './styles/react-grid-layout.css';
 
+import { Routes } from '@/constant/routes';
+import { redirect } from 'next/navigation';
+
 export default async function HomeLayout({
   header,
   main,
@@ -16,6 +19,11 @@ export default async function HomeLayout({
   const queryClient = getQueryClient();
   await queryClient
     .fetchQuery(myProfileQueryOptions())
+    .then((profile) => {
+      if (!profile.onboarded) {
+        redirect(Routes.ONBOARDING);
+      }
+    })
     .catch((error) => handleError(error));
 
   return (

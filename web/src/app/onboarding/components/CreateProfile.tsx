@@ -11,7 +11,6 @@ import {
   FormLabel,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { getToastMessageKey } from '@/constant/error';
 import { MimeType } from '@/constant/mime';
 import { unwrap } from '@/util/result';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -47,20 +46,11 @@ export default function CreateProfile({ onNextStep }: OnboardingContentProps) {
     values: CreateProfileFormSchemaType,
   ) => {
     updateProfile({
-      json: {
-        name: values.name,
-      },
-      ...(values.profileImage && {
-        profileImage: values.profileImage,
-      }),
-    })
-      .then((result) => {
-        unwrap(result);
-        onNextStep();
-      })
-      .catch((e) => {
-        toast.error(t(getToastMessageKey(e)));
-      });
+      name: values.name,
+    }).then((result) => {
+      unwrap(result);
+      onNextStep();
+    });
   };
 
   return (

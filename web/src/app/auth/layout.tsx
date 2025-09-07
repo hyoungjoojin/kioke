@@ -8,7 +8,6 @@ export default function AuthLayout({
 }>) {
   return (
     <>
-      <header>{/* TODO: Insert logo */}</header>
       <main className={cn('flex flex-row h-dvh justify-center items-center')}>
         <Card className='w-[32rem]'>{children}</Card>
       </main>

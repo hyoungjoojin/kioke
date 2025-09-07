@@ -1,7 +1,9 @@
-import { handleServerSideKiokeError } from '@/constant/error';
+import { Card } from '@/components/ui/card';
 import { Routes } from '@/constant/routes';
 import { getQueryClient } from '@/lib/query';
+import { cn } from '@/lib/utils';
 import { myProfileQueryOptions } from '@/query/profile';
+import { handleError } from '@/util/error';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
@@ -16,15 +18,19 @@ export default async function OnboardingLayout({
   children: React.ReactNode;
 }>) {
   const queryClient = getQueryClient();
-  try {
-    const profile = await queryClient.fetchQuery(myProfileQueryOptions());
 
-    if (profile.onboarded) {
-      redirect(Routes.HOME);
-    }
-  } catch (error) {
-    handleServerSideKiokeError(error);
-  }
+  await queryClient
+    .fetchQuery(myProfileQueryOptions())
+    .then((profile) => {
+      if (profile.onboarded) {
+        redirect(Routes.HOME);
+      }
+    })
+    .catch((error) => handleError(error));
 
-  return <>{children}</>;
+  return (
+    <main className={cn('flex flex-row h-dvh justify-center items-center')}>
+      <Card className='w-[32rem]'>{children}</Card>
+    </main>
+  );
 }
