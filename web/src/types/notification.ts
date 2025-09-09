@@ -7,13 +7,23 @@ import type { Role } from '@/constant/role';
 export type Notification = {
   id: string;
   status: NotificationStatus;
-} & {
-  type: NotificationType.SHARE_JOURNAL_REQUEST;
-  content: {
-    journalId: string;
-    journalTitle: string;
-    requesterId: string;
-    requesterName: string;
-    role: Role;
-  };
-};
+} & (
+  | {
+      type: NotificationType.SHARE_JOURNAL_REQUEST;
+      content: {
+        journalId: string;
+        journalTitle: string;
+        requesterId: string;
+        requesterName: string;
+        role: Role;
+      };
+    }
+  | {
+      type: NotificationType.FRIEND_REQUEST;
+      content: {
+        requesterId: string;
+        requesterName: string;
+        sentAt: Date;
+      };
+    }
+);

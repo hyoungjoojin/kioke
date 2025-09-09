@@ -1,9 +1,11 @@
 package io.kioke.feature.notification.util;
 
 import io.kioke.feature.notification.domain.Notification;
+import io.kioke.feature.notification.domain.content.FriendRequestNotificationContent;
 import io.kioke.feature.notification.domain.content.NotificationContent;
 import io.kioke.feature.notification.domain.content.ShareJournalRequestNotificationContent;
 import io.kioke.feature.notification.dto.NotificationDto;
+import io.kioke.feature.notification.dto.NotificationDto.FriendRequestNotificationContentDto;
 import io.kioke.feature.notification.dto.NotificationDto.NotificationContentDto;
 import io.kioke.feature.notification.dto.NotificationDto.ShareJournalRequestNotificationContentDto;
 import org.mapstruct.Mapper;
@@ -16,8 +18,10 @@ public interface NotificationMapper {
   public NotificationDto toDto(Notification notification);
 
   default NotificationContentDto toDto(NotificationContent content) {
-    if (content instanceof ShareJournalRequestNotificationContent shareJournalRequest) {
-      return toDto(shareJournalRequest);
+    if (content instanceof ShareJournalRequestNotificationContent c) {
+      return toDto(c);
+    } else if (content instanceof FriendRequestNotificationContent c) {
+      return toDto(c);
     }
 
     throw new IllegalArgumentException("Invalid content type");
@@ -32,4 +36,11 @@ public interface NotificationMapper {
     @Mapping(source = "shareRequest.createdAt", target = "sentAt")
   })
   ShareJournalRequestNotificationContentDto toDto(ShareJournalRequestNotificationContent content);
+
+  @Mappings({
+    @Mapping(source = "friendship.requester.userId", target = "requesterId"),
+    @Mapping(source = "friendship.requester.profile.name", target = "requesterName"),
+    @Mapping(source = "friendship.createdAt", target = "sentAt"),
+  })
+  FriendRequestNotificationContentDto toDto(FriendRequestNotificationContent content);
 }

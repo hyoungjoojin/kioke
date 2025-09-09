@@ -5,4 +5,5 @@ export enum NotificationStatus {
 
 export enum NotificationType {
   SHARE_JOURNAL_REQUEST = 'SHARE_JOURNAL_REQUEST',
+  FRIEND_REQUEST = 'FRIEND_REQUEST',
 }

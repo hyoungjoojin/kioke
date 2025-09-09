@@ -33,5 +33,18 @@ function NotificationItem({ notification }: { notification: Notification }) {
     );
   }
 
+  if (notification.type === NotificationType.FRIEND_REQUEST) {
+    const content = notification.content;
+
+    return (
+      <div>
+        <em>
+          {content.requesterName} sent a friend request at
+          {content.sentAt.toString()}
+        </em>
+      </div>
+    );
+  }
+
   return null;
 }

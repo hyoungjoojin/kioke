@@ -18,4 +18,7 @@ public record NotificationDto(
       Role role,
       Instant sentAt)
       implements NotificationContentDto {}
+
+  public record FriendRequestNotificationContentDto(
+      String requesterId, String requesterName, Instant sentAt) implements NotificationContentDto {}
 }
