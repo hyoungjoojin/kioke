@@ -75,6 +75,8 @@ export function TransactionProvider({
             }),
       );
 
+      queueRef.current = [];
+
       if (status !== 'error') {
         setStatus('idle');
       }
