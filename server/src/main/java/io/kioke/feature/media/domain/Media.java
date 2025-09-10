@@ -6,15 +6,16 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import java.time.Instant;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
-@Table(name = "MEDIA_TABLE")
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @EntityListeners(AuditingEntityListener.class)
-public class Media {
+public abstract class Media {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -28,11 +29,8 @@ public class Media {
 
   protected Media() {}
 
-  public static Media of(String key) {
-    Media media = new Media();
-    media.key = key;
-
-    return media;
+  public Media(String key) {
+    this.key = key;
   }
 
   public String id() {

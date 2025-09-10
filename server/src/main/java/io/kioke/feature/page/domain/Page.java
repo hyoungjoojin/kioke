@@ -45,6 +45,12 @@ public class Page {
     this.date = date;
   }
 
+  public static Page createReference(String pageId) {
+    Page page = new Page();
+    page.pageId = pageId;
+    return page;
+  }
+
   public String getPageId() {
     return pageId;
   }

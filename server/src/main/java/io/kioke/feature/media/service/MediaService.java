@@ -4,7 +4,9 @@ import io.kioke.feature.media.domain.Media;
 import io.kioke.feature.media.repository.MediaRepository;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.UUID;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,10 +37,7 @@ public class MediaService {
   }
 
   @Transactional(rollbackFor = Exception.class)
-  public String uploadFile(MultipartFile file) throws IOException {
-    Media media = Media.of(UUID.randomUUID().toString());
-    media = mediaRepository.save(media);
-
+  public String uploadMedia(Media media, MultipartFile file) throws IOException {
     PutObjectRequest request =
         PutObjectRequest.builder()
             .bucket(bucket)
@@ -66,5 +65,29 @@ public class MediaService {
 
     PresignedGetObjectRequest presignedRequest = s3Presigner.presignGetObject(presignRequest);
     return presignedRequest.url().toExternalForm();
+  }
+
+  @Transactional(readOnly = true)
+  public List<String> batchGetPresignedUrls(List<String> mediaIds) {
+    Stream<Media> medias =
+        mediaIds.stream()
+            .map(mediaId -> mediaRepository.findById(mediaId))
+            .filter(media -> media.isPresent())
+            .map(media -> media.get());
+
+    List<String> presignRequests =
+        medias
+            .map(media -> GetObjectRequest.builder().bucket(bucket).key(media.key()).build())
+            .map(
+                objectRequest ->
+                    GetObjectPresignRequest.builder()
+                        .signatureDuration(Duration.ofMinutes(10))
+                        .getObjectRequest(objectRequest)
+                        .build())
+            .map(presignRequest -> s3Presigner.presignGetObject(presignRequest))
+            .map(presignedRequest -> presignedRequest.url().toExternalForm())
+            .collect(Collectors.toList());
+
+    return presignRequests;
   }
 }

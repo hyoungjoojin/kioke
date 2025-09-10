@@ -65,7 +65,7 @@ public class PageService {
   }
 
   @Transactional
-  public void updatePage(UserDto userDto, String pageId, UpdatePageRequestDto request)
+  public Page updatePage(UserDto userDto, String pageId, UpdatePageRequestDto request)
       throws AccessDeniedException, PageNotFoundException {
     User user = User.builder().userId(userDto.userId()).build();
     Page page = pageRepository.findById(pageId).orElseThrow(() -> new PageNotFoundException());
@@ -86,6 +86,7 @@ public class PageService {
       page.changeDate(request.date());
     }
 
-    pageRepository.save(page);
+    page = pageRepository.save(page);
+    return page;
   }
 }
