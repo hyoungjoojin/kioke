@@ -63,4 +63,15 @@ public class CollectionService {
     collection.addJournal(journal);
     collectionRepository.save(collection);
   }
+
+  @Transactional
+  public void deleteCollection(UserDto user, String collectionId)
+      throws CollectionNotFoundException {
+    Collection collection =
+        collectionRepository
+            .findByUserAndId(User.of(user.userId()), collectionId)
+            .orElseThrow(() -> new CollectionNotFoundException());
+
+    collectionRepository.delete(collection);
+  }
 }

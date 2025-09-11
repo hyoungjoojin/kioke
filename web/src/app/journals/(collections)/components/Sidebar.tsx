@@ -1,8 +1,10 @@
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Routes } from '@/constant/routes';
 import { useClickOutside } from '@/hooks/useClickOutside';
 import { cn } from '@/lib/utils';
 import { useCollectionQuery } from '@/query/collection';
+import { useDeleteCollectionMutationQuery } from '@/query/collection/deleteCollection';
 import Link from 'next/link';
 import { useRef } from 'react';
 
@@ -15,6 +17,8 @@ export default function Sidebar({ collectionId, onClose }: SidebarProps) {
   const sidebarRef = useRef(null);
 
   const { data: collection } = useCollectionQuery({ id: collectionId });
+  const { mutate: deleteCollection } =
+    useDeleteCollectionMutationQuery(collectionId);
 
   useClickOutside(sidebarRef, () => {
     if (onClose) {
@@ -34,6 +38,14 @@ export default function Sidebar({ collectionId, onClose }: SidebarProps) {
     >
       <CardContent>
         <h1 className='text-2xl mb-5'>{collection && collection.name}</h1>
+
+        <Button
+          onClick={() => {
+            deleteCollection();
+          }}
+        >
+          Delete Collection
+        </Button>
 
         {collection &&
           collection.journals.map((journal, index) => {

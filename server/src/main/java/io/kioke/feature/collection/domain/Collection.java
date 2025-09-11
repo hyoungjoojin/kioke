@@ -41,7 +41,7 @@ public class Collection {
   @OneToMany(
       fetch = FetchType.LAZY,
       mappedBy = "collection",
-      cascade = CascadeType.MERGE,
+      cascade = {CascadeType.MERGE, CascadeType.REMOVE},
       orphanRemoval = false)
   private List<CollectionEntry> entries;
 

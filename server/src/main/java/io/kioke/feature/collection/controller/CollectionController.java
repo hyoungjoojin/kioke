@@ -13,6 +13,7 @@ import io.kioke.feature.user.dto.UserDto;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,5 +56,12 @@ public class CollectionController {
       throws CollectionNotFoundException {
     CollectionDto collection = collectionService.getCollection(user, collectionId);
     return collectionMapper.toGetCollectionResponse(collection);
+  }
+
+  @DeleteMapping("/collections/{collectionId}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void deleteCollection(@AuthenticatedUser UserDto user, @PathVariable String collectionId)
+      throws CollectionNotFoundException {
+    collectionService.deleteCollection(user, collectionId);
   }
 }
