@@ -6,9 +6,10 @@ import {
   ReactNodeViewRenderer,
   mergeAttributes,
 } from '@tiptap/react';
-import { Map as Mapbox } from 'mapbox-gl';
-import mapboxgl from 'mapbox-gl';
-import { useEffect, useRef } from 'react';
+import { useState } from 'react';
+import Map, { Marker } from 'react-map-gl/mapbox';
+
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 export const MapNode = Node.create({
   name: 'map',
@@ -28,33 +29,50 @@ export const MapNode = Node.create({
     ];
   },
   addNodeView() {
-    return ReactNodeViewRenderer(Map);
+    return ReactNodeViewRenderer(KiokeMap);
   },
 });
 
-function Map({}: NodeViewProps) {
-  const mapRef = useRef<Mapbox | null>(null);
-  const mapContainerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (mapContainerRef.current) {
-      mapboxgl.accessToken = env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
-      mapRef.current = new Mapbox({
-        container: mapContainerRef.current,
-      });
-    }
-
-    return () => {
-      if (mapRef.current) {
-        mapRef.current.remove();
-      }
-    };
-  }, []);
+function KiokeMap({}: NodeViewProps) {
+  const [sidebarOpen, _setSidebarOpen] = useState(false);
+  const [locations, setLocations] = useState<
+    {
+      lat: number;
+      lng: number;
+    }[]
+  >([]);
 
   return (
     <NodeViewWrapper>
-      <div className='flex items-center'>
-        <div ref={mapContainerRef} className='hover:cursor-pointer'></div>
+      <div className='flex bg-card px-5 py-5 rounded-xl h-72'>
+        <div className='grow flex items-center justify-center'>
+          <Map
+            mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
+            mapStyle='mapbox://styles/mapbox/streets-v9'
+            attributionControl={false}
+            onClick={(event) => {
+              setLocations((locations) => [
+                ...locations,
+                {
+                  lat: event.lngLat.lat,
+                  lng: event.lngLat.lng,
+                },
+              ]);
+            }}
+          >
+            {locations.map((location, index) => {
+              return (
+                <Marker
+                  latitude={location.lat}
+                  longitude={location.lng}
+                  key={index}
+                ></Marker>
+              );
+            })}
+          </Map>
+        </div>
+
+        {sidebarOpen ? <div className='w-1/5'></div> : null}
       </div>
     </NodeViewWrapper>
   );

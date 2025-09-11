@@ -1,3 +1,5 @@
+import Icon, { IconName } from '@/components/ui/icon';
+import { cn } from '@/lib/utils';
 import { computePosition, flip, shift } from '@floating-ui/react';
 import { Extension, ReactRenderer, posToDOMRect } from '@tiptap/react';
 import type { Editor, Range } from '@tiptap/react';
@@ -6,6 +8,7 @@ import {
   type SuggestionOptions,
   type SuggestionProps,
 } from '@tiptap/suggestion';
+import { useTranslations } from 'next-intl';
 import {
   type RefAttributes,
   forwardRef,
@@ -14,7 +17,8 @@ import {
 } from 'react';
 
 interface CommandPaletteItemProps {
-  title: string;
+  name: string;
+  icon: IconName;
   command: (props: { editor: Editor; range: Range }) => void;
 }
 
@@ -58,13 +62,15 @@ export const CommandPaletteExtension =
             return (
               [
                 {
-                  title: 'Image',
+                  name: 'image',
+                  icon: IconName.IMAGE,
                   command: ({ editor }) => {
                     editor.chain().insertContent({ type: 'image' }).run();
                   },
                 },
                 {
-                  title: 'Map',
+                  name: 'map',
+                  icon: IconName.PAINT,
                   command: ({ editor }) => {
                     editor.chain().insertContent({ type: 'map' }).run();
                   },
@@ -72,7 +78,7 @@ export const CommandPaletteExtension =
               ] as CommandPaletteItemProps[]
             )
               .filter((item) => {
-                return item.title.toLowerCase().startsWith(query.toLowerCase());
+                return item.name.startsWith(query.toLowerCase());
               })
               .slice(0, 10);
           },
@@ -159,6 +165,8 @@ type CommandPaletteProps = SuggestionProps<CommandPaletteItemProps>;
 
 const CommandPalette = forwardRef<CommandPaletteRef, CommandPaletteProps>(
   (props, ref) => {
+    const t = useTranslations('editor.command-palette');
+
     const [selectedIndex, setSelectedIndex] = useState(0);
 
     const selectItem = (index: number) => {
@@ -192,19 +200,25 @@ const CommandPalette = forwardRef<CommandPaletteRef, CommandPaletteProps>(
     }));
 
     return (
-      <div className='bg-card rounded-2xl w-20 flex flex-col'>
+      <div className='bg-card rounded-2xl flex flex-col'>
         {props.items.map((item, index) => {
           return (
-            <button
-              type='button'
-              className={`${index === selectedIndex ? 'bg-red-500' : ''}`}
+            <div
               key={index}
+              className={cn(
+                'flex items-center justify-between',
+                index === selectedIndex ? 'bg-card' : 'bg-background',
+              )}
               onClick={() => {
                 selectItem(index);
               }}
             >
-              {item.title}
-            </button>
+              <Icon name={item.icon} />
+              <div className='flex flex-col'>
+                <span>{t(`${item.name}.title`)}</span>
+                <span>{t(`${item.name}.description`)}</span>
+              </div>
+            </div>
           );
         })}
       </div>
