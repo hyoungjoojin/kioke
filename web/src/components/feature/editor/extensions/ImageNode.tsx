@@ -18,7 +18,12 @@ import {
 import { default as NextImage } from 'next/image';
 import { type ChangeEvent, useEffect, useState } from 'react';
 
+interface ImageNodeOptions {
+  pageId: string;
+}
+
 interface ImageNodeAttributes {
+  pageId: string | null;
   mediaId: string | null;
   src: string | null;
 }
@@ -27,8 +32,16 @@ export const ImageNode = Node.create({
   name: 'image',
   group: 'block',
   content: 'inline*',
+  addOptions() {
+    return {
+      pageId: '',
+    } as ImageNodeOptions;
+  },
   addAttributes() {
     return {
+      pageId: {
+        default: null,
+      },
       mediaId: {
         default: null,
       },
@@ -52,12 +65,13 @@ export const ImageNode = Node.create({
   },
 });
 
-function Image({ node, updateAttributes }: NodeViewProps) {
+function Image({ node, extension, updateAttributes }: NodeViewProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [imageSource, setImageSource] = useState<string | null>(null);
 
+  const { pageId } = extension.options as ImageNodeOptions;
   const { mediaId, src } = node.attrs as ImageNodeAttributes;
 
   useEffect(() => {
@@ -73,7 +87,7 @@ function Image({ node, updateAttributes }: NodeViewProps) {
 
     const fetchUrl = async () => {
       setIsLoading(true);
-      await getImage(mediaId)
+      await getImage(mediaId, { pageId })
         .then((result) => unwrap(result))
         .then((url) => {
           setImageSource(url);
@@ -86,7 +100,7 @@ function Image({ node, updateAttributes }: NodeViewProps) {
     };
 
     fetchUrl();
-  }, [src, mediaId, imageSource]);
+  }, [src, pageId, mediaId, imageSource]);
 
   const fileUploadHandler = async (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = e.target.files;
@@ -102,7 +116,7 @@ function Image({ node, updateAttributes }: NodeViewProps) {
 
     setIsUploading(true);
 
-    await uploadImage(fileToUpload)
+    await uploadImage(fileToUpload, { pageId })
       .then((response) => unwrap(response))
       .then((mediaId) => {
         updateAttributes({

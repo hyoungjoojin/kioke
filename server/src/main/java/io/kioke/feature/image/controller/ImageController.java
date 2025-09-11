@@ -45,8 +45,8 @@ public class ImageController {
       consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
   public String uploadImage(
       @AuthenticatedUser UserDto user,
-      @RequestPart(name = "image") MultipartFile image,
-      @RequestPart(name = "json") UploadImageRequestDto requestBody)
+      @RequestPart(name = "image", required = true) MultipartFile image,
+      @RequestPart(name = "json", required = true) UploadImageRequestDto requestBody)
       throws IOException, AccessDeniedException, PageNotFoundException {
     return imageService.uploadImage(user, image, requestBody);
   }

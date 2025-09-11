@@ -185,5 +185,17 @@
     "unknown-error": "Unknown Error",
     "file-too-large": "File too large. Please upload an image smaller than {size}.",
     "unsupported-file-type": "Unsupported File Type"
+  },
+  "editor": {
+    "command-palette": {
+      "image": {
+        "title": "Image",
+        "description": "Upload an image or a link from the web"
+      },
+      "map": {
+        "title": "Map",
+        "description": "Insert a map"
+      }
+    }
   }
 }

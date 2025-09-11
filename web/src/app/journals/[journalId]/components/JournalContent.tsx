@@ -1,7 +1,11 @@
 'use client';
 
 import CreatePageButton from './CreatePageButton';
-import { BasicJournalContent, ShortJournalContent } from './content';
+import {
+  BasicJournalContent,
+  GalleryJournalContent,
+  ShortJournalContent,
+} from './content';
 import { JournalType } from '@/constant/journal';
 import { useJournalQuery } from '@/query/journal';
 
@@ -29,6 +33,9 @@ export default function JournalContent({ journalId }: JournalContentProps) {
 
       case JournalType.SHORT:
         return <ShortJournalContent journalId={journalId} />;
+
+      case JournalType.GALLERY:
+        return <GalleryJournalContent journalId={journalId} />;
     }
   }
 

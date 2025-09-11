@@ -13,12 +13,16 @@ import io.kioke.feature.page.service.PageService;
 import io.kioke.feature.user.dto.UserDto;
 import java.io.IOException;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ImageService {
+
+  private static final Logger logger = LoggerFactory.getLogger(ImageService.class);
 
   private final PageService pageService;
   private final MediaService mediaService;
@@ -38,7 +42,7 @@ public class ImageService {
     return mediaService.getPresignedUrl(imageId);
   }
 
-  @Transactional
+  @Transactional(readOnly = true)
   public List<String> getImagesInPage(UserDto user, String pageId)
       throws JournalNotFoundException, PageNotFoundException {
     pageService.getPage(user, pageId);
@@ -47,8 +51,11 @@ public class ImageService {
         pageImageRepository.findByPage(Page.createReference(pageId)).stream()
             .map(pageImage -> pageImage.key())
             .toList();
+    logger.debug("Found {} images in page {}", imageKeys.size(), pageId);
 
     List<String> urls = mediaService.batchGetPresignedUrls(imageKeys);
+    logger.debug("Generated {} presigned URLs for images in page {}", urls.size(), pageId);
+
     return urls;
   }
 

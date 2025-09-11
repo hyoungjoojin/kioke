@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,16 +67,10 @@ public class MediaService {
   }
 
   @Transactional(readOnly = true)
-  public List<String> batchGetPresignedUrls(List<String> mediaIds) {
-    Stream<Media> medias =
-        mediaIds.stream()
-            .map(mediaId -> mediaRepository.findById(mediaId))
-            .filter(media -> media.isPresent())
-            .map(media -> media.get());
-
+  public List<String> batchGetPresignedUrls(List<String> keys) {
     List<String> presignRequests =
-        medias
-            .map(media -> GetObjectRequest.builder().bucket(bucket).key(media.key()).build())
+        keys.stream()
+            .map(key -> GetObjectRequest.builder().bucket(bucket).key(key).build())
             .map(
                 objectRequest ->
                     GetObjectPresignRequest.builder()

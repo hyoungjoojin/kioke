@@ -20,7 +20,14 @@ export default function BasicJournalPageEditor({ pageId }: EditorProps) {
   const { addTransaction } = useTransaction();
 
   const editor = useEditor({
-    extensions: [StarterKit, CommandPaletteExtension, ImageNode, MapNode],
+    extensions: [
+      StarterKit,
+      CommandPaletteExtension,
+      ImageNode.configure({
+        pageId,
+      }),
+      MapNode,
+    ],
     content: '',
     immediatelyRender: false,
     onTransaction: debounce(({ editor }: EditorEvents['transaction']) => {
