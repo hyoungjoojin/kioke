@@ -10,7 +10,7 @@ export function SettingsEntry({ title, children }: SettingsEntryProps) {
   return (
     <>
       <span className='font-bold'>{title}</span>
-      {children}
+      <div>{children}</div>
     </>
   );
 }

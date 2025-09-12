@@ -2,17 +2,15 @@ import kioke from '@/app/api';
 import { MimeType } from '@/constant/mime';
 import type { Theme } from '@/constant/theme';
 
-export interface UpdateProfileRequest {
-  name?: string;
-  onboarded?: boolean;
-  theme?: Theme;
+export interface UpdatePreferencesRequest {
+  theme: Theme;
 }
 
 function url() {
-  return '/users/me';
+  return `/preferences`;
 }
 
-export async function updateProfile(body: UpdateProfileRequest) {
+export async function updatePreferences(body: UpdatePreferencesRequest) {
   return kioke<void>(url(), {
     method: 'PATCH',
     body: JSON.stringify(body),

@@ -1,5 +1,6 @@
 import kioke from '@/app/api';
 import { MimeType } from '@/constant/mime';
+import type { Theme } from '@/constant/theme';
 import type { MyProfile } from '@/types/profile';
 import type KiokeError from '@/util/error';
 import type { Result } from 'neverthrow';
@@ -10,6 +11,7 @@ interface GetMyProfileResponse {
   name: string;
   onboarded: boolean;
   createdAt: Date;
+  theme: Theme;
 }
 
 function url() {

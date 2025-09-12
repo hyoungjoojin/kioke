@@ -6,6 +6,7 @@ import io.kioke.feature.auth.dto.request.SignUpRequestDto;
 import io.kioke.feature.auth.service.AuthService;
 import io.kioke.feature.auth.service.SessionService;
 import io.kioke.feature.dashboard.service.DashboardService;
+import io.kioke.feature.preferences.service.PreferencesService;
 import io.kioke.feature.profile.service.ProfileService;
 import io.kioke.feature.user.dto.UserDto;
 import io.kioke.feature.user.service.UserService;
@@ -25,18 +26,21 @@ public class AuthController {
   private final AuthService authService;
   private final SessionService sessionService;
   private final ProfileService profileService;
+  private final PreferencesService preferencesService;
   private final DashboardService dashboardService;
 
   public AuthController(
       UserService userService,
       AuthService authService,
       SessionService sessionService,
+      PreferencesService preferencesService,
       ProfileService profileService,
       DashboardService dashboardService) {
     this.userService = userService;
     this.authService = authService;
     this.sessionService = sessionService;
     this.profileService = profileService;
+    this.preferencesService = preferencesService;
     this.dashboardService = dashboardService;
   }
 
@@ -57,6 +61,7 @@ public class AuthController {
     UserDto user = userService.createUser(requestBody.email());
     authService.createUserDetails(user, requestBody.password());
     profileService.createProfile(user);
+    preferencesService.createPreferences(user);
     dashboardService.createDashboard(user);
   }
 

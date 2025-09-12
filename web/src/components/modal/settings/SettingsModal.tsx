@@ -8,14 +8,14 @@ import dynamic from 'next/dynamic';
 
 const tabs = [
   {
-    value: 'account',
-    icon: IconName.USER,
-    content: dynamic(() => import('./components/AccountTabContent')),
-  },
-  {
     value: 'theme',
     icon: IconName.PAINT,
     content: dynamic(() => import('./components/ThemeTabContent')),
+  },
+  {
+    value: 'account',
+    icon: IconName.USER,
+    content: dynamic(() => import('./components/AccountTabContent')),
   },
   {
     value: 'notifications',

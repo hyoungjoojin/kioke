@@ -2,9 +2,11 @@ package io.kioke.feature.profile.controller;
 
 import io.kioke.annotation.AuthenticatedUser;
 import io.kioke.exception.user.UserNotFoundException;
+import io.kioke.feature.preferences.dto.PreferencesDto;
+import io.kioke.feature.preferences.service.PreferencesService;
 import io.kioke.feature.profile.dto.ProfileDto;
 import io.kioke.feature.profile.dto.request.UpdateProfileRequestDto;
-import io.kioke.feature.profile.dto.response.GetProfileResponseDto;
+import io.kioke.feature.profile.dto.response.GetMyProfileResponse;
 import io.kioke.feature.profile.dto.response.SearchProfilesResponseDto;
 import io.kioke.feature.profile.service.ProfileService;
 import io.kioke.feature.profile.util.ProfileMapper;
@@ -23,19 +25,25 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProfileController {
 
   private final ProfileService profileService;
+  private final PreferencesService preferencesService;
   private final ProfileMapper profileMapper;
 
-  public ProfileController(ProfileService profileService, ProfileMapper profileMapper) {
+  public ProfileController(
+      ProfileService profileService,
+      PreferencesService preferencesService,
+      ProfileMapper profileMapper) {
     this.profileService = profileService;
+    this.preferencesService = preferencesService;
     this.profileMapper = profileMapper;
   }
 
   @GetMapping("/users/me")
   @ResponseStatus(HttpStatus.OK)
-  public GetProfileResponseDto getMyProfile(@AuthenticatedUser UserDto user)
+  public GetMyProfileResponse getMyProfile(@AuthenticatedUser UserDto user)
       throws UserNotFoundException {
     ProfileDto profile = profileService.getProfile(user);
-    return profileMapper.toGetProfileResponse(profile);
+    PreferencesDto preferences = preferencesService.getPreferences(user);
+    return profileMapper.toGetMyProfileResponse(profile, preferences);
   }
 
   @GetMapping("/users/search")
