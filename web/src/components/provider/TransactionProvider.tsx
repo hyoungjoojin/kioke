@@ -3,19 +3,23 @@
 import 'client-only';
 
 import { updatePage } from '@/app/api/page';
+import { BlockType } from '@/constant/block';
 import logger from '@/lib/logger';
 import { unwrap } from '@/util/result';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 
-interface Transaction {
-  pageId: string;
-  content: string;
-}
+type BlockContent = {
+  attrs: {
+    blockId: string | null;
+  };
+  type: BlockType.TEXT_BLOCK;
+  content: any[];
+};
 
 type TransactionStatus = 'idle' | 'saving' | 'error';
 
 interface TransactionContextType {
-  addTransaction: (transaction: Transaction) => void;
+  addTransaction: (pageId: string, content: BlockContent[]) => void;
   status: TransactionStatus;
 }
 
@@ -40,7 +44,7 @@ export function TransactionProvider({
   children: React.ReactNode;
 }) {
   const [status, setStatus] = useState<TransactionStatus>('idle');
-  const queueRef = useRef<Transaction[]>([]);
+  const queueRef = useRef<Map<string, BlockContent[]>>(new Map());
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -52,39 +56,45 @@ export function TransactionProvider({
   }, []);
 
   const flush = async () => {
-    if (queueRef.current.length === 0) {
+    setStatus('saving');
+
+    queueRef.current.forEach(async (value, key) => {
+      await updatePage({
+        id: key,
+        blocks: value.map((block) => {
+          if (block.type === BlockType.TEXT_BLOCK) {
+            const content = JSON.stringify(block.content);
+            return {
+              ...block,
+              content,
+            };
+          }
+
+          logger.debug(`Unhandled BlockType ${block.type}`);
+          return block as never;
+        }),
+      })
+        .then((response) => unwrap(response))
+        .catch((error) => {
+          logger.debug(error);
+          setStatus('error');
+        });
+    });
+
+    queueRef.current.clear();
+    if (status !== 'error') {
       setStatus('idle');
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-    } else {
-      setStatus('saving');
+    }
 
-      queueRef.current.forEach(
-        async (transaction, index) =>
-          await updatePage({
-            id: transaction.pageId,
-            content: transaction.content,
-          })
-            .then((response) => unwrap(response))
-            .catch((error) => {
-              logger.debug(error);
-              setStatus('error');
-              queueRef.current = queueRef.current.slice(index);
-            }),
-      );
-
-      queueRef.current = [];
-
-      if (status !== 'error') {
-        setStatus('idle');
-      }
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
     }
   };
 
-  const addTransaction = (transaction: Transaction) => {
-    queueRef.current.push(transaction);
+  const addTransaction = (pageId: string, content: BlockContent[]) => {
+    queueRef.current.set(pageId, content);
+
     if (status === 'idle') {
       setStatus('saving');
     }
@@ -92,7 +102,7 @@ export function TransactionProvider({
     if (!timerRef.current) {
       timerRef.current = setInterval(() => {
         flush();
-      }, 5000);
+      }, 2000);
     }
   };
 

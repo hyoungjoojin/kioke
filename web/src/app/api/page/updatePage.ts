@@ -1,4 +1,5 @@
 import kioke from '@/app/api';
+import type { BlockType } from '@/constant/block';
 import { MimeType } from '@/constant/mime';
 
 interface UpdatePagePathParams {
@@ -7,7 +8,13 @@ interface UpdatePagePathParams {
 
 export interface UpdatePageRequest {
   title?: string;
-  content?: string;
+  blocks?: {
+    attrs: {
+      blockId: string | null;
+    };
+    type: BlockType.TEXT_BLOCK;
+    content: string;
+  }[];
   date?: Date;
 }
 
