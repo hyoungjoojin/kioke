@@ -1,9 +1,12 @@
 package io.kioke.config;
 
+import io.kioke.common.auth.GlobalPermissionEvaluator;
 import java.util.Arrays;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -23,6 +26,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+
+  private final GlobalPermissionEvaluator globalPermissionEvaluator;
+
+  public SecurityConfig(GlobalPermissionEvaluator globalPermissionEvaluator) {
+    this.globalPermissionEvaluator = globalPermissionEvaluator;
+  }
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -83,5 +92,14 @@ public class SecurityConfig {
   public PasswordEncoder passwordEncoder() {
     int saltLength = 16, hashLength = 32, parallelism = 1, memory = 1 << 16, numIterations = 2;
     return new Argon2PasswordEncoder(saltLength, hashLength, parallelism, memory, numIterations);
+  }
+
+  @Bean
+  public MethodSecurityExpressionHandler methodSecurityExpressionHandler() {
+    DefaultMethodSecurityExpressionHandler expressionHandler =
+        new DefaultMethodSecurityExpressionHandler();
+    expressionHandler.setPermissionEvaluator(globalPermissionEvaluator);
+
+    return expressionHandler;
   }
 }
