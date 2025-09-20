@@ -1,4 +1,4 @@
-package io.kioke.annotation;
+package io.kioke.common.auth;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

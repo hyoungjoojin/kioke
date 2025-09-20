@@ -1,6 +1,8 @@
-package io.kioke.annotation;
+package io.kioke.common.auth;
 
-import io.kioke.feature.user.dto.UserDto;
+import io.kioke.feature.user.dto.UserPrincipal;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,10 +15,13 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @Component
 public class AuthenticatedUserArgumentResolver implements HandlerMethodArgumentResolver {
 
+  private static final Logger logger =
+      LoggerFactory.getLogger(AuthenticatedUserArgumentResolver.class);
+
   @Override
   public boolean supportsParameter(MethodParameter parameter) {
     return parameter.hasParameterAnnotation(AuthenticatedUser.class)
-        && parameter.getParameterType().equals(UserDto.class);
+        && parameter.getParameterType().equals(UserPrincipal.class);
   }
 
   @Override
@@ -27,15 +32,22 @@ public class AuthenticatedUserArgumentResolver implements HandlerMethodArgumentR
       WebDataBinderFactory binderFactory)
       throws Exception {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication == null || !authentication.isAuthenticated()) {
+    if (authentication == null) {
+      logger.debug("Authentication is null");
+      return null;
+    }
+
+    if (!authentication.isAuthenticated()) {
+      logger.debug("Request is not authenticated");
       return null;
     }
 
     Object principal = authentication.getPrincipal();
     if (!(principal instanceof String)) {
+      logger.warn("Unknown authentication principal type {}", principal.getClass());
       return null;
     }
 
-    return new UserDto((String) principal);
+    return UserPrincipal.of((String) principal);
   }
 }

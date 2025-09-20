@@ -1,6 +1,6 @@
 package io.kioke.config;
 
-import io.kioke.annotation.AuthenticatedUserArgumentResolver;
+import io.kioke.common.auth.AuthenticatedUserArgumentResolver;
 import java.util.List;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
