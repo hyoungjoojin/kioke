@@ -1,24 +1,26 @@
 package io.kioke.feature.journal.controller;
 
-import io.kioke.annotation.AuthenticatedUser;
+import io.kioke.common.auth.AuthenticatedUser;
 import io.kioke.exception.auth.AccessDeniedException;
-import io.kioke.exception.collection.CollectionNotFoundException;
 import io.kioke.exception.journal.JournalNotFoundException;
-import io.kioke.feature.journal.dto.JournalDto;
-import io.kioke.feature.journal.dto.request.CreateJournalRequestDto;
-import io.kioke.feature.journal.dto.request.UpdateJournalRequestDto;
-import io.kioke.feature.journal.dto.response.CreateJournalResponseDto;
-import io.kioke.feature.journal.dto.response.GetJournalResponseDto;
+import io.kioke.feature.journal.domain.Journal;
+import io.kioke.feature.journal.dto.request.CreateJournalRequest;
+import io.kioke.feature.journal.dto.request.ShareJournalRequest;
+import io.kioke.feature.journal.dto.request.UpdateJournalRequest;
+import io.kioke.feature.journal.dto.response.CreateJournalResponse;
+import io.kioke.feature.journal.dto.response.JournalResponse;
 import io.kioke.feature.journal.service.JournalService;
 import io.kioke.feature.journal.util.JournalMapper;
-import io.kioke.feature.user.dto.UserDto;
+import io.kioke.feature.user.dto.UserPrincipal;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,31 +35,51 @@ public class JournalController {
     this.journalMapper = journalMapper;
   }
 
-  @PostMapping("/journals")
-  @ResponseStatus(HttpStatus.CREATED)
-  public CreateJournalResponseDto createJournal(
-      @AuthenticatedUser UserDto user, @RequestBody @Validated CreateJournalRequestDto requestBody)
-      throws AccessDeniedException, CollectionNotFoundException {
-    JournalDto journal = journalService.createJournal(user, requestBody);
-    return journalMapper.toCreateJournalResponse(journal);
-  }
-
   @GetMapping("/journals/{journalId}")
   @ResponseStatus(HttpStatus.OK)
-  public GetJournalResponseDto getJournal(
-      @AuthenticatedUser UserDto user, @PathVariable String journalId)
+  public JournalResponse getJournal(@PathVariable String journalId)
       throws JournalNotFoundException {
-    JournalDto journal = journalService.getJournal(user, journalId);
-    return journalMapper.toGetJournalResponse(journal);
+    Journal journal = journalService.getJournal(journalId);
+    return journalMapper.mapToJournalResponse(journal);
+  }
+
+  @PostMapping("/journals")
+  @ResponseStatus(HttpStatus.CREATED)
+  public CreateJournalResponse createJournal(
+      @AuthenticatedUser UserPrincipal user,
+      @RequestBody @Validated CreateJournalRequest requestBody) {
+    Journal journal = journalService.createJournal(user.userId(), requestBody);
+    return journalMapper.mapToCreateJournalResponse(journal);
   }
 
   @PatchMapping("/journals/{journalId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void updateJournal(
-      @AuthenticatedUser UserDto user,
-      @PathVariable String journalId,
-      @RequestBody @Validated UpdateJournalRequestDto requestBody)
-      throws JournalNotFoundException, AccessDeniedException {
-    journalService.updateJournal(user, journalId, requestBody);
+      @PathVariable String journalId, @RequestBody @Validated UpdateJournalRequest requestBody)
+      throws JournalNotFoundException {
+    journalService.updateJournal(journalId, requestBody);
   }
+
+  @DeleteMapping("/journals/{journalId}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void deleteJournal(@PathVariable String journalId) {
+    journalService.deleteJournal(journalId);
+  }
+
+  @PostMapping("/journals/{journalId}/share")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void shareJournal(
+      @AuthenticatedUser UserPrincipal user,
+      @PathVariable String journalId,
+      @RequestBody @Validated ShareJournalRequest requestBody)
+      throws JournalNotFoundException, AccessDeniedException {
+    journalService.shareJournal(user.userId(), journalId, requestBody);
+  }
+
+  @PatchMapping("/journals/{journalId}/share")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void respondToShareJournal(
+      @AuthenticatedUser UserPrincipal user,
+      @PathVariable String journalId,
+      @RequestParam String action) {}
 }

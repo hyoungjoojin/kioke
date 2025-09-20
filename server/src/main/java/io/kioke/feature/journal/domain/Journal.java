@@ -1,8 +1,8 @@
 package io.kioke.feature.journal.domain;
 
-import io.kioke.feature.journal.constant.JournalType;
 import io.kioke.feature.page.domain.Page;
 import io.kioke.feature.user.domain.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -12,8 +12,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.Instant;
@@ -22,6 +20,7 @@ import java.util.List;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.util.Assert;
 
 @Entity
 @Table(name = "JOURNAL_TABLE")
@@ -33,13 +32,20 @@ public class Journal {
   @Column(name = "JOURNAL_ID")
   private String journalId;
 
+  @OneToMany(
+      cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
+      orphanRemoval = true)
+  private List<JournalUser> users;
+
+  @Column(name = "IS_DELETED")
+  private boolean isDeleted = false;
+
+  @Column(name = "IS_PUBLIC", nullable = false)
+  private boolean isPublic = false;
+
   @Enumerated(EnumType.STRING)
   @Column(name = "JOURNAL_TYPE", nullable = false)
   private JournalType type;
-
-  @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "AUTHOR_ID", nullable = false)
-  private User author;
 
   @Column(name = "TITLE", nullable = false)
   private String title;
@@ -47,10 +53,10 @@ public class Journal {
   @Column(name = "DESCRIPTION", nullable = false)
   private String description;
 
-  @Column(name = "IS_PUBLIC", nullable = false)
-  private boolean isPublic;
-
-  @OneToMany(fetch = FetchType.LAZY, mappedBy = "journal")
+  @OneToMany(
+      fetch = FetchType.LAZY,
+      mappedBy = "journal",
+      cascade = {CascadeType.REMOVE})
   private List<Page> pages;
 
   @CreatedDate
@@ -61,31 +67,23 @@ public class Journal {
   @Column(name = "LAST_MODIFIED_AT")
   private Instant lastModifiedAt;
 
-  protected Journal() {}
-
-  private Journal(String journalId) {
-    this.journalId = journalId;
-  }
-
-  private Journal(JournalType journalType, User author, String title) {
-    this.type = journalType;
-    this.author = author;
-    this.title = title;
-    this.description = "";
-    this.isPublic = false;
-    this.pages = new ArrayList<>();
-  }
+  @Column(name = "DELETED_AT")
+  private Instant deletedAt;
 
   public String getJournalId() {
     return journalId;
   }
 
-  public JournalType getType() {
-    return type;
+  public List<JournalUser> getUsers() {
+    return users;
   }
 
-  public User getAuthor() {
-    return author;
+  public boolean getIsPublic() {
+    return isPublic;
+  }
+
+  public JournalType getType() {
+    return type;
   }
 
   public String getTitle() {
@@ -96,16 +94,12 @@ public class Journal {
     return description;
   }
 
-  public boolean getIsPublic() {
-    return isPublic;
-  }
-
   public List<Page> getPages() {
     return pages;
   }
 
-  public static Journal from(String journalId) {
-    return new Journal(journalId);
+  public Instant getCreatedAt() {
+    return createdAt;
   }
 
   public static JournalBuilder builder() {
@@ -115,16 +109,10 @@ public class Journal {
   public static class JournalBuilder {
 
     private JournalType type;
-    private User author;
     private String title;
 
     public JournalBuilder type(JournalType type) {
       this.type = type;
-      return this;
-    }
-
-    public JournalBuilder author(User author) {
-      this.author = author;
       return this;
     }
 
@@ -134,23 +122,32 @@ public class Journal {
     }
 
     public Journal build() {
-      return new Journal(type, author, title);
+      Assert.notNull(type, "The type of the journal must not be null");
+      Assert.notNull(title, "The title of the journal must not be null");
+
+      Journal journal = new Journal();
+      journal.type = type;
+      journal.title = title;
+      journal.description = "";
+      journal.users = new ArrayList<>();
+      return journal;
     }
   }
 
-  public void setType(JournalType type) {
-    this.type = type;
+  public void addAuthor(User user) {
+    users.add(JournalUser.builder().user(user).journal(this).role(JournalRole.AUTHOR).build());
   }
 
-  public void setTitle(String title) {
+  public void updateTitle(String title) {
     this.title = title;
   }
 
-  public void setDescription(String description) {
+  public void updateDescription(String description) {
     this.description = description;
   }
 
-  public void setIsPublic(boolean isPublic) {
-    this.isPublic = isPublic;
+  public void deleteJournal() {
+    this.isDeleted = true;
+    this.deletedAt = Instant.now();
   }
 }

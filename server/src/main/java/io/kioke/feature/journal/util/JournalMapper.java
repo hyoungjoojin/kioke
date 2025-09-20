@@ -1,31 +1,25 @@
 package io.kioke.feature.journal.util;
 
-import io.kioke.feature.journal.constant.Role;
 import io.kioke.feature.journal.domain.Journal;
-import io.kioke.feature.journal.domain.ShareRequest;
-import io.kioke.feature.journal.dto.JournalDto;
-import io.kioke.feature.journal.dto.JournalRoleDto;
-import io.kioke.feature.journal.dto.ShareRequestDto;
-import io.kioke.feature.journal.dto.response.CreateJournalResponseDto;
-import io.kioke.feature.journal.dto.response.GetJournalResponseDto;
+import io.kioke.feature.journal.domain.JournalUser;
+import io.kioke.feature.journal.dto.response.CreateJournalResponse;
+import io.kioke.feature.journal.dto.response.JournalResponse;
 import io.kioke.feature.page.domain.Page;
-import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "spring")
 public interface JournalMapper {
 
+  @Mappings({@Mapping(source = "journal.journalId", target = "id")})
+  public JournalResponse mapToJournalResponse(Journal journal);
+
   @Mapping(source = "pageId", target = "id")
-  public JournalDto.Page toDto(Page page);
+  JournalResponse.Page map(Page page);
 
-  @Mapping(source = "journal.journalId", target = "id")
-  public JournalDto toDto(Journal journal, Role role, List<JournalRoleDto> collaborators);
+  @Mapping(source = "user.userId", target = "userId")
+  JournalResponse.User map(JournalUser user);
 
-  @Mapping(source = "id", target = "requestId")
-  public ShareRequestDto toDto(ShareRequest request);
-
-  public CreateJournalResponseDto toCreateJournalResponse(JournalDto journal);
-
-  public GetJournalResponseDto toGetJournalResponse(JournalDto journal);
+  CreateJournalResponse mapToCreateJournalResponse(Journal journal);
 }
