@@ -1,6 +1,6 @@
-package io.kioke.feature.profile.dto.response;
+package io.kioke.feature.profile.dto.projection;
 
 import java.time.Instant;
 
-public record GetMyProfileResponse(
+public record MyProfileProjection(
     String userId, String email, String name, boolean onboarded, Instant createdAt) {}

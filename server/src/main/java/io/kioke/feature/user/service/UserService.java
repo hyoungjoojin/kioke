@@ -1,10 +1,9 @@
 package io.kioke.feature.user.service;
 
 import io.kioke.exception.user.UserAlreadyExistsException;
+import io.kioke.feature.profile.service.ProfileService;
 import io.kioke.feature.user.domain.User;
-import io.kioke.feature.user.dto.UserDto;
 import io.kioke.feature.user.repository.UserRepository;
-import io.kioke.feature.user.util.UserMapper;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,15 +13,21 @@ import org.springframework.util.Assert;
 public class UserService {
 
   private final UserRepository userRepository;
-  private final UserMapper userMapper;
 
-  public UserService(UserRepository userRepository, UserMapper userMapper) {
+  private final ProfileService profileService;
+
+  public UserService(UserRepository userRepository, ProfileService profileService) {
     this.userRepository = userRepository;
-    this.userMapper = userMapper;
+    this.profileService = profileService;
+  }
+
+  @Transactional(readOnly = true)
+  public User getUserReference(String userId) {
+    return userRepository.getReferenceById(userId);
   }
 
   @Transactional
-  public UserDto createUser(String email) throws UserAlreadyExistsException {
+  public User createUser(String email) throws UserAlreadyExistsException {
     Assert.notNull(email, "Email must not be null");
 
     if (userRepository.findByEmail(email).isPresent()) {
@@ -31,7 +36,9 @@ public class UserService {
 
     User user = User.builder().email(email).build();
     user = userRepository.save(user);
-    return userMapper.toDto(user);
+
+    profileService.createProfile(user);
+    return user;
   }
 
   @Transactional(readOnly = true)
