@@ -1,35 +1,44 @@
 import { getJournals } from '@/app/api/journal';
 import type { Journal } from '@/types/journal';
+import type { PagedModel } from '@/types/server';
 import type KiokeError from '@/util/error';
 import { unwrap } from '@/util/result';
-import type { UseQueryOptions } from '@tanstack/react-query';
-import { useQuery } from '@tanstack/react-query';
+import {
+  type InfiniteData,
+  type QueryKey,
+  useInfiniteQuery,
+} from '@tanstack/react-query';
 
-type TData = Journal[];
+type TData = {
+  content: Journal[];
+  page: PagedModel;
+};
 type TError = KiokeError;
+type TPageParam = number;
 
-type Options = UseQueryOptions<TData, TError>;
-
-function key() {
-  return ['journals'] as const;
+function key(size: number) {
+  return ['journals', size] as const;
 }
 
-function options(): Options {
-  return {
-    queryKey: key(),
-    queryFn: async () => getJournals().then((response) => unwrap(response)),
-  };
-}
-
-function useJournalsQuery(custom?: Partial<Options>) {
-  return useQuery({
-    ...options(),
-    ...custom,
+function useInfiniteJournalsQuery({ size }: { size: number } = { size: 20 }) {
+  return useInfiniteQuery<
+    TData,
+    TError,
+    InfiniteData<TData>,
+    QueryKey,
+    TPageParam
+  >({
+    queryKey: key(size),
+    queryFn: async ({ pageParam }) =>
+      getJournals({ size, page: pageParam }).then((response) =>
+        unwrap(response),
+      ),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) =>
+      lastPage.page.number < lastPage.page.totalPages
+        ? lastPage.page.number + 1
+        : null,
   });
 }
 
-export {
-  useJournalsQuery,
-  key as journalsQueryKey,
-  options as journalsQueryOptions,
-};
+export { useInfiniteJournalsQuery, key as journalsQueryKey };

@@ -9,7 +9,9 @@ import io.kioke.feature.journal.repository.JournalRepository;
 import io.kioke.feature.journal.repository.JournalShareRequestRepository;
 import io.kioke.feature.user.domain.User;
 import io.kioke.feature.user.service.UserService;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,9 +51,11 @@ public class JournalService {
 
   @Transactional(readOnly = true)
   @PreAuthorize("#userId == authentication.principal")
-  public List<Journal> getJournalsByUser(String userId) {
-    List<Journal> journals = journalRepository.findAllWithUsersByUserId(userId);
-    journals = journalRepository.findAllWithPagesByUserId(userId);
+  public Page<Journal> getJournalsByUser(String userId, int page, int size) {
+    Pageable pageable = PageRequest.of(page, size);
+
+    Page<Journal> journals = journalRepository.findAllWithUsersByUserId(userId, pageable);
+    journals = journalRepository.findAllWithPagesByUserId(userId, pageable);
     return journals;
   }
 

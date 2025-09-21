@@ -26,8 +26,8 @@ const tabs = [
 
 export default async function Journals() {
   return (
-    <div>
-      <Tabs variant='vertical' defaultValue={tabs[0].value}>
+    <div className='h-full'>
+      <Tabs variant='vertical' defaultValue={tabs[0].value} className='h-full'>
         <TabsList>
           {tabs.map((tab, index) => {
             return (

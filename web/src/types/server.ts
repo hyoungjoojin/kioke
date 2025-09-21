@@ -5,3 +5,10 @@ export type ProblemDetail = {
   details?: string;
   code?: string;
 };
+
+export type PagedModel = {
+  size: number;
+  number: number;
+  totalElements: number;
+  totalPages: number;
+};

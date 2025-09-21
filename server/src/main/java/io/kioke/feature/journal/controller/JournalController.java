@@ -12,7 +12,7 @@ import io.kioke.feature.journal.dto.response.JournalResponse;
 import io.kioke.feature.journal.service.JournalService;
 import io.kioke.feature.journal.util.JournalMapper;
 import io.kioke.feature.user.dto.UserPrincipal;
-import java.util.List;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -45,9 +45,12 @@ public class JournalController {
   }
 
   @GetMapping("/journals")
-  public List<JournalResponse> getJournals(@AuthenticatedUser UserPrincipal user) {
-    List<Journal> journals = journalService.getJournalsByUser(user.userId());
-    return journals.stream().map(journal -> journalMapper.mapToJournalResponse(journal)).toList();
+  public Page<JournalResponse> getJournals(
+      @AuthenticatedUser UserPrincipal user,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+    Page<Journal> journals = journalService.getJournalsByUser(user.userId(), page, size);
+    return journals.map(journal -> journalMapper.mapToJournalResponse(journal));
   }
 
   @PostMapping("/journals")
