@@ -10,7 +10,7 @@ interface GetJournalPathParams {
   journalId: string;
 }
 
-interface GetJournalResponse {
+export interface GetJournalResponse {
   id: string;
   type: JournalType;
   title: string;
@@ -40,13 +40,5 @@ export async function getJournal(
     headers: {
       'Content-Type': MimeType.APPLICATION_JSON,
     },
-  }).then((response) =>
-    response.map((data) => ({
-      ...data,
-      pages: data.pages.map((page) => ({
-        ...page,
-        date: new Date(page.date),
-      })),
-    })),
-  );
+  });
 }

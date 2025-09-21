@@ -12,6 +12,7 @@ import io.kioke.feature.journal.dto.response.JournalResponse;
 import io.kioke.feature.journal.service.JournalService;
 import io.kioke.feature.journal.util.JournalMapper;
 import io.kioke.feature.user.dto.UserPrincipal;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -43,13 +44,19 @@ public class JournalController {
     return journalMapper.mapToJournalResponse(journal);
   }
 
+  @GetMapping("/journals")
+  public List<JournalResponse> getJournals(@AuthenticatedUser UserPrincipal user) {
+    List<Journal> journals = journalService.getJournalsByUser(user.userId());
+    return journals.stream().map(journal -> journalMapper.mapToJournalResponse(journal)).toList();
+  }
+
   @PostMapping("/journals")
   @ResponseStatus(HttpStatus.CREATED)
   public CreateJournalResponse createJournal(
       @AuthenticatedUser UserPrincipal user,
       @RequestBody @Validated CreateJournalRequest requestBody) {
     Journal journal = journalService.createJournal(user.userId(), requestBody);
-    return journalMapper.mapToCreateJournalResponse(journal);
+    return journalMapper.mapToCreateJournalResponse(user, journal);
   }
 
   @PatchMapping("/journals/{journalId}")

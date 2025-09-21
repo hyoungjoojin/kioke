@@ -2,6 +2,7 @@ package io.kioke.feature.journal.repository;
 
 import io.kioke.feature.journal.domain.Journal;
 import io.kioke.feature.journal.dto.projection.JournalPermissionProjection;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.EntityGraph.EntityGraphType;
@@ -13,6 +14,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface JournalRepository extends JpaRepository<Journal, String> {
+
+  @Query("SELECT j FROM Journal j LEFT JOIN FETCH j.users u WHERE u.user.userId = :userId")
+  public List<Journal> findAllWithUsersByUserId(String userId);
+
+  @Query(
+      """
+      SELECT
+        j
+      FROM
+        Journal j
+          LEFT JOIN j.users u
+          LEFT JOIN FETCH j.pages
+      WHERE
+        u.user.userId = :userId
+      """)
+  public List<Journal> findAllWithPagesByUserId(String userId);
 
   @Query(
       """

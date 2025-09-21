@@ -24,4 +24,8 @@ public enum JournalRole {
 
     return false;
   }
+
+  public static class Values {
+    public static final String AUTHOR = "AUTHOR";
+  }
 }

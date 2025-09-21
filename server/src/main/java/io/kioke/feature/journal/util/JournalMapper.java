@@ -1,10 +1,12 @@
 package io.kioke.feature.journal.util;
 
 import io.kioke.feature.journal.domain.Journal;
+import io.kioke.feature.journal.domain.JournalRole;
 import io.kioke.feature.journal.domain.JournalUser;
 import io.kioke.feature.journal.dto.response.CreateJournalResponse;
 import io.kioke.feature.journal.dto.response.JournalResponse;
 import io.kioke.feature.page.domain.Page;
+import io.kioke.feature.user.dto.UserPrincipal;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -21,5 +23,9 @@ public interface JournalMapper {
   @Mapping(source = "user.userId", target = "userId")
   JournalResponse.User map(JournalUser user);
 
-  CreateJournalResponse mapToCreateJournalResponse(Journal journal);
+  @Mappings({
+    @Mapping(source = "user.userId", target = "creator.userId"),
+    @Mapping(target = "creator.role", constant = JournalRole.Values.AUTHOR),
+  })
+  CreateJournalResponse mapToCreateJournalResponse(UserPrincipal user, Journal journal);
 }

@@ -6,15 +6,14 @@ export interface Journal {
   type: JournalType;
   title: string;
   description: string;
+  users: {
+    userId: string;
+    role: Role;
+  }[];
   pages: {
     id: string;
     title: string;
     date: Date;
   }[];
   isPublic: boolean;
-  role: Role;
-  collaborators: {
-    userId: string;
-    role: Role;
-  }[];
 }
