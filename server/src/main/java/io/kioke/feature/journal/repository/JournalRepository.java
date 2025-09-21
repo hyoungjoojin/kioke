@@ -16,7 +16,7 @@ public interface JournalRepository extends JpaRepository<Journal, String> {
 
   @Query(
       """
-        SELECT j.isPublic, u.role
+        SELECT u.role, j.isPublic
           FROM Journal j
             LEFT JOIN JournalUser u ON j.journalId = u.journal.journalId
         WHERE

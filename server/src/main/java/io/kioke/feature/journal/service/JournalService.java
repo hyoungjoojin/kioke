@@ -46,6 +46,11 @@ public class JournalService {
     return journal;
   }
 
+  @Transactional(readOnly = true)
+  public Journal getJournalReference(String journalId) {
+    return journalRepository.getReferenceById(journalId);
+  }
+
   @Transactional(rollbackFor = Exception.class)
   @PreAuthorize("hasPermission('journal', 'CREATE')")
   public Journal createJournal(String userId, CreateJournalRequest request) {

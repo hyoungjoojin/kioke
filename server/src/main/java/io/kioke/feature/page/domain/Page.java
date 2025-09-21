@@ -1,20 +1,29 @@
 package io.kioke.feature.page.domain;
 
 import io.kioke.feature.journal.domain.Journal;
+import io.kioke.feature.page.domain.block.Block;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.List;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Table(name = "PAGE_TABLE")
+@EntityListeners(AuditingEntityListener.class)
 public class Page {
 
   @Id
@@ -29,27 +38,19 @@ public class Page {
   @Column(name = "TITLE")
   private String title;
 
-  @Lob
-  @Column(name = "CONTENT")
-  private String content;
+  @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true, mappedBy = "page")
+  private List<Block> blocks;
 
   @Column(name = "DATE")
   private LocalDateTime date;
 
-  protected Page() {}
+  @Column(name = "CREATED_AT")
+  @CreatedDate
+  private Instant createdAt;
 
-  private Page(Journal journal, String title, LocalDateTime date) {
-    this.journal = journal;
-    this.title = title;
-    this.content = "";
-    this.date = date;
-  }
-
-  public static Page createReference(String pageId) {
-    Page page = new Page();
-    page.pageId = pageId;
-    return page;
-  }
+  @Column(name = "LAST_MODIFIED_AT")
+  @LastModifiedDate
+  private Instant lastModifiedAt;
 
   public String getPageId() {
     return pageId;
@@ -63,12 +64,12 @@ public class Page {
     return title;
   }
 
-  public String getContent() {
-    return content;
-  }
-
   public LocalDateTime getDate() {
     return date;
+  }
+
+  public List<Block> getBlocks() {
+    return blocks;
   }
 
   public static PageBuilder builder() {
@@ -97,19 +98,19 @@ public class Page {
     }
 
     public Page build() {
-      return new Page(journal, title, date);
+      Page page = new Page();
+      page.journal = journal;
+      page.title = title;
+      page.date = date;
+      return page;
     }
   }
 
-  public void changeTitle(String title) {
+  public void updateTitle(String title) {
     this.title = title;
   }
 
-  public void changeContent(String content) {
-    this.content = content;
-  }
-
-  public void changeDate(LocalDateTime date) {
+  public void updateDate(LocalDateTime date) {
     this.date = date;
   }
 }

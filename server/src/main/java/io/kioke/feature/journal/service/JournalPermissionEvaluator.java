@@ -52,17 +52,17 @@ public class JournalPermissionEvaluator implements PermissionEvaluator {
 
     return journalRepository
         .findJournalUserRole(journalId, userId)
-        .map(journalPermission -> hasPermission(journalPermission, permission))
+        .map(permissionProjection -> hasPermission(permissionProjection, permission))
         .orElse(false);
   }
 
-  private boolean hasPermission(
-      JournalPermissionProjection journalPermission, Permission permission) {
-    if (journalPermission.isPublic() && permission.equals(Permission.READ)) {
+  public boolean hasPermission(
+      JournalPermissionProjection permissionProjection, Permission permission) {
+    if (permissionProjection.isJournalPublic() && permission.equals(Permission.READ)) {
       return true;
     }
 
-    JournalRole role = journalPermission.role();
+    JournalRole role = permissionProjection.role();
     switch (permission) {
       case Permission.READ:
         if (role.canRead()) {

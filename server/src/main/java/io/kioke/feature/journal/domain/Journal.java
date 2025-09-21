@@ -34,7 +34,8 @@ public class Journal {
 
   @OneToMany(
       cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
-      orphanRemoval = true)
+      orphanRemoval = true,
+      mappedBy = "journal")
   private List<JournalUser> users;
 
   @Column(name = "IS_DELETED")
