@@ -1,6 +1,6 @@
 import kioke from '@/app/api';
 import { MimeType } from '@/constant/mime';
-import type { Page } from '@/types/page';
+import type { Block, Page } from '@/types/page';
 import type KiokeError from '@/util/error';
 import type { Result } from 'neverthrow';
 
@@ -12,8 +12,8 @@ interface GetPageResponseBody {
   pageId: string;
   journalId: string;
   title: string;
-  content: string;
-  date: Date;
+  date: string;
+  blocks: Block[];
 }
 
 function url({ id }: GetPagePathParams) {
@@ -28,5 +28,10 @@ export async function getPage(
     headers: {
       'Content-Type': MimeType.APPLICATION_JSON,
     },
-  });
+  }).then((response) =>
+    response.map((data) => ({
+      ...data,
+      date: new Date(data.date),
+    })),
+  );
 }

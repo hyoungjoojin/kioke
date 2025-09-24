@@ -23,7 +23,7 @@ export interface GetJournalResponse {
   pages: {
     id: string;
     title: string;
-    date: Date;
+    date: string;
   }[];
   isPublic: boolean;
 }
@@ -40,5 +40,13 @@ export async function getJournal(
     headers: {
       'Content-Type': MimeType.APPLICATION_JSON,
     },
-  });
+  }).then((response) =>
+    response.map((data) => ({
+      ...data,
+      pages: data.pages.map((page) => ({
+        ...page,
+        date: new Date(page.date),
+      })),
+    })),
+  );
 }
