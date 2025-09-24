@@ -15,7 +15,7 @@ import org.mapstruct.Mappings;
 public interface JournalMapper {
 
   @Mappings({@Mapping(source = "journal.journalId", target = "id")})
-  public JournalResponse mapToJournalResponse(Journal journal);
+  public JournalResponse mapToJournalResponse(Journal journal, String coverUrl);
 
   @Mapping(source = "pageId", target = "id")
   JournalResponse.Page map(Page page);

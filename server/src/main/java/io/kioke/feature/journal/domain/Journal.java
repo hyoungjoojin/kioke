@@ -13,6 +13,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -31,6 +32,11 @@ public class Journal {
   @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "JOURNAL_ID")
   private String journalId;
+
+  @OneToOne(
+      fetch = FetchType.LAZY,
+      cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+  private JournalCoverImage coverImage;
 
   @OneToMany(
       cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
@@ -73,6 +79,10 @@ public class Journal {
 
   public String getJournalId() {
     return journalId;
+  }
+
+  public JournalCoverImage getCoverImage() {
+    return coverImage;
   }
 
   public List<JournalUser> getUsers() {
@@ -145,6 +155,10 @@ public class Journal {
 
   public void updateDescription(String description) {
     this.description = description;
+  }
+
+  public void updateCover(JournalCoverImage coverImage) {
+    this.coverImage = coverImage;
   }
 
   public void deleteJournal() {

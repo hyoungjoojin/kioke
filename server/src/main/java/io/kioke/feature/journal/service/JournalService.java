@@ -1,12 +1,17 @@
 package io.kioke.feature.journal.service;
 
 import io.kioke.exception.journal.JournalNotFoundException;
+import io.kioke.feature.image.domain.Image;
+import io.kioke.feature.image.service.ImageService;
 import io.kioke.feature.journal.domain.Journal;
+import io.kioke.feature.journal.domain.JournalCoverImage;
 import io.kioke.feature.journal.dto.request.CreateJournalRequest;
 import io.kioke.feature.journal.dto.request.ShareJournalRequest;
 import io.kioke.feature.journal.dto.request.UpdateJournalRequest;
+import io.kioke.feature.journal.dto.response.JournalResponse;
 import io.kioke.feature.journal.repository.JournalRepository;
 import io.kioke.feature.journal.repository.JournalShareRequestRepository;
+import io.kioke.feature.journal.util.JournalMapper;
 import io.kioke.feature.user.domain.User;
 import io.kioke.feature.user.service.UserService;
 import org.springframework.data.domain.Page;
@@ -23,19 +28,26 @@ public class JournalService {
   private final JournalShareRequestRepository journalShareRequestRepository;
 
   private final UserService userService;
+  private final ImageService imageService;
+
+  private final JournalMapper journalMapper;
 
   public JournalService(
       JournalRepository journalRepository,
       JournalShareRequestRepository journalShareRequestRepository,
-      UserService userService) {
+      UserService userService,
+      ImageService imageService,
+      JournalMapper journalMapper) {
     this.journalRepository = journalRepository;
     this.journalShareRequestRepository = journalShareRequestRepository;
     this.userService = userService;
+    this.imageService = imageService;
+    this.journalMapper = journalMapper;
   }
 
   @PreAuthorize("hasPermission(#journalId, 'journal', 'READ')")
   @Transactional(readOnly = true)
-  public Journal getJournal(String journalId) throws JournalNotFoundException {
+  public JournalResponse getJournal(String journalId) throws JournalNotFoundException {
     Journal journal =
         journalRepository
             .findWithUsersById(journalId)
@@ -46,17 +58,30 @@ public class JournalService {
             .findWithPagesById(journalId)
             .orElseThrow(() -> new JournalNotFoundException());
 
-    return journal;
+    String coverUrl =
+        journal.getCoverImage() != null
+            ? imageService.getImageUrl(journal.getCoverImage().getImage().id())
+            : null;
+
+    return journalMapper.mapToJournalResponse(journal, coverUrl);
   }
 
   @Transactional(readOnly = true)
   @PreAuthorize("#userId == authentication.principal")
-  public Page<Journal> getJournalsByUser(String userId, int page, int size) {
+  public Page<JournalResponse> getJournalsByUser(String userId, int page, int size) {
     Pageable pageable = PageRequest.of(page, size);
 
     Page<Journal> journals = journalRepository.findAllWithUsersByUserId(userId, pageable);
     journals = journalRepository.findAllWithPagesByUserId(userId, pageable);
-    return journals;
+
+    return journals.map(
+        journal -> {
+          String coverUrl =
+              journal.getCoverImage() != null
+                  ? imageService.getImageUrl(journal.getCoverImage().getImage().id())
+                  : null;
+          return journalMapper.mapToJournalResponse(journal, coverUrl);
+        });
   }
 
   @Transactional(readOnly = true)
@@ -87,6 +112,12 @@ public class JournalService {
 
     if (request.description() != null) {
       journal.updateDescription(request.description());
+    }
+
+    if (request.coverImage() != null) {
+      Image image = imageService.uploadImageSuccess(request.coverImage());
+      JournalCoverImage coverImage = JournalCoverImage.of(journal, image);
+      journal.updateCover(coverImage);
     }
 
     journalRepository.save(journal);

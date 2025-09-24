@@ -1,5 +1,6 @@
 import type { IconName } from './icon';
 import Icon from './icon';
+import { Spinner } from './spinner';
 import { cn } from '@/lib/utils';
 import * as React from 'react';
 
@@ -32,4 +33,39 @@ function Input({
   );
 }
 
-export { Input };
+interface FileInputProps {
+  pending?: boolean;
+}
+
+function FileInput({
+  children,
+  className,
+  pending,
+  ...props
+}: React.ComponentProps<'input'> & FileInputProps) {
+  const inputRef = React.useRef<HTMLInputElement | null>(null);
+
+  const buttonClickHandler = () => {
+    if (inputRef.current) {
+      inputRef.current.click();
+    }
+  };
+
+  return (
+    <>
+      <div
+        onClick={buttonClickHandler}
+        className={cn(
+          'hover:cursor-pointer flex items-center justify-center',
+          className,
+        )}
+      >
+        {pending && <Spinner />}
+        {children}
+      </div>
+      <input ref={inputRef} type='file' className='hidden' {...props} />
+    </>
+  );
+}
+
+export { Input, FileInput };

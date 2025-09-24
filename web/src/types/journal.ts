@@ -3,6 +3,7 @@ import type { Role } from '@/constant/role';
 
 export interface Journal {
   id: string;
+  coverUrl?: string;
   type: JournalType;
   title: string;
   description: string;

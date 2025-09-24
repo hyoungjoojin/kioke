@@ -12,6 +12,7 @@ interface GetJournalPathParams {
 
 export interface GetJournalResponse {
   id: string;
+  coverUrl?: string;
   type: JournalType;
   title: string;
   description: string;

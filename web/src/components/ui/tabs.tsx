@@ -58,7 +58,7 @@ function TabsList({
       data-slot='tabs-list'
       className={cn(
         'inline-flex items-center justify-center rounded-lg p-[3px]',
-        variant === 'vertical' ? 'flex-col h-fit w-fit' : 'h-9 w-fit',
+        variant === 'vertical' ? 'sm:flex-col h-fit w-fit' : 'h-9 w-fit',
         className,
       )}
       {...props}

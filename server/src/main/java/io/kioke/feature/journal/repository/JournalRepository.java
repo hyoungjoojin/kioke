@@ -49,7 +49,7 @@ public interface JournalRepository extends JpaRepository<Journal, String> {
   public Optional<Journal> findWithUsersById(String journalId);
 
   @EntityGraph(
-      attributePaths = {"pages"},
+      attributePaths = {"pages", "coverImage"},
       type = EntityGraphType.FETCH)
   @Query("SELECT j FROM Journal j WHERE j.journalId = :journalId")
   public Optional<Journal> findWithPagesById(String journalId);

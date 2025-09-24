@@ -8,13 +8,14 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record JournalResponse(
     @NotNull String id,
     List<User> users,
     @NotNull JournalType type,
     String title,
     String description,
+    String coverUrl,
     List<Page> pages,
     boolean isPublic,
     Instant createdAt) {

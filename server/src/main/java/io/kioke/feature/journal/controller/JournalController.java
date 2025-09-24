@@ -40,8 +40,7 @@ public class JournalController {
   @ResponseStatus(HttpStatus.OK)
   public JournalResponse getJournal(@PathVariable String journalId)
       throws JournalNotFoundException {
-    Journal journal = journalService.getJournal(journalId);
-    return journalMapper.mapToJournalResponse(journal);
+    return journalService.getJournal(journalId);
   }
 
   @GetMapping("/journals")
@@ -49,8 +48,7 @@ public class JournalController {
       @AuthenticatedUser UserPrincipal user,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
-    Page<Journal> journals = journalService.getJournalsByUser(user.userId(), page, size);
-    return journals.map(journal -> journalMapper.mapToJournalResponse(journal));
+    return journalService.getJournalsByUser(user.userId(), page, size);
   }
 
   @PostMapping("/journals")

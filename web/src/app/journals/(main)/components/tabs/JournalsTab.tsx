@@ -14,6 +14,7 @@ import {
 } from '@/query/journal';
 import type { Journal } from '@/types/journal';
 import { useIntersectionObserver } from '@uidotdev/usehooks';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef } from 'react';
 
@@ -100,6 +101,9 @@ function JournalPreview({ data: journal }: { data: Journal }) {
 function BasicJournalPreview({ journal }: { journal: Journal }) {
   return (
     <Card className='m-2'>
+      {journal.coverUrl && (
+        <Image src={journal.coverUrl} height={100} width={100} alt='asdf' />
+      )}
       {journal.id} {journal.title}
     </Card>
   );
