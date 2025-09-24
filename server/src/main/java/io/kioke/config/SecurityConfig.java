@@ -53,6 +53,8 @@ public class SecurityConfig {
                 .permitAll()
                 .requestMatchers(HttpMethod.GET, "/journals/**")
                 .permitAll()
+                .requestMatchers("/actuator/**")
+                .permitAll()
                 .anyRequest()
                 .authenticated());
 

@@ -5,7 +5,7 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
 
   flyway:
     enabled: false
@@ -52,5 +52,32 @@ s3:
     secret-key: ${S3_SECRET_KEY}
     bucket: kioke-public
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1.0
+  metrics:
+    export:
+      otlp:
+        enabled: true
+        url: http://localhost:4318/v1/metrics
+  otlp:
+    tracing:
+      endpoint: http://localhost:4318/v1/traces
+    logs:
+      endpoint: http://localhost:4318/v1/logs
+  endpoint:
+    show-details: always
+
 hibernate:
-  generate_statistics: true
+  generate_statistics: false
+
+logging:
+  level:
+    io.kioke: DEBUG
+    net.ttddyy: DEBUG
