@@ -1,16 +1,15 @@
 package io.kioke.feature.dashboard.controller;
 
-import io.kioke.annotation.AuthenticatedUser;
-import io.kioke.feature.dashboard.dto.DashboardDto;
-import io.kioke.feature.dashboard.dto.request.UpdateDashboardRequestDto;
-import io.kioke.feature.dashboard.dto.response.GetDashboardResponseDto;
+import io.kioke.common.auth.AuthenticatedUser;
+import io.kioke.feature.dashboard.domain.Dashboard;
+import io.kioke.feature.dashboard.dto.request.UpdateDashboardRequest;
+import io.kioke.feature.dashboard.dto.response.DashboardResponse;
 import io.kioke.feature.dashboard.service.DashboardService;
 import io.kioke.feature.dashboard.util.DashboardMapper;
-import io.kioke.feature.user.dto.UserDto;
+import io.kioke.feature.user.dto.UserPrincipal;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -29,24 +28,16 @@ public class DashboardController {
 
   @GetMapping("/dashboards/me")
   @ResponseStatus(HttpStatus.OK)
-  public GetDashboardResponseDto getMyDashboard(@AuthenticatedUser UserDto user) {
-    DashboardDto dashboard = dashboardService.getDashboard(user, user.userId());
-    return dashboardMapper.toGetDashboardResponse(dashboard);
-  }
-
-  @GetMapping("/dashboards/{userId}")
-  @ResponseStatus(HttpStatus.OK)
-  public GetDashboardResponseDto getDashboard(
-      @AuthenticatedUser UserDto authenticatedUser, @PathVariable String userId) {
-    DashboardDto dashboard = dashboardService.getDashboard(authenticatedUser, userId);
-    return dashboardMapper.toGetDashboardResponse(dashboard);
+  public DashboardResponse getMyDashboard(@AuthenticatedUser UserPrincipal user) {
+    Dashboard dashboard = dashboardService.getDashboard(user.userId());
+    return dashboardMapper.toDashboardResponse(dashboard);
   }
 
   @PutMapping("/dashboards/me")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void updateDashboard(
-      @AuthenticatedUser UserDto user,
-      @RequestBody @Validated UpdateDashboardRequestDto requestBody) {
-    dashboardService.updateDashboard(user, requestBody);
+      @AuthenticatedUser UserPrincipal user,
+      @RequestBody @Validated UpdateDashboardRequest requestBody) {
+    dashboardService.updateDashboard(user.userId(), requestBody);
   }
 }

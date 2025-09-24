@@ -13,7 +13,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
-public record UpdateDashboardRequestDto(@NotNull List<@Valid Widget> widgets) {
+public record UpdateDashboardRequest(@NotNull List<@Valid Widget> widgets) {
 
   public static record Widget(
       @NotNull WidgetType type,
