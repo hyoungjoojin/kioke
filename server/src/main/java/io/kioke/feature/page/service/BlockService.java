@@ -46,10 +46,9 @@ public class BlockService {
 
   @Transactional
   public Block updateBlock(String blockId, UpdateBlockRequest request) {
-    Block block = blockRepository.getReferenceById(blockId);
+    Block block = blockRepository.findById(blockId).orElseThrow();
 
     if (request.content() instanceof UpdateBlockRequest.TextBlock content) {
-      block = new TextBlock();
       ((TextBlock) block).setText(content.text());
     } else {
       logger.debug(

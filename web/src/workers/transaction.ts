@@ -19,6 +19,7 @@ interface TransactionDB extends DBSchema {
       blockId: string;
       mappedBlockId: string | null;
       content?: BlockContent;
+      isNew: boolean;
       isPending: boolean;
       isDirty: boolean;
       isDeleted: boolean;
@@ -45,13 +46,15 @@ self.onmessage = async (event: MessageEvent<Transaction>) => {
   await db.put('blocks', {
     ...(block === null
       ? {
-          mappedBlockId: null,
-          content,
           isPending: false,
         }
       : block),
     pageId,
     blockId,
+    content,
+    mappedBlockId:
+      command === 'create' ? null : block ? block.mappedBlockId : blockId,
+    isNew: command === 'create',
     isDirty: true,
     isDeleted: command === 'delete',
   });
@@ -85,15 +88,23 @@ setInterval(async () => {
 
     if (block.isDeleted) {
       await deleteBlock({ blockId });
-    } else if (block.mappedBlockId === null) {
-      block.mappedBlockId = await createBlock({
+    } else if (block.mappedBlockId === null || block.isNew) {
+      await createBlock({
         pageId: block.pageId,
         content: block.content,
       })
         .then((response) => unwrap(response))
-        .then((data) => data.blockId);
+        .then(({ blockId }) => {
+          block.mappedBlockId = blockId;
+        })
+        .then((_) => {
+          block.isNew = false;
+        });
     } else if (block.content) {
-      await updateBlock({ blockId, content: block.content });
+      await updateBlock({
+        blockId: block.mappedBlockId,
+        content: block.content,
+      });
     }
 
     await db.put('blocks', {

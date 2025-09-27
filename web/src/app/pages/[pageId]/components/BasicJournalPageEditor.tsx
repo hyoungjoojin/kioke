@@ -57,21 +57,15 @@ export default function BasicJournalPageEditor({ pageId }: EditorProps) {
             command: isNew ? 'create' : 'update',
             content: getBlockContent(block),
           });
+
+          if (isNew) {
+            const { tr } = editor.state;
+            tr.setNodeAttribute(position, 'isNew', false);
+            editor.view.dispatch(tr);
+          }
         }
 
         return false;
-      });
-    },
-    onDelete(props) {
-      if (props.type !== 'node') {
-        return;
-      }
-
-      const { blockId } = props.node.attrs as BlockAttributes;
-      addTransaction({
-        pageId,
-        blockId,
-        command: 'delete',
       });
     },
   });
