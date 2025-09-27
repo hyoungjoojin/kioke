@@ -4,15 +4,14 @@ import type { EditorProps } from '.';
 import PageTitle from './PageTitle';
 import { EditorBubbleMenu } from '@/components/feature/editor/EditorMenu';
 import {
-  CommandPaletteExtension,
-  ImageNode,
-  MapNode,
+  type BlockAttributes,
+  Document,
+  TextBlock,
+  getBlockContent,
 } from '@/components/feature/editor/extensions';
 import { useTransaction } from '@/components/provider/TransactionProvider';
 import { usePageQuery } from '@/query/page';
 import { EditorContent, type EditorEvents, useEditor } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import { debounce } from 'lodash';
 import { useEffect } from 'react';
 
 export default function BasicJournalPageEditor({ pageId }: EditorProps) {
@@ -20,30 +19,65 @@ export default function BasicJournalPageEditor({ pageId }: EditorProps) {
   const { addTransaction } = useTransaction();
 
   const editor = useEditor({
-    extensions: [
-      StarterKit,
-      CommandPaletteExtension,
-      ImageNode.configure({
-        pageId,
-      }),
-      MapNode,
-    ],
+    extensions: [Document, TextBlock],
     content: '',
     immediatelyRender: false,
-    onTransaction: debounce(({ editor }: EditorEvents['transaction']) => {
-      if (page) {
-        addTransaction({
-          pageId,
-          content: JSON.stringify(editor.getJSON()),
-        });
+    onTransaction: async ({
+      editor,
+      transaction,
+    }: EditorEvents['transaction']) => {
+      if (!page || !transaction.docChanged) {
+        return;
       }
-    }, 3000),
+
+      const modifiedRanges: { from: number; to: number }[] = [];
+      transaction.steps.forEach((_, i) => {
+        transaction.mapping.maps[i].forEach((from, to) => {
+          modifiedRanges.push({ from, to });
+        });
+      });
+
+      editor.state.doc.descendants((block, position) => {
+        if (!block.isBlock) {
+          return false;
+        }
+
+        if (
+          modifiedRanges.some(
+            (range) =>
+              position < range.to && range.from < position + block.nodeSize,
+          )
+        ) {
+          const { blockId, isNew } = block.attrs as BlockAttributes;
+
+          addTransaction({
+            pageId,
+            blockId,
+            command: isNew ? 'create' : 'update',
+            content: getBlockContent(block),
+          });
+        }
+
+        return false;
+      });
+    },
+    onDelete(props) {
+      if (props.type !== 'node') {
+        return;
+      }
+
+      const { blockId } = props.node.attrs as BlockAttributes;
+      addTransaction({
+        pageId,
+        blockId,
+        command: 'delete',
+      });
+    },
   });
 
   useEffect(() => {
     if (editor && page) {
       try {
-        editor.commands.setContent(JSON.parse(page.content));
       } catch (_) {
         editor.commands.setContent('');
       }

@@ -10,7 +10,7 @@ import { type Result, err } from 'neverthrow';
 
 const BACKEND_URL = env.NEXT_PUBLIC_BACKEND_URL;
 
-export default async function kioke<T>(
+async function kioke<T>(
   url: string,
   options?: RequestInit,
 ): Promise<Result<T, KiokeError>> {
@@ -41,3 +41,5 @@ export default async function kioke<T>(
       );
     });
 }
+
+export default kioke;

@@ -1,4 +1,3 @@
-import type { BlockAttributes } from '.';
 import { BlockType } from '@/constant/block';
 import Bold from '@tiptap/extension-bold';
 import HardBreak from '@tiptap/extension-hard-break';
@@ -11,12 +10,11 @@ import {
   ReactNodeViewRenderer,
   mergeAttributes,
 } from '@tiptap/react';
+import { v4 as uuidv4 } from 'uuid';
 
 interface TextBlockOptions {}
 
-type TextBlockAttributes = BlockAttributes & {};
-
-export const TextBlock = Node.create({
+const TextBlock = Node.create({
   name: BlockType.TEXT_BLOCK,
   group: 'block',
   content: 'inline*',
@@ -26,7 +24,12 @@ export const TextBlock = Node.create({
   addAttributes() {
     return {
       blockId: {
-        default: null,
+        default: () => {
+          return uuidv4();
+        },
+      },
+      isNew: {
+        default: true,
       },
     };
   },
@@ -50,6 +53,9 @@ export const TextBlock = Node.create({
         editor.commands.insertContent('  ');
         return true;
       },
+      Backspace: ({ editor }) => {
+        return editor.commands.joinBackward();
+      },
     };
   },
   addNodeView() {
@@ -57,9 +63,7 @@ export const TextBlock = Node.create({
   },
 });
 
-function TextBlockComponent({ node }: NodeViewProps) {
-  const {} = node.attrs as TextBlockAttributes;
-
+function TextBlockComponent({}: NodeViewProps) {
   return (
     <NodeViewWrapper>
       <div>
@@ -68,3 +72,5 @@ function TextBlockComponent({ node }: NodeViewProps) {
     </NodeViewWrapper>
   );
 }
+
+export { TextBlock };
