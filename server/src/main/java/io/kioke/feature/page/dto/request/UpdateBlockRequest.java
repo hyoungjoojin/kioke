@@ -7,20 +7,23 @@ import io.kioke.feature.page.domain.block.BlockType;
 import java.util.List;
 
 public record UpdateBlockRequest(
-    BlockType type,
     @JsonTypeInfo(
             use = JsonTypeInfo.Id.NAME,
             visible = true,
-            include = JsonTypeInfo.As.EXTERNAL_PROPERTY,
+            include = JsonTypeInfo.As.EXISTING_PROPERTY,
             property = "type")
         @JsonSubTypes({
-          @Type(value = UpdateBlockRequest.TextBlock.class, name = BlockType.Values.TEXT_BLOCK)
+          @Type(value = TextBlock.class, name = "TEXT_BLOCK"),
+          @Type(value = ImageBlock.class, name = "IMAGE_BLOCK")
         })
         BlockContent content) {
 
-  public static interface BlockContent {}
+  public static interface BlockContent {
 
-  public static record TextBlock(String text) implements BlockContent {}
+    public BlockType type();
+  }
 
-  public static record ImageBlock(List<String> images) implements BlockContent {}
+  public static record TextBlock(BlockType type, String text) implements BlockContent {}
+
+  public static record ImageBlock(BlockType type, List<String> images) implements BlockContent {}
 }

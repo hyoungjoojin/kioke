@@ -38,7 +38,10 @@ public class Page {
   @Column(name = "TITLE")
   private String title;
 
-  @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true, mappedBy = "page")
+  @OneToMany(
+      cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+      orphanRemoval = true,
+      mappedBy = "page")
   private List<Block> blocks;
 
   @Column(name = "DATE")
@@ -112,5 +115,10 @@ public class Page {
 
   public void updateDate(LocalDateTime date) {
     this.date = date;
+  }
+
+  public void setBlocks(List<Block> blocks) {
+    this.blocks.clear();
+    this.blocks.addAll(blocks);
   }
 }

@@ -3,9 +3,11 @@ package io.kioke.feature.page.service;
 import io.kioke.exception.page.PageNotFoundException;
 import io.kioke.feature.journal.service.JournalService;
 import io.kioke.feature.page.domain.Page;
+import io.kioke.feature.page.domain.block.Block;
 import io.kioke.feature.page.dto.request.CreatePageRequest;
 import io.kioke.feature.page.dto.request.UpdatePageRequest;
 import io.kioke.feature.page.repository.PageRepository;
+import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +27,13 @@ public class PageService {
   @Transactional(readOnly = true)
   @PreAuthorize("hasPermission(#pageId, 'page', 'READ')")
   public Page getPage(String pageId) throws PageNotFoundException {
-    return pageRepository.findWithBlocksById(pageId).orElseThrow(() -> new PageNotFoundException());
+    Page page = pageRepository.findById(pageId).orElseThrow(() -> new PageNotFoundException());
+
+    List<String> blockIds = pageRepository.findBlocksInPage(page);
+    List<Block> blocks = pageRepository.fetchBlocks(blockIds);
+
+    page.setBlocks(blocks);
+    return page;
   }
 
   @Transactional

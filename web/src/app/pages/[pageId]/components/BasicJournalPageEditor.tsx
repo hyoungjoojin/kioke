@@ -7,6 +7,7 @@ import {
   type BlockAttributes,
   Document,
   TextBlock,
+  deserializeBlock,
   getBlockContent,
 } from '@/components/feature/editor/extensions';
 import { useTransaction } from '@/components/provider/TransactionProvider';
@@ -77,6 +78,12 @@ export default function BasicJournalPageEditor({ pageId }: EditorProps) {
 
   useEffect(() => {
     if (editor && page) {
+      editor.commands.setContent({
+        type: 'doc',
+        content: page.blocks
+          .map((block) => deserializeBlock(block))
+          .filter((content) => content !== null),
+      });
       try {
       } catch (_) {
         editor.commands.setContent('');

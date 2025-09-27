@@ -7,11 +7,12 @@ import java.util.List;
 public record PageResponse(
     String pageId, String journalId, String title, List<Block> blocks, LocalDateTime date) {
 
-  public static record Block(String id, BlockType type, BlockContent content) {}
+  public static interface Block {
 
-  public static interface BlockContent {}
+    public String blockId();
 
-  public static record TextBlockContent(String text) implements BlockContent {}
+    public BlockType type();
+  }
 
-  public static record ImageBlockContent(List<String> images) implements BlockContent {}
+  public static record TextBlock(String blockId, BlockType type, String text) implements Block {}
 }

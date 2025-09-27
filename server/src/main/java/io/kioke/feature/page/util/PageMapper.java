@@ -26,18 +26,13 @@ public interface PageMapper {
       return null;
     }
 
-    BlockType type;
-    PageResponse.BlockContent content;
-
     if (block instanceof TextBlock textBlock) {
-      type = BlockType.TEXT_BLOCK;
-      content = map(textBlock);
+      return map(textBlock);
     } else {
       throw new IllegalArgumentException("Unknown block type " + block.getClass());
     }
-
-    return new PageResponse.Block(block.getBlockId(), type, content);
   }
 
-  PageResponse.TextBlockContent map(TextBlock block);
+  @Mapping(target = "type", constant = BlockType.Values.TEXT_BLOCK)
+  PageResponse.TextBlock map(TextBlock block);
 }

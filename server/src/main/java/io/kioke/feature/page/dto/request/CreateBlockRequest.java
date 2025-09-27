@@ -8,21 +8,24 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public record CreateBlockRequest(
-    @NotNull BlockType type,
     @NotNull String pageId,
     @JsonTypeInfo(
             use = JsonTypeInfo.Id.NAME,
             visible = true,
-            include = JsonTypeInfo.As.EXTERNAL_PROPERTY,
+            include = JsonTypeInfo.As.EXISTING_PROPERTY,
             property = "type")
         @JsonSubTypes({
           @Type(value = CreateBlockRequest.TextBlock.class, name = BlockType.Values.TEXT_BLOCK)
         })
         BlockContent content) {
 
-  public static interface BlockContent {}
+  public static interface BlockContent {
 
-  public static record TextBlock(String text) implements BlockContent {}
+    public BlockType type();
+  }
 
-  public static record ImageBlock(List<String> images) implements BlockContent {}
+  public static record TextBlock(@NotNull BlockType type, String text) implements BlockContent {}
+
+  public static record ImageBlock(@NotNull BlockType type, List<String> images)
+      implements BlockContent {}
 }
