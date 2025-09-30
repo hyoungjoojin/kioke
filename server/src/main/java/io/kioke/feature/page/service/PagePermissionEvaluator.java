@@ -1,22 +1,18 @@
 package io.kioke.feature.page.service;
 
-import io.kioke.constant.Permission;
+import io.kioke.common.auth.CustomPermissionEvaluator;
+import io.kioke.common.auth.Permission;
+import io.kioke.common.auth.PermissionEvaluatorType;
+import io.kioke.common.auth.PermissionObject;
 import io.kioke.feature.journal.service.JournalPermissionEvaluator;
 import io.kioke.feature.page.repository.PageRepository;
-import java.io.Serializable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PagePermissionEvaluator implements PermissionEvaluator {
-
-  private static Logger logger = LoggerFactory.getLogger(PagePermissionEvaluator.class);
+public class PagePermissionEvaluator implements CustomPermissionEvaluator {
 
   private final PageRepository pageRepository;
-
   private final JournalPermissionEvaluator journalPermissionEvaluator;
 
   public PagePermissionEvaluator(
@@ -26,25 +22,18 @@ public class PagePermissionEvaluator implements PermissionEvaluator {
   }
 
   @Override
-  public boolean hasPermission(
-      Authentication authentication, Object targetDomainObject, Object permission) {
+  public PermissionEvaluatorType type() {
+    return PermissionEvaluatorType.PAGE;
+  }
+
+  @Override
+  public boolean hasPermission(Authentication authentication, Permission permission) {
     return true;
   }
 
   @Override
   public boolean hasPermission(
-      Authentication authentication,
-      Serializable targetId,
-      String targetType,
-      Object permissionObject) {
-    if (targetId == null) {
-      logger.debug("Target ID is empty, permission denied");
-      return false;
-    }
-
-    Permission permission = Permission.valueOf(permissionObject.toString());
-
-    String pageId = targetId.toString();
+      Authentication authentication, String pageId, Permission permission) {
     String userId = authentication.getPrincipal().toString();
 
     return pageRepository
@@ -53,5 +42,11 @@ public class PagePermissionEvaluator implements PermissionEvaluator {
             permissionProjection ->
                 journalPermissionEvaluator.hasPermission(permissionProjection, permission))
         .orElse(false);
+  }
+
+  @Override
+  public boolean hasPermission(
+      Authentication authentication, Permission permission, PermissionObject permissionObject) {
+    throw new UnsupportedOperationException();
   }
 }

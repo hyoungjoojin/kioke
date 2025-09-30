@@ -1,20 +1,17 @@
 package io.kioke.feature.journal.service;
 
-import io.kioke.constant.Permission;
+import io.kioke.common.auth.CustomPermissionEvaluator;
+import io.kioke.common.auth.Permission;
+import io.kioke.common.auth.PermissionEvaluatorType;
+import io.kioke.common.auth.PermissionObject;
 import io.kioke.feature.journal.domain.JournalRole;
 import io.kioke.feature.journal.dto.projection.JournalPermissionProjection;
 import io.kioke.feature.journal.repository.JournalRepository;
-import java.io.Serializable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JournalPermissionEvaluator implements PermissionEvaluator {
-
-  private static final Logger logger = LoggerFactory.getLogger(JournalPermissionEvaluator.class);
+public class JournalPermissionEvaluator implements CustomPermissionEvaluator {
 
   private JournalRepository journalRepository;
 
@@ -23,10 +20,12 @@ public class JournalPermissionEvaluator implements PermissionEvaluator {
   }
 
   @Override
-  public boolean hasPermission(
-      Authentication authentication, Object targetDomainObject, Object permissionObject) {
-    Permission permission = Permission.valueOf(permissionObject.toString());
+  public PermissionEvaluatorType type() {
+    return PermissionEvaluatorType.JOURNAL;
+  }
 
+  @Override
+  public boolean hasPermission(Authentication authentication, Permission permission) {
     if (permission.equals(Permission.CREATE)) {
       return true;
     }
@@ -36,24 +35,19 @@ public class JournalPermissionEvaluator implements PermissionEvaluator {
 
   @Override
   public boolean hasPermission(
-      Authentication authentication,
-      Serializable targetId,
-      String targetType,
-      Object permissionObject) {
-    if (targetId == null) {
-      logger.debug("Target ID is empty, permission denied");
-      return false;
-    }
-
-    Permission permission = Permission.valueOf(permissionObject.toString());
-
-    String journalId = targetId.toString();
+      Authentication authentication, String journalId, Permission permission) {
     String userId = authentication.getPrincipal().toString();
 
     return journalRepository
         .findJournalUserRole(journalId, userId)
         .map(permissionProjection -> hasPermission(permissionProjection, permission))
         .orElse(false);
+  }
+
+  @Override
+  public boolean hasPermission(
+      Authentication authentication, Permission permission, PermissionObject permissionObject) {
+    throw new UnsupportedOperationException();
   }
 
   public boolean hasPermission(
@@ -71,7 +65,7 @@ public class JournalPermissionEvaluator implements PermissionEvaluator {
 
         break;
 
-      case Permission.EDIT:
+      case Permission.UPDATE:
         if (role.canEdit()) {
           return true;
         }

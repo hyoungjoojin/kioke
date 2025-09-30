@@ -1,9 +1,9 @@
 package io.kioke.common.auth;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -11,56 +11,72 @@ import org.springframework.stereotype.Component;
 @Component
 public class GlobalPermissionEvaluator implements PermissionEvaluator {
 
-  private static final Logger logger = LoggerFactory.getLogger(GlobalPermissionEvaluator.class);
+  private final Map<PermissionEvaluatorType, CustomPermissionEvaluator> permissionEvaluators;
 
-  private final Map<String, PermissionEvaluator> permissionEvaluators;
-
-  public GlobalPermissionEvaluator(Map<String, PermissionEvaluator> permissionEvaluators) {
-    logger.debug(
-        "Found {} permission evaluators: {}",
-        permissionEvaluators.size(),
-        permissionEvaluators.keySet());
-
-    this.permissionEvaluators = permissionEvaluators;
+  public GlobalPermissionEvaluator(List<CustomPermissionEvaluator> permissionEvaluators) {
+    this.permissionEvaluators = new HashMap<>();
+    permissionEvaluators.forEach(
+        permissionEvaluator -> {
+          this.permissionEvaluators.put(permissionEvaluator.type(), permissionEvaluator);
+        });
   }
 
   @Override
   public boolean hasPermission(
-      Authentication authentication, Object targetDomainObject, Object permission) {
-    logger.debug("Checking permission {} for object {}", permission, targetDomainObject);
+      Authentication authentication, Object targetDomainObject, Object permissionString) {
+    Permission permission = Permission.of(permissionString.toString());
 
-    String evaluatorName = targetDomainObject.toString() + "PermissionEvaluator";
-    PermissionEvaluator permissionEvaluator = permissionEvaluators.get(evaluatorName);
-
-    if (permissionEvaluator == null) {
-      logger.warn(
-          "Could not find PermissionEvaluator for target domain object {}",
-          targetDomainObject.toString());
-      return false;
+    if (targetDomainObject instanceof String) {
+      return hasPermission(authentication, (String) targetDomainObject, permission);
+    } else if (targetDomainObject instanceof PermissionObject) {
+      return hasPermission(authentication, (PermissionObject) targetDomainObject, permission);
+    } else {
+      throw new IllegalArgumentException(
+          "Call to hasPermission must be either of String type or PermissionObjectType");
     }
-
-    return permissionEvaluator.hasPermission(authentication, targetDomainObject, permission);
   }
 
   @Override
   public boolean hasPermission(
-      Authentication authentication, Serializable targetId, String targetType, Object permission) {
-    logger.debug(
-        "Checking permission {} for object {} with ID {}", permission, targetType, targetId);
-
+      Authentication authentication,
+      Serializable targetId,
+      String targetType,
+      Object permissionString) {
     if (targetId == null) {
-      logger.debug("Given target of type {} is null, permission denied", targetType);
       return false;
     }
 
-    String evaluatorName = targetType + "PermissionEvaluator";
-    PermissionEvaluator permissionEvaluator = permissionEvaluators.get(evaluatorName);
+    Permission permission = Permission.of(permissionString.toString());
+    PermissionEvaluatorType type = PermissionEvaluatorType.of(targetType);
+    CustomPermissionEvaluator permissionEvaluator = permissionEvaluators.get(type);
+
+    return permissionEvaluator.hasPermission(authentication, targetId.toString(), permission);
+  }
+
+  private boolean hasPermission(
+      Authentication authentication, String targetDomainObject, Permission permission) {
+    PermissionEvaluatorType type = PermissionEvaluatorType.of(targetDomainObject.toString());
+    CustomPermissionEvaluator permissionEvaluator = getPermissionEvaluator(type);
+
+    return permissionEvaluator.hasPermission(authentication, permission);
+  }
+
+  private boolean hasPermission(
+      Authentication authentication, PermissionObject targetDomainObject, Permission permission) {
+    PermissionEvaluatorType type = targetDomainObject.type();
+    CustomPermissionEvaluator permissionEvaluator = getPermissionEvaluator(type);
+
+    return permissionEvaluator.hasPermission(
+        authentication, permission, (PermissionObject) targetDomainObject);
+  }
+
+  private CustomPermissionEvaluator getPermissionEvaluator(PermissionEvaluatorType type) {
+    CustomPermissionEvaluator permissionEvaluator = permissionEvaluators.get(type);
 
     if (permissionEvaluator == null) {
-      logger.warn("Could not find PermissionEvaluator for target type {}", targetType);
-      return false;
+      throw new IllegalArgumentException();
     }
 
-    return permissionEvaluator.hasPermission(authentication, targetId, targetType, permission);
+    return permissionEvaluator;
   }
 }
