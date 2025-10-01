@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BlockType } from '@/constant/block';
 import { ErrorCode } from '@/constant/error';
 import logger from '@/lib/logger';
+import { cn } from '@/lib/utils';
 import KiokeError from '@/util/error';
 import { unwrap } from '@/util/result';
 import {
@@ -30,7 +31,9 @@ type ImageBlockAttributes = BlockAttributes & {
 const ImageBlock = Node.create({
   name: BlockType.IMAGE_BLOCK,
   group: 'block',
-  content: 'inline*',
+  content: '',
+  atom: true,
+  selectable: true,
   addAttributes() {
     return {
       blockId: {
@@ -72,7 +75,7 @@ type ImageState = {
     | { uploadStatus: 'failed'; error: KiokeError }
   );
 
-function Image({ node, updateAttributes }: NodeViewProps) {
+function Image({ node, updateAttributes, selected }: NodeViewProps) {
   const { blockId, images: imageData } = node.attrs as ImageBlockAttributes;
 
   const [images, setImages] = useState<ImageState[]>(
@@ -274,7 +277,7 @@ function Image({ node, updateAttributes }: NodeViewProps) {
   if (!images || images.length === 0) {
     return (
       <NodeViewWrapper>
-        <Card className='my-1'>
+        <Card className={cn('my-1', selected && 'bg-red-300/40 shadow-md')}>
           <CardContent>
             <Tabs defaultValue='upload'>
               <TabsList>

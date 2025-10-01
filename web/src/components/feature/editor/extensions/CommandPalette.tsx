@@ -66,9 +66,10 @@ export const CommandPaletteExtension =
                 {
                   name: 'image',
                   icon: IconName.IMAGE,
-                  command: ({ editor }) => {
+                  command: ({ editor, range }) => {
                     editor
                       .chain()
+                      .deleteRange(range)
                       .insertContent([
                         { type: BlockType.IMAGE_BLOCK },
                         { type: BlockType.TEXT_BLOCK },
@@ -80,8 +81,12 @@ export const CommandPaletteExtension =
                 {
                   name: 'map',
                   icon: IconName.PAINT,
-                  command: ({ editor }) => {
-                    editor.chain().insertContent({ type: 'map' }).run();
+                  command: ({ editor, range }) => {
+                    editor
+                      .chain()
+                      .deleteRange(range)
+                      .insertContent({ type: 'map' })
+                      .run();
                   },
                 },
               ] as CommandPaletteItemProps[]
@@ -125,7 +130,7 @@ export const CommandPaletteExtension =
                   return;
                 }
 
-                if (props.query.length >= 6 && props.items.length === 0) {
+                if (props.query.length >= 6 || props.items.length === 0) {
                   if (renderer) {
                     renderer.element.remove();
                     renderer.destroy();
@@ -223,17 +228,21 @@ const CommandPalette = forwardRef<CommandPaletteRef, CommandPaletteProps>(
             <div
               key={index}
               className={cn(
-                'flex items-center justify-between',
-                // index === selectedIndex ? 'bg-card' : 'bg-background',
+                'flex items-center ',
+                index === selectedIndex ? 'bg-red-400/30' : 'bg-background',
+                index === 0 && 'rounded-t-2xl',
               )}
               onClick={() => {
                 selectItem(index);
               }}
             >
-              <Icon name={item.icon} />
+              <div className='flex items-center justify-center p-2'>
+                <Icon name={item.icon} />
+              </div>
+
               <div className='flex flex-col'>
-                <span>{t(`${item.name}.title`)}</span>
-                <span>{t(`${item.name}.description`)}</span>
+                <span className='text-sm'>{t(`${item.name}.title`)}</span>
+                <span className='text-xs'>{t(`${item.name}.description`)}</span>
               </div>
             </div>
           );
@@ -241,9 +250,13 @@ const CommandPalette = forwardRef<CommandPaletteRef, CommandPaletteProps>(
 
         <Separator />
 
-        <div>
-          Type {"'"}/{props.query}
-          {"'"} on the page
+        <div className='flex justify-between items-center px-3 py-2'>
+          <span className='text-sm'>
+            Type {"'"}/{props.query}
+            {"'"} on the page
+          </span>
+
+          <span className='text-xs'>ESC</span>
         </div>
       </div>
     );
