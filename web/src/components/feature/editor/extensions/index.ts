@@ -1,3 +1,4 @@
+import type { ImageBlockAttributes } from './ImageBlock';
 import { BlockType } from '@/constant/block';
 import type { Block, BlockContent } from '@/types/page';
 import type { JSONContent } from '@tiptap/react';
@@ -15,20 +16,39 @@ function getBlockContent(block: Node): BlockContent {
       type,
       text: JSON.stringify(block.content.toJSON()),
     };
+  } else if (type === BlockType.IMAGE_BLOCK) {
+    const { images } = block.attrs as ImageBlockAttributes;
+
+    return {
+      type,
+      images,
+    };
   } else {
     throw new Error();
   }
 }
 
 function deserializeBlock(block: Block): JSONContent | null {
-  console.log(block);
-  if (block.type === BlockType.TEXT_BLOCK) {
+  const blockContent = block.content;
+
+  if (blockContent.type === BlockType.TEXT_BLOCK) {
     return {
-      type: block.type,
-      content: block.text ? JSON.parse(block.text) : '',
+      type: blockContent.type,
+      content: blockContent.text ? JSON.parse(blockContent.text) : '',
       attrs: {
         blockId: block.blockId,
+        isNew: false,
       },
+    };
+  } else if (blockContent.type === BlockType.IMAGE_BLOCK) {
+    return {
+      type: blockContent.type,
+      content: undefined,
+      attrs: {
+        blockId: block.blockId,
+        isNew: false,
+        images: blockContent.images,
+      } as ImageBlockAttributes,
     };
   }
 

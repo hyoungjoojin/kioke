@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.kioke.feature.page.domain.block.BlockType;
+import io.kioke.feature.page.dto.BlockContent;
+import io.kioke.feature.page.dto.ImageBlockContent;
+import io.kioke.feature.page.dto.TextBlockContent;
 import jakarta.validation.constraints.NotNull;
-import java.util.List;
 
 public record CreateBlockRequest(
     @NotNull String pageId,
@@ -15,17 +17,7 @@ public record CreateBlockRequest(
             include = JsonTypeInfo.As.EXISTING_PROPERTY,
             property = "type")
         @JsonSubTypes({
-          @Type(value = CreateBlockRequest.TextBlock.class, name = BlockType.Values.TEXT_BLOCK)
+          @Type(value = TextBlockContent.class, name = BlockType.Values.TEXT_BLOCK),
+          @Type(value = ImageBlockContent.class, name = BlockType.Values.IMAGE_BLOCK)
         })
-        BlockContent content) {
-
-  public static interface BlockContent {
-
-    public BlockType type();
-  }
-
-  public static record TextBlock(@NotNull BlockType type, String text) implements BlockContent {}
-
-  public static record ImageBlock(@NotNull BlockType type, List<String> images)
-      implements BlockContent {}
-}
+        BlockContent content) {}

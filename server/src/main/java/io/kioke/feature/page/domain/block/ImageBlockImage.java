@@ -27,4 +27,32 @@ public class ImageBlockImage {
   @MapsId("IMAGE_ID")
   @JoinColumn(name = "IMAGE_ID")
   private Image image;
+
+  @Column(name = "DESCRIPTION")
+  private String description;
+
+  public String getId() {
+    return id;
+  }
+
+  public void setImageBlock(ImageBlock imageBlock) {
+    this.imageBlock = imageBlock;
+  }
+
+  public Image getImage() {
+    return image;
+  }
+
+  public void setImage(Image image) {
+    this.id = image.getId();
+    this.image = image;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
 }

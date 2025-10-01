@@ -25,7 +25,7 @@ public class PageService {
   }
 
   @Transactional(readOnly = true)
-  @PreAuthorize("hasPermission(#pageId, 'page', 'READ')")
+  @PreAuthorize("hasPermission(#pageId, 'page', 'read')")
   public Page getPage(String pageId) throws PageNotFoundException {
     Page page = pageRepository.findById(pageId).orElseThrow(() -> new PageNotFoundException());
 
@@ -37,8 +37,7 @@ public class PageService {
   }
 
   @Transactional
-  @PreAuthorize("hasPermission('page', 'EDIT')")
-  // TODO: Need some way to pass in journal ID to preauthorize call
+  @PreAuthorize("hasPermission(#request.journalId, 'journal', 'update')")
   public Page createPage(String userId, CreatePageRequest request) {
     Page page =
         Page.builder()
@@ -52,7 +51,7 @@ public class PageService {
   }
 
   @Transactional
-  @PreAuthorize("hasPermission(#pageId, 'page', 'EDIT')")
+  @PreAuthorize("hasPermission(#pageId, 'page', 'update')")
   public void updatePage(String pageId, UpdatePageRequest request) throws PageNotFoundException {
     Page page = pageRepository.findById(pageId).orElseThrow(() -> new PageNotFoundException());
 

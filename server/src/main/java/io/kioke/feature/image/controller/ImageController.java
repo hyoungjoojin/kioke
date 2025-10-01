@@ -1,22 +1,20 @@
 package io.kioke.feature.image.controller;
 
-import io.kioke.annotation.AuthenticatedUser;
-import io.kioke.exception.auth.AccessDeniedException;
-import io.kioke.exception.journal.JournalNotFoundException;
-import io.kioke.exception.page.PageNotFoundException;
-import io.kioke.feature.image.dto.request.UploadImageRequestDto;
+import io.kioke.common.auth.AuthenticatedUser;
+import io.kioke.feature.image.dto.request.UploadImageRequest;
+import io.kioke.feature.image.dto.response.ImageResponse;
+import io.kioke.feature.image.dto.response.UploadImageResponse;
 import io.kioke.feature.image.service.ImageService;
-import io.kioke.feature.user.dto.UserDto;
-import java.io.IOException;
+import io.kioke.feature.media.dto.request.GetMediaRequest;
+import io.kioke.feature.user.dto.UserPrincipal;
 import java.util.List;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class ImageController {
@@ -27,27 +25,16 @@ public class ImageController {
     this.imageService = imageService;
   }
 
-  @GetMapping("/images/{imageId}")
-  public String getImage(
-      @AuthenticatedUser UserDto user, @PathVariable String imageId, @RequestParam String pageId)
-      throws PageNotFoundException, JournalNotFoundException {
-    return imageService.getImage(user, pageId, imageId);
+  @PostMapping("/images")
+  @ResponseStatus(HttpStatus.OK)
+  public UploadImageResponse getUploadUrl(
+      @AuthenticatedUser UserPrincipal user, @RequestBody @Validated UploadImageRequest request) {
+    return imageService.uploadImage(user.userId(), request);
   }
 
-  @GetMapping("/images/page/{pageId}")
-  public List<String> getImagesInPage(@AuthenticatedUser UserDto user, @PathVariable String pageId)
-      throws PageNotFoundException, JournalNotFoundException {
-    return imageService.getImagesInPage(user, pageId);
-  }
-
-  @PutMapping(
-      path = "/images",
-      consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-  public String uploadImage(
-      @AuthenticatedUser UserDto user,
-      @RequestPart(name = "image", required = true) MultipartFile image,
-      @RequestPart(name = "json", required = true) UploadImageRequestDto requestBody)
-      throws IOException, AccessDeniedException, PageNotFoundException {
-    return imageService.uploadImage(user, image, requestBody);
+  @PutMapping("/images")
+  @ResponseStatus(HttpStatus.OK)
+  public List<ImageResponse> getImages(@RequestBody @Validated GetMediaRequest request) {
+    return imageService.getImages(request);
   }
 }

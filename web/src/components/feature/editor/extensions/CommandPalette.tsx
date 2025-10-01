@@ -1,4 +1,6 @@
 import Icon, { IconName } from '@/components/ui/icon';
+import { Separator } from '@/components/ui/separator';
+import { BlockType } from '@/constant/block';
 import { cn } from '@/lib/utils';
 import { computePosition, flip, shift } from '@floating-ui/react';
 import { Extension, ReactRenderer, posToDOMRect } from '@tiptap/react';
@@ -65,7 +67,14 @@ export const CommandPaletteExtension =
                   name: 'image',
                   icon: IconName.IMAGE,
                   command: ({ editor }) => {
-                    editor.chain().insertContent({ type: 'image' }).run();
+                    editor
+                      .chain()
+                      .insertContent([
+                        { type: BlockType.IMAGE_BLOCK },
+                        { type: BlockType.TEXT_BLOCK },
+                      ])
+                      .joinForward()
+                      .run();
                   },
                 },
                 {
@@ -113,6 +122,14 @@ export const CommandPaletteExtension =
               },
               onUpdate(props) {
                 if (!renderer) {
+                  return;
+                }
+
+                if (props.query.length >= 6 && props.items.length === 0) {
+                  if (renderer) {
+                    renderer.element.remove();
+                    renderer.destroy();
+                  }
                   return;
                 }
 
@@ -207,7 +224,7 @@ const CommandPalette = forwardRef<CommandPaletteRef, CommandPaletteProps>(
               key={index}
               className={cn(
                 'flex items-center justify-between',
-                index === selectedIndex ? 'bg-card' : 'bg-background',
+                // index === selectedIndex ? 'bg-card' : 'bg-background',
               )}
               onClick={() => {
                 selectItem(index);
@@ -221,6 +238,13 @@ const CommandPalette = forwardRef<CommandPaletteRef, CommandPaletteProps>(
             </div>
           );
         })}
+
+        <Separator />
+
+        <div>
+          Type {"'"}/{props.query}
+          {"'"} on the page
+        </div>
       </div>
     );
   },

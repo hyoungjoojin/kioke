@@ -1,5 +1,7 @@
 package io.kioke.common.auth;
 
+import java.util.Arrays;
+
 public enum Permission {
   CREATE("create"),
   READ("read"),
@@ -7,19 +9,30 @@ public enum Permission {
   DELETE("delete"),
   SHARE("share");
 
-  private String permission;
+  private String key;
 
-  private Permission(String permission) {
-    this.permission = permission;
+  private Permission(String key) {
+    this.key = key;
   }
 
-  public static Permission of(String permission) {
+  private String getKey() {
+    return key;
+  }
+
+  public static Permission of(String key) {
     for (Permission p : Permission.values()) {
-      if (p.permission.equals(permission)) {
+      if (p.key.equals(key)) {
         return p;
       }
     }
 
-    throw new IllegalArgumentException();
+    throw new IllegalArgumentException(
+        String.format(
+            "Unknown permission key %s. Permission key has to one of: %s",
+            key,
+            Arrays.asList(Permission.values()).stream()
+                .map(Permission::getKey)
+                .toList()
+                .toString()));
   }
 }

@@ -12,10 +12,17 @@ import java.util.List;
 @DiscriminatorValue(value = BlockType.Values.IMAGE_BLOCK)
 public class ImageBlock extends Block {
 
-  @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true, mappedBy = "imageBlock")
+  @OneToMany(
+      cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+      orphanRemoval = true,
+      mappedBy = "imageBlock")
   private List<ImageBlockImage> images;
 
   public List<ImageBlockImage> getImages() {
     return images;
+  }
+
+  public void setImages(List<ImageBlockImage> images) {
+    this.images = images;
   }
 }

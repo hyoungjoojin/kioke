@@ -5,7 +5,9 @@ import PageTitle from './PageTitle';
 import { EditorBubbleMenu } from '@/components/feature/editor/EditorMenu';
 import {
   type BlockAttributes,
+  CommandPaletteExtension,
   Document,
+  ImageBlock,
   TextBlock,
   deserializeBlock,
   getBlockContent,
@@ -20,7 +22,7 @@ export default function BasicJournalPageEditor({ pageId }: EditorProps) {
   const { addTransaction } = useTransaction();
 
   const editor = useEditor({
-    extensions: [Document, TextBlock],
+    extensions: [Document, TextBlock, ImageBlock, CommandPaletteExtension],
     content: '',
     immediatelyRender: false,
     onTransaction: async ({
@@ -30,6 +32,30 @@ export default function BasicJournalPageEditor({ pageId }: EditorProps) {
       if (!page || !transaction.docChanged) {
         return;
       }
+
+      const previousBlocks = new Set<string>();
+      transaction.before.descendants((block) => {
+        if (block.isBlock) {
+          previousBlocks.add(block.attrs.blockId);
+        }
+      });
+
+      const currentBlocks = new Set<string>();
+      editor.state.doc.descendants((block) => {
+        if (block.isBlock) {
+          currentBlocks.add(block.attrs.blockId);
+        }
+      });
+
+      [...previousBlocks]
+        .filter((block) => !currentBlocks.has(block))
+        .forEach((blockId) => {
+          addTransaction({
+            pageId,
+            blockId,
+            command: 'delete',
+          });
+        });
 
       const modifiedRanges: { from: number; to: number }[] = [];
       transaction.steps.forEach((_, i) => {
@@ -46,7 +72,7 @@ export default function BasicJournalPageEditor({ pageId }: EditorProps) {
         if (
           modifiedRanges.some(
             (range) =>
-              position < range.to && range.from < position + block.nodeSize,
+              position <= range.to && range.from <= position + block.nodeSize,
           )
         ) {
           const { blockId, isNew } = block.attrs as BlockAttributes;

@@ -5,8 +5,10 @@ import type { Result } from 'neverthrow';
 
 interface UploadImageRequest {
   name: string;
-  contentLength: number;
   contentType: string;
+  contentLength: number;
+  width: number;
+  height: number;
 }
 
 type UploadImageResponse = {

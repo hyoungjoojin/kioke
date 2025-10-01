@@ -17,7 +17,13 @@ public interface PageRepository extends JpaRepository<Page, String> {
 
   @Query(
       """
-      SELECT b FROM Block b WHERE b.id in :blockIds
+        SELECT
+          b
+        FROM
+          Block b
+          LEFT JOIN FETCH TREAT(b as ImageBlock).images
+        WHERE
+          b.id in :blockIds
       """)
   public List<Block> fetchBlocks(List<String> blockIds);
 

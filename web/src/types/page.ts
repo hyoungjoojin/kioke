@@ -10,11 +10,20 @@ interface Page {
 
 type Block = {
   blockId: string;
-} & BlockContent;
-
-type BlockContent = {
-  type: BlockType.TEXT_BLOCK;
-  text: string;
+  content: BlockContent;
 };
+
+type BlockContent =
+  | {
+      type: BlockType.TEXT_BLOCK;
+      text: string;
+    }
+  | {
+      type: BlockType.IMAGE_BLOCK;
+      images: {
+        imageId: string;
+        description: string;
+      }[];
+    };
 
 export type { Page, Block, BlockContent };

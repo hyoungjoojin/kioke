@@ -1,73 +1,78 @@
 package io.kioke.feature.image.service;
 
-import io.kioke.exception.auth.AccessDeniedException;
-import io.kioke.exception.journal.JournalNotFoundException;
-import io.kioke.exception.page.PageNotFoundException;
-import io.kioke.feature.image.domain.PageImage;
-import io.kioke.feature.image.dto.request.UploadImageRequestDto;
-import io.kioke.feature.image.repository.PageImageRepository;
+import io.kioke.feature.image.domain.Image;
+import io.kioke.feature.image.dto.request.UploadImageRequest;
+import io.kioke.feature.image.dto.response.ImageResponse;
+import io.kioke.feature.image.dto.response.UploadImageResponse;
+import io.kioke.feature.image.repository.ImageRepository;
+import io.kioke.feature.media.dto.request.GetMediaRequest;
+import io.kioke.feature.media.dto.response.MediaResponse;
 import io.kioke.feature.media.service.MediaService;
-import io.kioke.feature.page.domain.Page;
-import io.kioke.feature.page.dto.request.UpdatePageRequestDto;
-import io.kioke.feature.page.service.PageService;
-import io.kioke.feature.user.dto.UserDto;
-import java.io.IOException;
+import io.kioke.feature.user.domain.User;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.UUID;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ImageService {
 
-  private static final Logger logger = LoggerFactory.getLogger(ImageService.class);
-
-  private final PageService pageService;
+  private final ImageRepository imageRepository;
   private final MediaService mediaService;
-  private final PageImageRepository pageImageRepository;
 
-  public ImageService(
-      PageService pageService, MediaService mediaService, PageImageRepository pageImageRepository) {
-    this.pageService = pageService;
+  public ImageService(ImageRepository imageRepository, MediaService mediaService) {
+    this.imageRepository = imageRepository;
     this.mediaService = mediaService;
-    this.pageImageRepository = pageImageRepository;
-  }
-
-  @Transactional
-  public String getImage(UserDto user, String pageId, String imageId)
-      throws JournalNotFoundException, PageNotFoundException {
-    pageService.getPage(user, pageId);
-    return mediaService.getPresignedUrl(imageId);
-  }
-
-  @Transactional(readOnly = true)
-  public List<String> getImagesInPage(UserDto user, String pageId)
-      throws JournalNotFoundException, PageNotFoundException {
-    pageService.getPage(user, pageId);
-
-    List<String> imageKeys =
-        pageImageRepository.findByPage(Page.createReference(pageId)).stream()
-            .map(pageImage -> pageImage.key())
-            .toList();
-    logger.debug("Found {} images in page {}", imageKeys.size(), pageId);
-
-    List<String> urls = mediaService.batchGetPresignedUrls(imageKeys);
-    logger.debug("Generated {} presigned URLs for images in page {}", urls.size(), pageId);
-
-    return urls;
   }
 
   @Transactional(rollbackFor = Exception.class)
-  public String uploadImage(UserDto user, MultipartFile image, UploadImageRequestDto request)
-      throws IOException, AccessDeniedException, PageNotFoundException {
-    Page page = pageService.updatePage(user, request.pageId(), UpdatePageRequestDto.emptyRequest());
+  @PreAuthorize("isAuthenticated()")
+  public UploadImageResponse uploadImage(String uploaderId, UploadImageRequest request) {
+    String key = UUID.randomUUID().toString();
+    Image image = Image.create(key);
+    image.setUploader(User.of(uploaderId));
+    image.setDimensions(request.width(), request.height());
+    image = imageRepository.save(image);
 
-    PageImage pageImage = PageImage.of(page);
-    pageImageRepository.save(pageImage);
+    MediaResponse mediaResponse = mediaService.uploadMedia(image);
+    return new UploadImageResponse(image.getId(), mediaResponse.url());
+  }
 
-    mediaService.uploadMedia(pageImage, image);
-    return pageImage.id();
+  @Transactional(readOnly = true)
+  @PreAuthorize("hasPermission(#request, 'read')")
+  public List<ImageResponse> getImages(GetMediaRequest request) {
+    if (request.ids().size() == 0) {
+      return Collections.emptyList();
+    }
+
+    List<Image> images = imageRepository.findAllById(request.ids());
+
+    HashMap<String, MediaResponse> mediaMap = new HashMap<>();
+    mediaService.getMedia(images).forEach(media -> mediaMap.put(media.mediaId(), media));
+
+    return images.stream()
+        .map(
+            image -> {
+              MediaResponse media = mediaMap.get(image.getId());
+              if (media == null) {
+                return null;
+              }
+
+              return new ImageResponse(
+                  image.getId(), media.url(), image.getWidth(), image.getHeight());
+            })
+        .toList();
+  }
+
+  @Transactional(readOnly = true)
+  public List<Image> getPendingImages(User requester, List<String> imageIds) {
+    return imageRepository.findAllById(imageIds).stream()
+        .filter(
+            image ->
+                image.isPending() && image.getUploader().getUserId().equals(requester.getUserId()))
+        .toList();
   }
 }
