@@ -1,4 +1,5 @@
 import kioke from '@/app/api';
+import type { JournalType } from '@/constant/journal';
 import { MimeType } from '@/constant/mime';
 
 interface UpdateJournalPathParams {
@@ -7,6 +8,7 @@ interface UpdateJournalPathParams {
 
 export interface UpdateJournalRequest {
   title?: string;
+  type?: JournalType;
   description?: string;
   coverImage?: string;
 }

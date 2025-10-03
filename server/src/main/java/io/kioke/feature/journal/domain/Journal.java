@@ -161,6 +161,10 @@ public class Journal {
     this.coverImage = coverImage;
   }
 
+  public void updateType(JournalType type) {
+    this.type = type;
+  }
+
   public void deleteJournal() {
     this.isDeleted = true;
     this.deletedAt = Instant.now();

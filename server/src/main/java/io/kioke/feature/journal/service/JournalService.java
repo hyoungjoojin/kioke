@@ -118,6 +118,8 @@ public class JournalService {
       Image image = imageService.uploadImageSuccess(request.coverImage());
       JournalCoverImage coverImage = JournalCoverImage.of(journal, image);
       journal.updateCover(coverImage);
+    if (request.type() != null) {
+      journal.updateType(request.type());
     }
 
     journalRepository.save(journal);
