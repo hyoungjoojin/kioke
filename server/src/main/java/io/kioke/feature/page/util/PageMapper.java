@@ -5,9 +5,11 @@ import io.kioke.feature.page.domain.block.Block;
 import io.kioke.feature.page.domain.block.BlockType;
 import io.kioke.feature.page.domain.block.ImageBlock;
 import io.kioke.feature.page.domain.block.ImageBlockImage;
+import io.kioke.feature.page.domain.block.MapBlock;
 import io.kioke.feature.page.domain.block.TextBlock;
 import io.kioke.feature.page.dto.BlockContent;
 import io.kioke.feature.page.dto.ImageBlockContent;
+import io.kioke.feature.page.dto.MapBlockContent;
 import io.kioke.feature.page.dto.TextBlockContent;
 import io.kioke.feature.page.dto.response.CreateBlockResponse;
 import io.kioke.feature.page.dto.response.CreatePageResponse;
@@ -36,6 +38,8 @@ public interface PageMapper {
       content = map(textBlock);
     } else if (block instanceof ImageBlock imageBlock) {
       content = map(imageBlock);
+    } else if (block instanceof MapBlock mapBlock) {
+      content = map(mapBlock);
     } else {
       throw new IllegalArgumentException("Unknown block type " + block.getClass());
     }
@@ -51,4 +55,7 @@ public interface PageMapper {
 
   @Mapping(source = "image.id", target = "imageId")
   ImageBlockContent.Image map(ImageBlockImage image);
+
+  @Mapping(target = "type", constant = BlockType.Values.MAP_BLOCK)
+  MapBlockContent map(MapBlock block);
 }

@@ -24,6 +24,14 @@ type BlockContent =
         imageId: string;
         description: string;
       }[];
+    }
+  | {
+      type: BlockType.MAP_BLOCK;
+      locations: {
+        locationId: string | null;
+        latitude: number;
+        longitude: number;
+      }[];
     };
 
 export type { Page, Block, BlockContent };

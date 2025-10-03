@@ -85,7 +85,7 @@ export const CommandPaletteExtension =
                     editor
                       .chain()
                       .deleteRange(range)
-                      .insertContent({ type: 'map' })
+                      .insertContent({ type: BlockType.MAP_BLOCK })
                       .run();
                   },
                 },

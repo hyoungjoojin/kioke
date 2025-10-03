@@ -8,6 +8,7 @@ import {
   CommandPaletteExtension,
   Document,
   ImageBlock,
+  MapBlock,
   TextBlock,
   deserializeBlock,
   getBlockContent,
@@ -22,7 +23,13 @@ export default function BasicJournalPageEditor({ pageId }: EditorProps) {
   const { addTransaction } = useTransaction();
 
   const editor = useEditor({
-    extensions: [Document, TextBlock, ImageBlock, CommandPaletteExtension],
+    extensions: [
+      Document,
+      TextBlock,
+      ImageBlock,
+      MapBlock,
+      CommandPaletteExtension,
+    ],
     content: '',
     immediatelyRender: false,
     onTransaction: async ({

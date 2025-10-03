@@ -2,7 +2,8 @@ package io.kioke.feature.page.domain.block;
 
 public enum BlockType {
   TEXT_BLOCK(Values.TEXT_BLOCK),
-  IMAGE_BLOCK(Values.IMAGE_BLOCK);
+  IMAGE_BLOCK(Values.IMAGE_BLOCK),
+  MAP_BLOCK(Values.MAP_BLOCK);
 
   private String value;
 
@@ -22,5 +23,6 @@ public enum BlockType {
   public static class Values {
     public static final String TEXT_BLOCK = "TEXT_BLOCK";
     public static final String IMAGE_BLOCK = "IMAGE_BLOCK";
+    public static final String MAP_BLOCK = "MAP_BLOCK";
   }
 }
