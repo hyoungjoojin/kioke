@@ -1,4 +1,4 @@
-type IconName = 'location' | 'location-plus';
+type IconName = 'location' | 'location-plus' | 'x' | 'trash' | 'edit';
 
 type IconProps = React.ComponentProps<'svg'> & {
   name: IconName;
@@ -14,3 +14,4 @@ function Icon({ name, size, className, ...props }: IconProps) {
 }
 
 export default Icon;
+export type { IconName };

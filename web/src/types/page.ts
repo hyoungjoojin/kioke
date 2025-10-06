@@ -13,6 +13,14 @@ type Block = {
   content: BlockContent;
 };
 
+type Place = {
+  id: string | null;
+  latitude: number;
+  longitude: number;
+  title: string;
+  description: string;
+};
+
 type BlockContent =
   | {
       type: BlockType.TEXT_BLOCK;
@@ -27,11 +35,7 @@ type BlockContent =
     }
   | {
       type: BlockType.MAP_BLOCK;
-      locations: {
-        locationId: string | null;
-        latitude: number;
-        longitude: number;
-      }[];
+      places: Place[];
     };
 
-export type { Page, Block, BlockContent };
+export type { Page, Block, BlockContent, Place };

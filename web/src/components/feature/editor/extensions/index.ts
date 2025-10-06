@@ -1,5 +1,5 @@
 import type { ImageBlockAttributes } from './ImageBlock';
-import { MapBlockAttributes } from './MapBlock';
+import type { MapBlockAttributes } from './MapBlock';
 import { BlockType } from '@/constant/block';
 import type { Block, BlockContent } from '@/types/page';
 import type { JSONContent } from '@tiptap/react';
@@ -27,7 +27,7 @@ function getBlockContent(block: Node): BlockContent {
   } else if (type === BlockType.MAP_BLOCK) {
     return {
       type,
-      locations: [],
+      places: [],
     };
   } else {
     throw new Error();
@@ -62,7 +62,7 @@ function deserializeBlock(block: Block): JSONContent | null {
       attrs: {
         blockId: block.blockId,
         isNew: false,
-        locations: [],
+        places: [],
       } as MapBlockAttributes,
     };
   }
