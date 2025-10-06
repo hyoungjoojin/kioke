@@ -1,13 +1,20 @@
-import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+'use client';
+
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Routes } from '@/constant/routes';
 import { useJournalQuery } from '@/query/journal';
 import Link from 'next/link';
 
-interface ShortJournalContentProps {
+interface JournalPagesViewParams {
   journalId: string;
 }
 
-export function ShortJournalContent({ journalId }: ShortJournalContentProps) {
+function JournalPagesView({ journalId }: JournalPagesViewParams) {
   const { data: journal, isPending } = useJournalQuery({ journalId });
 
   if (isPending) {
@@ -26,6 +33,7 @@ export function ShortJournalContent({ journalId }: ShortJournalContentProps) {
             <Card className='my-2'>
               <CardHeader>
                 <CardTitle>{page.title}</CardTitle>
+                <CardDescription>{page.date.toDateString()}</CardDescription>
               </CardHeader>
             </Card>
           </Link>
@@ -34,3 +42,5 @@ export function ShortJournalContent({ journalId }: ShortJournalContentProps) {
     </>
   );
 }
+
+export default JournalPagesView;

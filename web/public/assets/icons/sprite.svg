@@ -17,5 +17,19 @@
     <symbol fill="none" id="x" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24">
       <path d="M18 6 6 18M6 6l12 12"></path>
     </symbol>
+    <symbol fill="none" id="map" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24">
+      <path d="M3 8.593c0-1.527 0-2.29.393-2.735.139-.159.308-.285.497-.372 1.416-.653 3.272 1.066 4.77 1.013q.297-.011.587-.082c2.184-.535 3.552-3.08 5.798-3.39 1.287-.18 2.7.598 3.904 1.014.99.342 1.485.513 1.768.92S21 5.91 21 6.99v8.422c0 1.526 0 2.29-.393 2.735a1.5 1.5 0 0 1-.497.371c-1.416.653-3.272-1.065-4.77-1.012a3 3 0 0 0-.587.081c-2.184.535-3.552 3.08-5.798 3.391-1.281.178-4.847-.75-5.672-1.935C3 18.636 3 18.096 3 17.014zm6-2.052v14.255m6-17.615v14.255"></path>
+    </symbol>
+    <symbol fill="none" id="menu" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24">
+      <path d="M4.5 6.5h15M4.5 12h15m-15 5.5h15"></path>
+    </symbol>
+    <symbol fill="none" id="image" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24">
+      <path d="M6 9a2 2 0 1 0 4 0 2 2 0 0 0-4 0m14.927-.01c-6.61-.908-11.31 4-10.927 10.51"></path>
+      <path d="M3 13.066c2.78-.385 5.851 1.293 7.2 3.434"></path>
+      <path d="M2.357 9.3c0-1.68 0-2.52.327-3.162a3 3 0 0 1 1.311-1.311C4.637 4.5 5.477 4.5 7.157 4.5h9.686c1.68 0 2.52 0 3.162.327a3 3 0 0 1 1.31 1.311c.328.642.328 1.482.328 3.162v5.4c0 1.68 0 2.52-.327 3.162a3 3 0 0 1-1.311 1.311c-.642.327-1.482.327-3.162.327H7.157c-1.68 0-2.52 0-3.162-.327a3 3 0 0 1-1.31-1.311c-.328-.642-.328-1.482-.328-3.162z"></path>
+    </symbol>
+    <symbol fill="none" id="plus" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24">
+      <path d="M18 12h-6m0 0H6m6 0V6m0 6v6"></path>
+    </symbol>
   </defs>
 </svg>

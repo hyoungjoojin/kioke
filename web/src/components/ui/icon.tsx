@@ -1,4 +1,13 @@
-type IconName = 'location' | 'location-plus' | 'x' | 'trash' | 'edit';
+type IconName =
+  | 'location'
+  | 'location-plus'
+  | 'x'
+  | 'trash'
+  | 'edit'
+  | 'map'
+  | 'menu'
+  | 'image'
+  | 'plus';
 
 type IconProps = React.ComponentProps<'svg'> & {
   name: IconName;

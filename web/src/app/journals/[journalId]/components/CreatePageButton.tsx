@@ -15,8 +15,9 @@ export default function CreatePageButton({ journalId }: CreatePageButtonProps) {
 
   return (
     <Button
-      size='sm'
+      variant='icon'
       pending={isPending}
+      icon='plus'
       onClick={() => {
         createPage({
           journalId,
@@ -24,8 +25,6 @@ export default function CreatePageButton({ journalId }: CreatePageButtonProps) {
           date: new Date(),
         });
       }}
-    >
-      Add
-    </Button>
+    ></Button>
   );
 }

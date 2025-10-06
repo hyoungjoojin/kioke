@@ -82,9 +82,7 @@ function ChangeTypeButton({ journalId }: { journalId: string }) {
                   <span>{type}</span>
 
                   {journal.type === type ? (
-                    <span>
-                      <Icon name={IconName.PLUS} />
-                    </span>
+                    <span></span>
                   ) : isUpdateJournalPending && journal.type === selected ? (
                     <span>
                       <Spinner />
