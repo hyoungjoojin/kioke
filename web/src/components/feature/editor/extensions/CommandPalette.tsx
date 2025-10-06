@@ -1,4 +1,3 @@
-import Icon, { IconName } from '@/components/ui/icon';
 import { Separator } from '@/components/ui/separator';
 import { BlockType } from '@/constant/block';
 import { cn } from '@/lib/utils';
@@ -20,7 +19,6 @@ import {
 
 interface CommandPaletteItemProps {
   name: string;
-  icon: IconName;
   command: (props: { editor: Editor; range: Range }) => void;
 }
 
@@ -65,7 +63,6 @@ export const CommandPaletteExtension =
               [
                 {
                   name: 'image',
-                  icon: IconName.IMAGE,
                   command: ({ editor, range }) => {
                     editor
                       .chain()
@@ -80,7 +77,6 @@ export const CommandPaletteExtension =
                 },
                 {
                   name: 'map',
-                  icon: IconName.PAINT,
                   command: ({ editor, range }) => {
                     editor
                       .chain()
@@ -236,9 +232,7 @@ const CommandPalette = forwardRef<CommandPaletteRef, CommandPaletteProps>(
                 selectItem(index);
               }}
             >
-              <div className='flex items-center justify-center p-2'>
-                <Icon name={item.icon} />
-              </div>
+              <div className='flex items-center justify-center p-2'></div>
 
               <div className='flex flex-col'>
                 <span className='text-sm'>{t(`${item.name}.title`)}</span>

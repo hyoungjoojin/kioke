@@ -1,6 +1,5 @@
 import { SettingsSubmit } from './components';
 import { SettingsProvider } from './components/SettingsContext';
-import { IconName } from '@/components/ui/icon';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTranslations } from 'next-intl';
@@ -9,17 +8,14 @@ import dynamic from 'next/dynamic';
 const tabs = [
   {
     value: 'theme',
-    icon: IconName.PAINT,
     content: dynamic(() => import('./components/ThemeTabContent')),
   },
   {
     value: 'account',
-    icon: IconName.USER,
     content: dynamic(() => import('./components/AccountTabContent')),
   },
   {
     value: 'notifications',
-    icon: IconName.BELL,
     content: dynamic(() => import('./components/ThemeTabContent')),
   },
 ];
@@ -39,7 +35,7 @@ export default function SettingsModal() {
             {tabs.map((tab, index) => {
               {
                 return (
-                  <TabsTrigger key={index} icon={tab.icon} value={tab.value}>
+                  <TabsTrigger key={index} value={tab.value}>
                     {t(`modal.settings.tabs.${tab.value}.name`)}
                   </TabsTrigger>
                 );

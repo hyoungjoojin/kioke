@@ -11,7 +11,6 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import Icon, { IconName } from '@/components/ui/icon';
 import { FileInput } from '@/components/ui/input';
 import {
   Popover,
@@ -37,15 +36,13 @@ export default function JournalActionsButton({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button icon={IconName.DOTS} variant='ghost' />
+        <Button variant='ghost' />
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align='end' sideOffset={10}>
         <ChangeTypeButton journalId={journalId} />
         <UpdateCoverButton journalId={journalId} />
-        <DropdownMenuItem icon={IconName.TRASH}>
-          Delete Journal
-        </DropdownMenuItem>
+        <DropdownMenuItem>Delete Journal</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

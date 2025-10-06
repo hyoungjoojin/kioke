@@ -2,7 +2,6 @@
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { IconName } from '@/components/ui/icon';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Spinner } from '@/components/ui/spinner';
@@ -46,10 +45,9 @@ export default function JournalsTab() {
         </div>
 
         <div className='flex gap-2'>
-          <Button icon={IconName.SEARCH} onClick={() => {}} />
+          <Button onClick={() => {}} />
 
           <Button
-            icon={IconName.PLUS}
             onClick={() => {
               createJournal({
                 title: 'Untitled',

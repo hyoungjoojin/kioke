@@ -1,63 +1,16 @@
-import { cn } from '@/lib/utils';
-
-export const enum IconName {
-  PLUS = 'plus',
-  X = 'x',
-  USER = 'user',
-  SIGN_OUT = 'sign-out',
-  EDIT = 'edit',
-  TRASH = 'trash',
-  IMAGE = 'image',
-  SEARCH = 'search',
-  SETTINGS = 'settings',
-  PAINT = 'paint',
-  BELL = 'bell',
-  DOTS = 'dots',
-  DANGER = 'danger',
-}
-
-type IconSize = 'sm' | 'md' | 'lg' | number;
+type IconName = 'location' | 'location-plus';
 
 type IconProps = React.ComponentProps<'svg'> & {
   name: IconName;
-  size?: IconSize;
-  className?: string;
+  size: number;
 };
 
-function getIconSize(size: IconSize): number {
-  if (typeof size === 'number') {
-    return size;
-  }
-
-  switch (size) {
-    case 'sm':
-      return 15;
-    case 'md':
-      return 24;
-    case 'lg':
-      return 28;
-  }
-}
-
-export default function Icon({
-  name,
-  size = 'md',
-  className,
-  ...props
-}: IconProps) {
-  const width = getIconSize(size),
-    height = width;
-
+function Icon({ name, size, className, ...props }: IconProps) {
   return (
-    <svg
-      width={width}
-      height={height}
-      strokeLinecap='round'
-      strokeLinejoin='round'
-      className={cn('stroke-black', className)}
-      {...props}
-    >
+    <svg width={size} height={size} className={className} {...props}>
       <use href={`/assets/icons/sprite.svg#${name}`} />
     </svg>
   );
 }
+
+export default Icon;

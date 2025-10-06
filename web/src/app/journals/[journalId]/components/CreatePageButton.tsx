@@ -1,7 +1,6 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { IconName } from '@/components/ui/icon';
 import { useCreatePageMutationQuery } from '@/query/page';
 import { useTranslations } from 'next-intl';
 
@@ -16,7 +15,6 @@ export default function CreatePageButton({ journalId }: CreatePageButtonProps) {
 
   return (
     <Button
-      icon={IconName.PLUS}
       size='sm'
       pending={isPending}
       onClick={() => {

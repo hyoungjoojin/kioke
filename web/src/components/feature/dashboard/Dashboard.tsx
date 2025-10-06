@@ -1,7 +1,6 @@
 import Widgets from './widgets';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import { IconName } from '@/components/ui/icon';
 import type { DashboardWidgetType } from '@/constant/dashboard';
 import {
   DEFAULT_DASHBOARD_LAYOUT_CONFIGURATION,
@@ -169,7 +168,6 @@ function WidgetPreviewControls({
         <DialogTrigger asChild>
           <Button
             variant='ghost'
-            icon={IconName.EDIT}
             onMouseDown={(event) => {
               setIsDialogOpen(true);
               event.stopPropagation();
@@ -202,7 +200,6 @@ function WidgetPreviewControls({
 
       <Button
         variant='ghost'
-        icon={IconName.X}
         onMouseDown={(event) => {
           updateDraft((dashboard) => ({
             widgets: dashboard.widgets.filter((widget) => widget.id !== id),

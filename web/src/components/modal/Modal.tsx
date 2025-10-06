@@ -1,7 +1,6 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { IconName } from '@/components/ui/icon';
 import { useClickOutside } from '@/hooks/useClickOutside';
 import { cn } from '@/lib/utils';
 import { useModal, useModalActions } from '@/store/modal';
@@ -78,7 +77,6 @@ export default function Modal() {
 
               <Button
                 variant='ghost'
-                icon={IconName.X}
                 onClick={() => {
                   closeModal();
                 }}

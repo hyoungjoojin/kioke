@@ -9,7 +9,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import Icon, { IconName } from '@/components/ui/icon';
 import { destroySession } from '@/lib/session';
 import { useMyDashboardQuery } from '@/query/dashboard';
 import { useDashboardActions } from '@/store/dashboard';
@@ -22,9 +21,7 @@ export default function ProfileAvatar() {
       <DropdownMenuTrigger asChild>
         <Avatar>
           <AvatarImage src={''} />
-          <AvatarFallback>
-            <Icon name={IconName.USER} fill='none' />
-          </AvatarFallback>
+          <AvatarFallback></AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
 
@@ -47,7 +44,6 @@ function EditDashboard() {
 
   return (
     <DropdownMenuItem
-      icon={IconName.EDIT}
       onClick={() => {
         setIsEditingDraft(true);
         setDraft(dashboard);
@@ -64,7 +60,6 @@ function Settings() {
 
   return (
     <DropdownMenuItem
-      icon={IconName.SETTINGS}
       onClick={() => {
         openModal(ModalType.SETTINGS);
       }}
@@ -83,10 +78,7 @@ function SignOut() {
   };
 
   return (
-    <DropdownMenuItem
-      icon={IconName.SIGN_OUT}
-      onClick={signOutButtonClickHandler}
-    >
+    <DropdownMenuItem onClick={signOutButtonClickHandler}>
       {t('header.profile.sign-out')}
     </DropdownMenuItem>
   );

@@ -1,7 +1,5 @@
 'use client';
 
-import type { IconName } from './icon';
-import Icon from './icon';
 import { cn } from '@/lib/utils';
 import * as TabsPrimitive from '@radix-ui/react-tabs';
 import * as React from 'react';
@@ -68,12 +66,9 @@ function TabsList({
 
 function TabsTrigger({
   className,
-  icon,
   children,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.Trigger> & {
-  icon?: IconName;
-}) {
+}: React.ComponentProps<typeof TabsPrimitive.Trigger> & {}) {
   const { variant } = useTabsContext();
 
   return (
@@ -88,7 +83,6 @@ function TabsTrigger({
       )}
       {...props}
     >
-      {icon && <Icon className='mr-2' size='sm' name={icon} />}
       <span className='grow'>{children}</span>
     </TabsPrimitive.Trigger>
   );

@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button';
-import Icon, { IconName } from '@/components/ui/icon';
 import { Input } from '@/components/ui/input';
 import {
   Popover,
@@ -21,9 +20,7 @@ export function EditorBubbleMenu({ editor }: EditorMenuProps) {
         <div className='rounded-full bg-white w-7 h-7 flex items-center justify-center'>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant='ghost'>
-                <Icon name={IconName.IMAGE} />
-              </Button>
+              <Button variant='ghost'></Button>
             </PopoverTrigger>
             <PopoverContent>
               <ImageSelectionContent editor={editor} />

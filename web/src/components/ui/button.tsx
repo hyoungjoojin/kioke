@@ -1,5 +1,3 @@
-import type { IconName } from './icon';
-import Icon from './icon';
 import { Spinner } from './spinner';
 import { cn } from '@/lib/utils';
 import { Slot } from '@radix-ui/react-slot';
@@ -36,25 +34,8 @@ const buttonVariants = cva(
   },
 );
 
-const iconVariants = cva('', {
-  variants: {
-    variant: {
-      default: 'stroke-primary-foreground',
-      destructive: '',
-      outline: '',
-      secondary: '',
-      ghost: '',
-      link: '',
-    },
-  },
-  defaultVariants: {
-    variant: 'default',
-  },
-});
-
 function Button({
   children,
-  icon,
   className,
   variant,
   size,
@@ -63,7 +44,6 @@ function Button({
   ...props
 }: React.ComponentProps<'button'> &
   VariantProps<typeof buttonVariants> & {
-    icon?: IconName;
     asChild?: boolean;
     pending?: boolean;
   }) {
@@ -78,11 +58,7 @@ function Button({
       )}
       {...props}
     >
-      {pending ? (
-        <Spinner />
-      ) : (
-        icon && <Icon name={icon} className={cn(iconVariants({ variant }))} />
-      )}
+      {pending ? <Spinner /> : null}
       {children}
     </Comp>
   );

@@ -1,10 +1,7 @@
 'use client';
 
-import type { IconName } from './icon';
-import Icon from './icon';
 import { cn } from '@/lib/utils';
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
-import { CheckIcon, ChevronRightIcon, CircleIcon } from 'lucide-react';
 import * as React from 'react';
 
 function DropdownMenu({
@@ -64,11 +61,9 @@ function DropdownMenuItem({
   className,
   inset,
   variant = 'default',
-  icon,
   children,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Item> & {
-  icon?: IconName;
   inset?: boolean;
   variant?: 'default' | 'destructive';
 }) {
@@ -83,7 +78,6 @@ function DropdownMenuItem({
       )}
       {...props}
     >
-      {icon && <Icon name={icon} size='sm' />}
       {children}
     </DropdownMenuPrimitive.Item>
   );
@@ -106,9 +100,7 @@ function DropdownMenuCheckboxItem({
       {...props}
     >
       <span className='pointer-events-none absolute left-2 flex size-3.5 items-center justify-center'>
-        <DropdownMenuPrimitive.ItemIndicator>
-          <CheckIcon className='size-4' />
-        </DropdownMenuPrimitive.ItemIndicator>
+        <DropdownMenuPrimitive.ItemIndicator></DropdownMenuPrimitive.ItemIndicator>
       </span>
       {children}
     </DropdownMenuPrimitive.CheckboxItem>
@@ -141,9 +133,7 @@ function DropdownMenuRadioItem({
       {...props}
     >
       <span className='pointer-events-none absolute left-2 flex size-3.5 items-center justify-center'>
-        <DropdownMenuPrimitive.ItemIndicator>
-          <CircleIcon className='size-2 fill-current' />
-        </DropdownMenuPrimitive.ItemIndicator>
+        <DropdownMenuPrimitive.ItemIndicator></DropdownMenuPrimitive.ItemIndicator>
       </span>
       {children}
     </DropdownMenuPrimitive.RadioItem>
@@ -208,12 +198,10 @@ function DropdownMenuSub({
 function DropdownMenuSubTrigger({
   className,
   inset,
-  icon,
   children,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.SubTrigger> & {
   inset?: boolean;
-  icon?: IconName;
 }) {
   return (
     <DropdownMenuPrimitive.SubTrigger
@@ -225,11 +213,7 @@ function DropdownMenuSubTrigger({
       )}
       {...props}
     >
-      <div className='flex items-center justify-center gap-2'>
-        {icon && <Icon name={icon} size='sm' />}
-        {children}
-      </div>
-      <ChevronRightIcon className='ml-auto size-4' />
+      <div className='flex items-center justify-center gap-2'>{children}</div>
     </DropdownMenuPrimitive.SubTrigger>
   );
 }
