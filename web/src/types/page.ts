@@ -20,16 +20,20 @@ type BlockContent =
     }
   | {
       type: BlockType.IMAGE_BLOCK;
-      images: {
-        imageId: string;
-        imageUrl: string;
-        description: string;
-      }[];
+      images: PageImage[];
     }
   | {
       type: BlockType.MAP_BLOCK;
       places: Place[];
     };
+
+type PageImage = {
+  imageId: string;
+  imageUrl: string;
+  description: string;
+  width: number;
+  height: number;
+};
 
 type Place = {
   id: string | null;
@@ -39,4 +43,4 @@ type Place = {
   description: string;
 };
 
-export type { Page, Block, BlockContent, Place };
+export type { Page, Block, BlockContent, PageImage, Place };

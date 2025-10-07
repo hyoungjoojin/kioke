@@ -10,6 +10,7 @@ import io.kioke.feature.page.domain.block.ImageBlockImage;
 import io.kioke.feature.page.dto.BlockContentDto;
 import io.kioke.feature.page.dto.BlockDto;
 import io.kioke.feature.page.dto.ImageBlockContentDto;
+import io.kioke.feature.page.dto.PageImageDto;
 import io.kioke.feature.user.domain.User;
 import java.net.URL;
 import java.util.List;
@@ -38,11 +39,11 @@ public class ImageBlockProcessor implements BlockProcessor {
         mediaService.getPresignedUrl(
             imageBlockImages.stream().map(imageBlockImage -> imageBlockImage.getImage()).toList());
 
-    List<ImageBlockContentDto.Image> images =
+    List<PageImageDto> images =
         imageBlockImages.stream()
             .map(
                 imageBlockImage ->
-                    new ImageBlockContentDto.Image(
+                    new PageImageDto(
                         imageBlockImage.getId(),
                         urls.get(imageBlockImage.getId()).toExternalForm(),
                         imageBlockImage.getDescription(),

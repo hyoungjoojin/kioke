@@ -3,6 +3,7 @@ package io.kioke.feature.page.service;
 import io.kioke.feature.page.domain.Page;
 import io.kioke.feature.page.domain.block.Block;
 import io.kioke.feature.page.domain.block.BlockType;
+import io.kioke.feature.page.domain.block.ImageBlock;
 import io.kioke.feature.page.dto.BlockDto;
 import io.kioke.feature.page.dto.request.CreateBlockRequest;
 import io.kioke.feature.page.dto.request.UpdateBlockRequest;
@@ -42,6 +43,11 @@ public class BlockService {
 
     log.debug("Found {} blocks in page {}", blocks.size(), pageId);
     return blocks;
+  }
+
+  @Transactional(readOnly = true)
+  public List<ImageBlock> getAllImageBlocks(String pageId) {
+    return blockRepository.findAllImageBlocksByPageId(pageId);
   }
 
   @Transactional
