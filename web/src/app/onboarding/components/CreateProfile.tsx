@@ -14,7 +14,6 @@ import { Input } from '@/components/ui/input';
 import { MimeType } from '@/constant/mime';
 import { unwrap } from '@/util/result';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Upload } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -85,9 +84,7 @@ export default function CreateProfile({ onNextStep }: OnboardingContentProps) {
                             URL.createObjectURL(profileImagePreview)
                           }
                         />
-                        <AvatarFallback>
-                          <Upload />
-                        </AvatarFallback>
+                        <AvatarFallback></AvatarFallback>
                       </Avatar>
                     </ImageSelector>
                   </FormControl>

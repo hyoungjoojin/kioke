@@ -1,15 +1,12 @@
 import type { BlockAttributes } from '.';
 import { uploadImage } from '@/app/api/image';
-import { getImage } from '@/app/api/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BlockType } from '@/constant/block';
 import { ErrorCode } from '@/constant/error';
-import logger from '@/lib/logger';
 import { cn } from '@/lib/utils';
 import KiokeError from '@/util/error';
-import { unwrap } from '@/util/result';
 import {
   Node,
   type NodeViewProps,
@@ -18,12 +15,15 @@ import {
   mergeAttributes,
 } from '@tiptap/react';
 import { default as NextImage } from 'next/image';
-import { type ChangeEvent, useEffect, useState } from 'react';
+import { type ChangeEvent, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 type ImageBlockAttributes = BlockAttributes & {
   images: {
     imageId: string;
+    imageUrl: string;
+    width: number;
+    height: number;
     description: string;
   }[];
 };
@@ -66,7 +66,6 @@ type ImageState = {
   imageId: string;
   description: string;
 } & (
-  | { loadStatus: 'pending' }
   | { loadStatus: 'loaded'; src: string; width: number; height: number }
   | { loadStatus: 'failed'; error: KiokeError }
 ) &
@@ -76,91 +75,18 @@ type ImageState = {
   );
 
 function Image({ node, updateAttributes, selected }: NodeViewProps) {
-  const { blockId, images: imageData } = node.attrs as ImageBlockAttributes;
+  const { images: imageData } = node.attrs as ImageBlockAttributes;
 
   const [images, setImages] = useState<ImageState[]>(
     imageData.map((image) => ({
       ...image,
-      loadStatus: 'pending',
+      loadStatus: 'loaded',
+      src: image.imageUrl,
+      width: image.width,
+      height: image.height,
       uploadStatus: 'uploaded',
     })),
   );
-
-  useEffect(() => {
-    if (
-      images.length === 0 ||
-      !images.some((image) => image.loadStatus === 'pending')
-    ) {
-      return;
-    }
-
-    const pendingImageIds = images
-      .filter((image) => image.loadStatus === 'pending')
-      .map((image) => image.imageId);
-
-    const getImages = async () => {
-      const imageMap = new Map<
-        string,
-        | {
-            success: true;
-            imageId: string;
-            url: string;
-            width: number;
-            height: number;
-          }
-        | { success: false; error: KiokeError }
-      >();
-
-      await getImage({
-        context: 'IMAGE_BLOCK',
-        contextId: blockId,
-        ids: pendingImageIds,
-      })
-        .then((result) => unwrap(result))
-        .then((data) =>
-          data.forEach((data) =>
-            imageMap.set(data.imageId, { success: true, ...data }),
-          ),
-        )
-        .catch((error) => {
-          logger.debug(error);
-          pendingImageIds.forEach((imageId) =>
-            imageMap.set(imageId, { success: false, error }),
-          );
-        });
-
-      setImages((images) =>
-        images.map((image) => {
-          const data = imageMap.get(image.imageId);
-          if (!data) {
-            return image;
-          }
-
-          if (data.success) {
-            return {
-              imageId: image.imageId,
-              description: '',
-              loadStatus: 'loaded',
-              src: data.url,
-              width: data.width,
-              height: data.height,
-              uploadStatus: 'uploaded',
-            };
-          } else {
-            return {
-              imageId: image.imageId,
-              description: '',
-              loadStatus: 'failed',
-              error: data.error,
-              uploadStatus: 'uploaded',
-            };
-          }
-        }),
-      );
-    };
-
-    getImages();
-  }, [blockId, images]);
 
   const fileInputChangeHandler = async (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;

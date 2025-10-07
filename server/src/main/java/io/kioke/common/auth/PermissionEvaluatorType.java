@@ -2,8 +2,7 @@ package io.kioke.common.auth;
 
 public enum PermissionEvaluatorType {
   JOURNAL("journal"),
-  PAGE("page"),
-  MEDIA("media");
+  PAGE("page");
 
   private String type;
 

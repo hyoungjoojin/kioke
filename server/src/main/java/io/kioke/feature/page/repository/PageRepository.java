@@ -12,9 +12,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PageRepository extends JpaRepository<Page, String> {
 
-  @Query("SELECT b.blockId FROM Page p JOIN p.blocks b WHERE p = :page")
-  public List<String> findBlocksInPage(Page page);
-
   @Query(
       """
         SELECT

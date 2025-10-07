@@ -17,6 +17,11 @@ import jakarta.persistence.Table;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -24,6 +29,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 @Table(name = "PAGE_TABLE")
 @EntityListeners(AuditingEntityListener.class)
+@Data
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 public class Page {
 
   @Id
@@ -55,70 +64,9 @@ public class Page {
   @LastModifiedDate
   private Instant lastModifiedAt;
 
-  public String getPageId() {
-    return pageId;
-  }
-
-  public Journal getJournal() {
-    return journal;
-  }
-
-  public String getTitle() {
-    return title;
-  }
-
-  public LocalDateTime getDate() {
-    return date;
-  }
-
-  public List<Block> getBlocks() {
-    return blocks;
-  }
-
-  public static PageBuilder builder() {
-    return new PageBuilder();
-  }
-
-  public static class PageBuilder {
-
-    private Journal journal;
-    private String title;
-    private LocalDateTime date;
-
-    public PageBuilder journal(Journal journal) {
-      this.journal = journal;
-      return this;
-    }
-
-    public PageBuilder title(String title) {
-      this.title = title;
-      return this;
-    }
-
-    public PageBuilder date(LocalDateTime date) {
-      this.date = date;
-      return this;
-    }
-
-    public Page build() {
-      Page page = new Page();
-      page.journal = journal;
-      page.title = title;
-      page.date = date;
-      return page;
-    }
-  }
-
-  public void updateTitle(String title) {
-    this.title = title;
-  }
-
-  public void updateDate(LocalDateTime date) {
-    this.date = date;
-  }
-
-  public void setBlocks(List<Block> blocks) {
-    this.blocks.clear();
-    this.blocks.addAll(blocks);
+  public static Page getReferenceById(String pageId) {
+    Page page = new Page();
+    page.setPageId(pageId);
+    return page;
   }
 }

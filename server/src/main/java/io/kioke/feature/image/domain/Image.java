@@ -15,13 +15,6 @@ public class Image extends Media {
   @Column(name = "HEIGHT")
   private Long height;
 
-  public static Image create(String key) {
-    Image image = new Image();
-    image.setKey(key);
-    image.setContext(null);
-    return image;
-  }
-
   public void setDimensions(Long width, Long height) {
     this.width = width;
     this.height = height;

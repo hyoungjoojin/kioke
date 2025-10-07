@@ -9,8 +9,5 @@ public interface CustomPermissionEvaluator {
   public boolean hasPermission(Authentication authentication, Permission permission);
 
   public boolean hasPermission(
-      Authentication authentication, Permission permission, PermissionObject permissionObject);
-
-  public boolean hasPermission(
       Authentication authentication, String targetId, Permission permission);
 }

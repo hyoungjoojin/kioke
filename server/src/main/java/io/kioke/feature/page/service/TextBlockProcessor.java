@@ -3,8 +3,9 @@ package io.kioke.feature.page.service;
 import io.kioke.feature.page.domain.block.Block;
 import io.kioke.feature.page.domain.block.BlockType;
 import io.kioke.feature.page.domain.block.TextBlock;
-import io.kioke.feature.page.dto.BlockContent;
-import io.kioke.feature.page.dto.TextBlockContent;
+import io.kioke.feature.page.dto.BlockContentDto;
+import io.kioke.feature.page.dto.BlockDto;
+import io.kioke.feature.page.dto.TextBlockContentDto;
 import io.kioke.feature.user.domain.User;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +18,16 @@ public class TextBlockProcessor implements BlockProcessor {
   }
 
   @Override
-  public TextBlock createBlock(User requester, BlockContent content) {
-    TextBlockContent textBlockContent = (TextBlockContent) content;
+  public BlockDto map(Block block) {
+    TextBlock textBlock = (TextBlock) block;
+    TextBlockContentDto content =
+        new TextBlockContentDto(BlockType.TEXT_BLOCK, textBlock.getText());
+    return new BlockDto(block.getBlockId(), content);
+  }
+
+  @Override
+  public Block createBlock(User requester, BlockContentDto content) {
+    TextBlockContentDto textBlockContent = (TextBlockContentDto) content;
 
     TextBlock block = new TextBlock();
     block.setText(textBlockContent.text());
@@ -26,9 +35,9 @@ public class TextBlockProcessor implements BlockProcessor {
   }
 
   @Override
-  public Block updateBlock(User requester, Block block, BlockContent content) {
+  public Block updateBlock(User requester, Block block, BlockContentDto content) {
     TextBlock textBlock = (TextBlock) block;
-    TextBlockContent textBlockContent = (TextBlockContent) content;
+    TextBlockContentDto textBlockContent = (TextBlockContentDto) content;
 
     textBlock.setText(textBlockContent.text());
     return textBlock;

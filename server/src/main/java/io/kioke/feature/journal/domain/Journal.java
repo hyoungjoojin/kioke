@@ -18,6 +18,7 @@ import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -26,6 +27,7 @@ import org.springframework.util.Assert;
 @Entity
 @Table(name = "JOURNAL_TABLE")
 @EntityListeners(AuditingEntityListener.class)
+@Data
 public class Journal {
 
   @Id
@@ -74,44 +76,14 @@ public class Journal {
   @Column(name = "LAST_MODIFIED_AT")
   private Instant lastModifiedAt;
 
+  public static Journal getReferenceById(String journalId) {
+    Journal journal = new Journal();
+    journal.setJournalId(journalId);
+    return journal;
+  }
+
   @Column(name = "DELETED_AT")
   private Instant deletedAt;
-
-  public String getJournalId() {
-    return journalId;
-  }
-
-  public JournalCoverImage getCoverImage() {
-    return coverImage;
-  }
-
-  public List<JournalUser> getUsers() {
-    return users;
-  }
-
-  public boolean getIsPublic() {
-    return isPublic;
-  }
-
-  public JournalType getType() {
-    return type;
-  }
-
-  public String getTitle() {
-    return title;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public List<Page> getPages() {
-    return pages;
-  }
-
-  public Instant getCreatedAt() {
-    return createdAt;
-  }
 
   public static JournalBuilder builder() {
     return new JournalBuilder();

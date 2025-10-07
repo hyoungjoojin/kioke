@@ -3,7 +3,6 @@ package io.kioke.feature.journal.service;
 import io.kioke.common.auth.CustomPermissionEvaluator;
 import io.kioke.common.auth.Permission;
 import io.kioke.common.auth.PermissionEvaluatorType;
-import io.kioke.common.auth.PermissionObject;
 import io.kioke.feature.journal.domain.JournalRole;
 import io.kioke.feature.journal.dto.projection.JournalPermissionProjection;
 import io.kioke.feature.journal.repository.JournalRepository;
@@ -42,12 +41,6 @@ public class JournalPermissionEvaluator implements CustomPermissionEvaluator {
         .findJournalUserRole(journalId, userId)
         .map(permissionProjection -> hasPermission(permissionProjection, permission))
         .orElse(false);
-  }
-
-  @Override
-  public boolean hasPermission(
-      Authentication authentication, Permission permission, PermissionObject permissionObject) {
-    throw new UnsupportedOperationException();
   }
 
   public boolean hasPermission(

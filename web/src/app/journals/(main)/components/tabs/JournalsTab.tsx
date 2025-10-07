@@ -48,6 +48,8 @@ export default function JournalsTab() {
           <Button onClick={() => {}} />
 
           <Button
+            variant='icon'
+            icon='plus'
             onClick={() => {
               createJournal({
                 title: 'Untitled',

@@ -18,6 +18,11 @@ public class ImageBlock extends Block {
       mappedBy = "imageBlock")
   private List<ImageBlockImage> images;
 
+  @Override
+  public BlockType getBlockType() {
+    return BlockType.IMAGE_BLOCK;
+  }
+
   public List<ImageBlockImage> getImages() {
     return images;
   }

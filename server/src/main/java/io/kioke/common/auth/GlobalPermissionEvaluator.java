@@ -28,11 +28,8 @@ public class GlobalPermissionEvaluator implements PermissionEvaluator {
 
     if (targetDomainObject instanceof String) {
       return hasPermission(authentication, (String) targetDomainObject, permission);
-    } else if (targetDomainObject instanceof PermissionObject) {
-      return hasPermission(authentication, (PermissionObject) targetDomainObject, permission);
     } else {
-      throw new IllegalArgumentException(
-          "Call to hasPermission must be either of String type or PermissionObjectType");
+      throw new IllegalArgumentException("Call to hasPermission must of String type");
     }
   }
 
@@ -59,15 +56,6 @@ public class GlobalPermissionEvaluator implements PermissionEvaluator {
     CustomPermissionEvaluator permissionEvaluator = getPermissionEvaluator(type);
 
     return permissionEvaluator.hasPermission(authentication, permission);
-  }
-
-  private boolean hasPermission(
-      Authentication authentication, PermissionObject targetDomainObject, Permission permission) {
-    PermissionEvaluatorType type = targetDomainObject.type();
-    CustomPermissionEvaluator permissionEvaluator = getPermissionEvaluator(type);
-
-    return permissionEvaluator.hasPermission(
-        authentication, permission, (PermissionObject) targetDomainObject);
   }
 
   private CustomPermissionEvaluator getPermissionEvaluator(PermissionEvaluatorType type) {

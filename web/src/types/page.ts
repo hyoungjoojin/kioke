@@ -13,14 +13,6 @@ type Block = {
   content: BlockContent;
 };
 
-type Place = {
-  id: string | null;
-  latitude: number;
-  longitude: number;
-  title: string;
-  description: string;
-};
-
 type BlockContent =
   | {
       type: BlockType.TEXT_BLOCK;
@@ -30,6 +22,7 @@ type BlockContent =
       type: BlockType.IMAGE_BLOCK;
       images: {
         imageId: string;
+        imageUrl: string;
         description: string;
       }[];
     }
@@ -37,5 +30,13 @@ type BlockContent =
       type: BlockType.MAP_BLOCK;
       places: Place[];
     };
+
+type Place = {
+  id: string | null;
+  latitude: number;
+  longitude: number;
+  title: string;
+  description: string;
+};
 
 export type { Page, Block, BlockContent, Place };

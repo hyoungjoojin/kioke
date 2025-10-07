@@ -4,8 +4,11 @@ import io.kioke.feature.media.domain.Media;
 import io.kioke.feature.media.dto.response.MediaResponse;
 import io.kioke.feature.media.repository.MediaRepository;
 import io.kioke.feature.media.util.MediaMapper;
+import java.net.URL;
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,29 +44,25 @@ public class MediaService {
     this.s3Presigner = s3Presigner;
   }
 
-  @Transactional(readOnly = true)
-  public List<MediaResponse> getMedia(List<? extends Media> mediaList) {
-    List<MediaResponse> presignedRequests =
-        mediaList.stream()
-            .map(
-                media -> {
-                  GetObjectRequest objectRequest =
-                      GetObjectRequest.builder().bucket(bucket).key(media.getKey()).build();
+  public Map<String, URL> getPresignedUrl(List<? extends Media> media) {
+    Map<String, URL> result = new HashMap<>();
+    media.forEach(m -> result.put(m.getId(), getPresignedUrl(m)));
+    return result;
+  }
 
-                  GetObjectPresignRequest presignRequest =
-                      GetObjectPresignRequest.builder()
-                          .signatureDuration(Duration.ofMinutes(10))
-                          .getObjectRequest(objectRequest)
-                          .build();
+  public URL getPresignedUrl(Media media) {
+    GetObjectRequest objectRequest =
+        GetObjectRequest.builder().bucket(bucket).key(media.getKey()).build();
 
-                  PresignedGetObjectRequest presignedRequest =
-                      s3Presigner.presignGetObject(presignRequest);
+    GetObjectPresignRequest presignRequest =
+        GetObjectPresignRequest.builder()
+            .signatureDuration(Duration.ofMinutes(10))
+            .getObjectRequest(objectRequest)
+            .build();
 
-                  return mediaMapper.map(media.getId(), presignedRequest);
-                })
-            .toList();
+    PresignedGetObjectRequest presignedRequest = s3Presigner.presignGetObject(presignRequest);
 
-    return presignedRequests;
+    return presignedRequest.url();
   }
 
   public MediaResponse uploadMedia(Media media) {

@@ -13,11 +13,13 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Data;
 
 @Entity
 @Table(name = "BLOCK_TABLE")
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "BLOCK_TYPE", discriminatorType = DiscriminatorType.STRING)
+@Data
 public abstract class Block {
 
   @Id
@@ -28,11 +30,5 @@ public abstract class Block {
   @JoinColumn(name = "PAGE_ID")
   private Page page;
 
-  public String getBlockId() {
-    return blockId;
-  }
-
-  public void setPage(Page page) {
-    this.page = page;
-  }
+  public abstract BlockType getBlockType();
 }

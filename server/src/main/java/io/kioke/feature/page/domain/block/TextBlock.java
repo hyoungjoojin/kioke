@@ -15,6 +15,11 @@ public class TextBlock extends Block {
   @Column(name = "TEXT")
   private String text;
 
+  @Override
+  public BlockType getBlockType() {
+    return BlockType.TEXT_BLOCK;
+  }
+
   public String getText() {
     return text;
   }

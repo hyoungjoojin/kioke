@@ -2,29 +2,27 @@ package io.kioke.feature.page.service;
 
 import io.kioke.feature.image.domain.Image;
 import io.kioke.feature.image.service.ImageService;
-import io.kioke.feature.media.domain.MediaContext;
+import io.kioke.feature.media.service.MediaService;
 import io.kioke.feature.page.domain.block.Block;
 import io.kioke.feature.page.domain.block.BlockType;
 import io.kioke.feature.page.domain.block.ImageBlock;
 import io.kioke.feature.page.domain.block.ImageBlockImage;
-import io.kioke.feature.page.dto.BlockContent;
-import io.kioke.feature.page.dto.ImageBlockContent;
+import io.kioke.feature.page.dto.BlockContentDto;
+import io.kioke.feature.page.dto.BlockDto;
+import io.kioke.feature.page.dto.ImageBlockContentDto;
 import io.kioke.feature.user.domain.User;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class ImageBlockProcessor implements BlockProcessor {
 
   private final ImageService imageService;
-
-  public ImageBlockProcessor(ImageService imageService) {
-    this.imageService = imageService;
-  }
+  private final MediaService mediaService;
 
   @Override
   public BlockType type() {
@@ -32,53 +30,53 @@ public class ImageBlockProcessor implements BlockProcessor {
   }
 
   @Override
-  @Transactional
-  public ImageBlock createBlock(User requester, BlockContent content) {
-    ImageBlock imageBlock = new ImageBlock();
+  public BlockDto map(Block block) {
+    ImageBlock imageBlock = (ImageBlock) block;
 
-    ImageBlockContent imageBlockContent = (ImageBlockContent) content;
+    List<ImageBlockImage> imageBlockImages = imageBlock.getImages();
+    Map<String, URL> urls =
+        mediaService.getPresignedUrl(
+            imageBlockImages.stream().map(imageBlockImage -> imageBlockImage.getImage()).toList());
 
-    List<String> imageIds =
-        imageBlockContent.images().stream().map(image -> image.imageId()).toList();
-    Map<String, Image> images =
-        imageService.getPendingImages(requester, imageIds).stream()
+    List<ImageBlockContentDto.Image> images =
+        imageBlockImages.stream()
             .map(
-                image -> {
-                  image.setContext(MediaContext.IMAGE_BLOCK);
-                  return image;
-                })
-            .collect(Collectors.toMap(Image::getId, Function.identity()));
-
-    List<ImageBlockImage> imageBlockImages =
-        imageBlockContent.images().stream()
-            .map(
-                image -> {
-                  ImageBlockImage imageBlockImage = new ImageBlockImage();
-                  imageBlockImage.setImageBlock(imageBlock);
-                  imageBlockImage.setImage(images.get(image.imageId()));
-                  imageBlockImage.setDescription(image.description());
-                  return imageBlockImage;
-                })
+                imageBlockImage ->
+                    new ImageBlockContentDto.Image(
+                        imageBlockImage.getId(),
+                        urls.get(imageBlockImage.getId()).toExternalForm(),
+                        imageBlockImage.getDescription(),
+                        imageBlockImage.getImage().getWidth(),
+                        imageBlockImage.getImage().getHeight()))
             .toList();
 
-    imageBlock.setImages(imageBlockImages);
+    ImageBlockContentDto content = new ImageBlockContentDto(BlockType.IMAGE_BLOCK, images);
+    return new BlockDto(block.getBlockId(), content);
+  }
+
+  @Override
+  public Block createBlock(User requester, BlockContentDto content) {
+    ImageBlock imageBlock = new ImageBlock();
     return imageBlock;
   }
 
   @Override
-  @Transactional
-  public Block updateBlock(User requester, Block block, BlockContent content) {
+  public Block updateBlock(User requester, Block block, BlockContentDto content) {
     ImageBlock imageBlock = (ImageBlock) block;
 
-    ImageBlockContent imageBlockContent = (ImageBlockContent) content;
+    ImageBlockContentDto imageBlockContent = (ImageBlockContentDto) content;
+
     List<String> imageIds =
         imageBlockContent.images().stream().map(image -> image.imageId()).toList();
-
     List<Image> images =
-        imageService.getPendingImages(requester, imageIds).stream()
+        imageService.getImages(imageIds).stream()
+            .filter(
+                image ->
+                    image.isPending()
+                        && image.getUploader().getUserId().equals(requester.getUserId()))
             .map(
                 image -> {
-                  image.setContext(MediaContext.IMAGE_BLOCK);
+                  image.setPending(false);
                   return image;
                 })
             .toList();
@@ -94,6 +92,7 @@ public class ImageBlockProcessor implements BlockProcessor {
                 })
             .toList();
 
+    imageBlock.getImages().clear();
     imageBlock.getImages().addAll(imageBlockImages);
     return imageBlock;
   }

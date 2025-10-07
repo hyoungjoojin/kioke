@@ -3,7 +3,6 @@ package io.kioke.feature.page.service;
 import io.kioke.common.auth.CustomPermissionEvaluator;
 import io.kioke.common.auth.Permission;
 import io.kioke.common.auth.PermissionEvaluatorType;
-import io.kioke.common.auth.PermissionObject;
 import io.kioke.feature.journal.service.JournalPermissionEvaluator;
 import io.kioke.feature.page.repository.PageRepository;
 import org.springframework.security.core.Authentication;
@@ -42,11 +41,5 @@ public class PagePermissionEvaluator implements CustomPermissionEvaluator {
             permissionProjection ->
                 journalPermissionEvaluator.hasPermission(permissionProjection, permission))
         .orElse(false);
-  }
-
-  @Override
-  public boolean hasPermission(
-      Authentication authentication, Permission permission, PermissionObject permissionObject) {
-    throw new UnsupportedOperationException();
   }
 }
