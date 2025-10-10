@@ -58,6 +58,7 @@ public class ImageBlockProcessor implements BlockProcessor {
   @Override
   public Block createBlock(User requester, BlockContentDto content) {
     ImageBlock imageBlock = new ImageBlock();
+    updateBlock(requester, imageBlock, content);
     return imageBlock;
   }
 

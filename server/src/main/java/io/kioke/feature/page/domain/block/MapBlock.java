@@ -5,13 +5,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.List;
+import lombok.Getter;
 
 @Entity
 @Table(name = "MAP_BLOCK_TABLE")
 @DiscriminatorValue(value = BlockType.Values.MAP_BLOCK)
 public class MapBlock extends Block {
 
-  @OneToMany List<MapBlockMarker> markers;
+  @OneToMany @Getter List<MapBlockMarker> markers;
 
   @Override
   public BlockType getBlockType() {
