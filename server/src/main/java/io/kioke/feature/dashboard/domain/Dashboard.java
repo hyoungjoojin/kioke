@@ -13,11 +13,19 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.util.ArrayList;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "DASHBOARD_TABLE")
+@Data
+@Builder
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Dashboard {
 
   @Id
@@ -31,28 +39,4 @@ public class Dashboard {
 
   @OneToMany(mappedBy = "dashboard", orphanRemoval = true, cascade = CascadeType.MERGE)
   private List<Widget> widgets;
-
-  protected Dashboard() {}
-
-  private Dashboard(User user) {
-    this.user = user;
-    this.widgets = new ArrayList<>();
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public List<Widget> getWidgets() {
-    return widgets;
-  }
-
-  public static Dashboard from(User user) {
-    return new Dashboard(user);
-  }
-
-  public void setWidgets(List<Widget> widgets) {
-    this.widgets.clear();
-    this.widgets.addAll(widgets);
-  }
 }

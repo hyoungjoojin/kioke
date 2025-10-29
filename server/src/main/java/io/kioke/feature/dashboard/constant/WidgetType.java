@@ -1,20 +1,11 @@
 package io.kioke.feature.dashboard.constant;
 
-import io.kioke.feature.dashboard.domain.widget.content.JournalCollectionWidgetContent;
-import io.kioke.feature.dashboard.domain.widget.content.SingleJournalWidgetContent;
-import io.kioke.feature.dashboard.domain.widget.content.WidgetContent;
-
 public enum WidgetType {
-  JOURNAL_COLLECTION(JournalCollectionWidgetContent.class),
-  SINGLE_JOURNAL(SingleJournalWidgetContent.class);
+  JOURNAL_COVER,
+  WEATHER;
 
-  private final Class<? extends WidgetContent> contentClass;
-
-  private WidgetType(Class<? extends WidgetContent> contentClass) {
-    this.contentClass = contentClass;
-  }
-
-  public Class<? extends WidgetContent> getContentClass() {
-    return contentClass;
+  public static final class Values {
+    public static final String JOURNAL_COVER = "JOURNAL_COVER";
+    public static final String WEATHER = "WEATHER";
   }
 }
