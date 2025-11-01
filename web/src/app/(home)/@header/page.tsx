@@ -1,6 +1,6 @@
 'use client';
 
-import DashboardEditorToolbar from './components/DashboardEditorToolbar';
+import DashboardEditorToolbar from '@/components/feature/dashboard/DashboardEditorToolbar';
 import BaseHeader from '@/components/header/BaseHeader';
 import { useDashboard } from '@/store/dashboard';
 

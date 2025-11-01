@@ -1,46 +1,75 @@
-import {
-  JournalCollectionWidget,
-  JournalCollectionWidgetDefaultContent,
-  JournalCollectionWidgetEditModal,
-  JournalCollectionWidgetPreview,
-} from './JournalCollection';
-import {
-  SingleJournalWidget,
-  SingleJournalWidgetDefaultContent,
-  SingleJournalWidgetEditModal,
-  SingleJournalWidgetPreview,
-} from './SingleJournal';
-import { DashboardWidgetType } from '@/constant/dashboard';
-import type { ComponentType } from 'react';
+import JournalCoverWidget from './JournalCover/JournalCoverWidget';
+import JournalCoverWidgetForm from './JournalCover/JournalCoverWidgetForm';
+import JournalCoverWidgetPreview from './JournalCover/JournalCoverWidgetPreview';
+import WeatherWidget from './Weather/WeatherWidget';
+import WeatherWidgetPreview from './Weather/WeatherWidgetPreview';
+import { WidgetType } from '@/constant/dashboard';
+import type { WidgetContent } from '@/types/dashboard';
+import type {
+  ComponentType,
+  ForwardRefExoticComponent,
+  PropsWithoutRef,
+} from 'react';
 
-export interface DashboardWidgetEditModalProps {
+interface WidgetProps {
+  id: string;
+  widget: WidgetContent;
+  isEditing: boolean;
+  disabled?: boolean;
+}
+
+interface WidgetFormRef {
+  submit: () => void;
+}
+
+interface WidgetFormProps {
+  widget: WidgetContent;
   onSubmit: (content: any) => void;
 }
 
 const Widgets: {
-  [K in DashboardWidgetType]: {
-    main: ComponentType<any>;
+  [W in WidgetType]: {
+    main: ComponentType<WidgetProps>;
     preview: ComponentType<any>;
-    edit: ComponentType<
-      DashboardWidgetEditModalProps & {
-        content: any;
+    defaultContent: () => Promise<WidgetContent>;
+  } & (
+    | {
+        configurable: true;
+        form: ForwardRefExoticComponent<
+          React.RefAttributes<WidgetFormRef> & PropsWithoutRef<WidgetFormProps>
+        >;
       }
-    >;
-    default: () => Promise<any>;
-  };
+    | {
+        configurable: false;
+      }
+  );
 } = {
-  [DashboardWidgetType.JOURNAL_COLLECTION]: {
-    main: JournalCollectionWidget,
-    preview: JournalCollectionWidgetPreview,
-    edit: JournalCollectionWidgetEditModal,
-    default: JournalCollectionWidgetDefaultContent,
+  [WidgetType.JOURNAL_COVER]: {
+    main: JournalCoverWidget,
+    preview: JournalCoverWidgetPreview,
+    defaultContent: async () => {
+      return {
+        type: WidgetType.JOURNAL_COVER,
+        content: {
+          journalId: '',
+        },
+      };
+    },
+    configurable: true,
+    form: JournalCoverWidgetForm,
   },
-  [DashboardWidgetType.SINGLE_JOURNAL]: {
-    main: SingleJournalWidget,
-    preview: SingleJournalWidgetPreview,
-    edit: SingleJournalWidgetEditModal,
-    default: SingleJournalWidgetDefaultContent,
+  [WidgetType.WEATHER]: {
+    main: WeatherWidget,
+    preview: WeatherWidgetPreview,
+    defaultContent: async () => {
+      return {
+        type: WidgetType.WEATHER,
+        content: {},
+      };
+    },
+    configurable: false,
   },
 };
 
 export default Widgets;
+export type { WidgetProps, WidgetFormRef, WidgetFormProps };

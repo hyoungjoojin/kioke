@@ -1,10 +1,10 @@
 import kioke from '@/app/api';
-import type { DashboardWidgetType } from '@/constant/dashboard';
+import type { WidgetType } from '@/constant/dashboard';
 import { MimeType } from '@/constant/mime';
 
 export interface UpdateDashboardRequest {
   widgets: {
-    type: DashboardWidgetType;
+    type: WidgetType;
     x: number;
     y: number;
     content: any;

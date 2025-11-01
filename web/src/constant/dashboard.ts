@@ -1,20 +1,20 @@
-export const enum DashboardWidgetType {
-  JOURNAL_COLLECTION = 'JOURNAL_COLLECTION',
-  SINGLE_JOURNAL = 'SINGLE_JOURNAL',
+const enum WidgetType {
+  JOURNAL_COVER = 'JOURNAL_COVER',
+  WEATHER = 'WEATHER',
 }
 
-export const DashboardWidgetDimensions: Record<
-  DashboardWidgetType,
+const WidgetDimensions: Record<
+  WidgetType,
   {
     w: number;
     h: number;
   }
 > = {
-  [DashboardWidgetType.JOURNAL_COLLECTION]: { w: 2, h: 5 },
-  [DashboardWidgetType.SINGLE_JOURNAL]: { w: 2, h: 3 },
+  [WidgetType.JOURNAL_COVER]: { w: 2, h: 5 },
+  [WidgetType.WEATHER]: { w: 2, h: 3 },
 };
 
-export const DEFAULT_DASHBOARD_LAYOUT_CONFIGURATION = {
+const DEFAULT_DASHBOARD_LAYOUT_CONFIGURATION = {
   columns: {
     xl: 12,
     lg: 10,
@@ -32,3 +32,5 @@ export const DEFAULT_DASHBOARD_LAYOUT_CONFIGURATION = {
   margin: [5, 5] as [number, number],
   rowHeight: 50,
 };
+
+export { WidgetType, WidgetDimensions, DEFAULT_DASHBOARD_LAYOUT_CONFIGURATION };

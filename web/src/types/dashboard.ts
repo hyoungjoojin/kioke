@@ -1,13 +1,25 @@
-import type { DashboardWidgetType } from '@/constant/dashboard';
+import type { WidgetType } from '@/constant/dashboard';
 
-export interface Dashboard {
+interface Dashboard {
   widgets: Widget[];
 }
 
-export interface Widget {
-  type: DashboardWidgetType;
-  content: any;
+type Widget = {
   id: string;
   x: number;
   y: number;
-}
+} & WidgetContent;
+
+type WidgetContent =
+  | {
+      type: WidgetType.JOURNAL_COVER;
+      content: {
+        journalId: string;
+      };
+    }
+  | {
+      type: WidgetType.WEATHER;
+      content: {};
+    };
+
+export type { Dashboard, Widget, WidgetContent };
