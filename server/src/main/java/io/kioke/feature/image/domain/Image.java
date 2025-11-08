@@ -27,4 +27,10 @@ public class Image extends Media {
   public Long getHeight() {
     return height;
   }
+
+  public static Image of(String imageId) {
+    Image image = new Image();
+    image.setId(imageId);
+    return image;
+  }
 }

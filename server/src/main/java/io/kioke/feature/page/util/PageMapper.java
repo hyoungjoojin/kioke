@@ -1,7 +1,7 @@
 package io.kioke.feature.page.util;
 
+import io.kioke.feature.block.dto.BlockDto;
 import io.kioke.feature.page.domain.Page;
-import io.kioke.feature.page.dto.BlockDto;
 import io.kioke.feature.page.dto.PageDto;
 import java.util.List;
 import org.mapstruct.Mapper;

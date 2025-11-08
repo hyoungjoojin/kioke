@@ -41,6 +41,12 @@ public class ImageService {
   }
 
   @Transactional(readOnly = true)
+  public Image getImage(String imageId) {
+    Image image = imageRepository.findById(imageId).orElseThrow();
+    return image;
+  }
+
+  @Transactional(readOnly = true)
   public List<Image> getImages(List<String> imageIds) {
     List<Image> images = imageRepository.findAllById(imageIds);
     return images;

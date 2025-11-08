@@ -1,28 +1,20 @@
-package io.kioke.feature.page.domain.block;
+package io.kioke.feature.block.domain.blocks;
 
+import io.kioke.feature.block.domain.Block;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Data;
 
 @Entity
-@Table(name = "MAP_BLOCK_MARKER_TABLE")
-@Data
-public class MapBlockMarker {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
-  private String id;
+@Table(name = "MARKER_BLOCK_TABLE")
+public class MarkerBlock extends Block {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "MAP_BLOCK_ID")
-  private MapBlock mapBlock;
+  private MapBlock parent;
 
   @Column(name = "LATITUDE")
   private Long latitude;

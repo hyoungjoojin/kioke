@@ -1,5 +1,6 @@
 package io.kioke.feature.page.dto;
 
+import io.kioke.feature.block.dto.BlockDto;
 import java.time.LocalDateTime;
 import java.util.List;
 

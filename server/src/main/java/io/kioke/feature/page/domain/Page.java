@@ -1,7 +1,7 @@
 package io.kioke.feature.page.domain;
 
+import io.kioke.feature.block.domain.Block;
 import io.kioke.feature.journal.domain.Journal;
-import io.kioke.feature.page.domain.block.Block;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -64,7 +64,7 @@ public class Page {
   @LastModifiedDate
   private Instant lastModifiedAt;
 
-  public static Page getReferenceById(String pageId) {
+  public static Page of(String pageId) {
     Page page = new Page();
     page.setPageId(pageId);
     return page;
