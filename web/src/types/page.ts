@@ -105,6 +105,7 @@ export type {
   Page,
   Block,
   ImageBlock,
+  MarkerBlock,
   BlockOperation,
   DeleteBlockOperation,
   UpdateBlockOperation,

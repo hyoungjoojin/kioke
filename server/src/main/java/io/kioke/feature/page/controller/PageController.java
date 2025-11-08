@@ -1,6 +1,7 @@
 package io.kioke.feature.page.controller;
 
 import io.kioke.exception.page.PageNotFoundException;
+import io.kioke.feature.block.domain.BlockType;
 import io.kioke.feature.block.dto.BlockDto;
 import io.kioke.feature.page.dto.PageDto;
 import io.kioke.feature.page.dto.request.CreatePageRequest;
@@ -32,7 +33,12 @@ public class PageController {
 
   @GetMapping("/pages/{pageId}/images")
   public List<BlockDto> getPageImages(@PathVariable String pageId) throws PageNotFoundException {
-    return pageService.getPageImages(pageId);
+    return pageService.getPageBlocksByType(pageId, BlockType.IMAGE_BLOCK);
+  }
+
+  @GetMapping("/pages/{pageId}/markers")
+  public List<BlockDto> getPageMarkers(@PathVariable String pageId) throws PageNotFoundException {
+    return pageService.getPageBlocksByType(pageId, BlockType.MARKER_BLOCK);
   }
 
   @PostMapping("/pages")

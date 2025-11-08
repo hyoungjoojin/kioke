@@ -38,9 +38,10 @@ public class PageService {
   }
 
   @Transactional(readOnly = true)
-  public List<BlockDto> getPageImages(String pageId) throws PageNotFoundException {
+  public List<BlockDto> getPageBlocksByType(String pageId, BlockType blockType)
+      throws PageNotFoundException {
     Page page = pageRepository.getReferenceById(pageId);
-    List<BlockDto> blocks = blockService.getBlocksInPage(page, BlockType.IMAGE_BLOCK);
+    List<BlockDto> blocks = blockService.getBlocksInPage(page, blockType);
     return blocks;
   }
 

@@ -41,10 +41,10 @@ export default async function Journal({
   const { journalId } = await params;
 
   return (
-    <>
+    <div className='h-full flex flex-col'>
       <JournalTitle journalId={journalId} />
 
-      <Tabs defaultValue={JournalView.Pages}>
+      <Tabs defaultValue={JournalView.Pages} className='flex-grow'>
         <TabsList className='flex justify-between w-full'>
           <div className='flex'>
             {Object.values(JournalView).map((view, index) => {
@@ -74,6 +74,6 @@ export default async function Journal({
           );
         })}
       </Tabs>
-    </>
+    </div>
   );
 }
