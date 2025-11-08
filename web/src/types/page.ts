@@ -23,16 +23,18 @@ type Block = {
   | {
       type: BlockType.GALLERY_BLOCK;
     }
-  | {
-      type: BlockType.IMAGE_BLOCK;
-      parentId: string;
-      imageId: string;
-      url: string;
-      description: string;
-      width: number;
-      height: number;
-    }
+  | ImageBlock
 );
+
+type ImageBlock = {
+  type: BlockType.IMAGE_BLOCK;
+  parentId: string;
+  imageId: string;
+  url: string;
+  description: string;
+  width: number;
+  height: number;
+};
 
 enum BlockOperationType {
   UPDATE = 'UPDATE',
@@ -73,6 +75,7 @@ export { BlockType, BlockOperationType };
 export type {
   Page,
   Block,
+  ImageBlock,
   BlockOperation,
   DeleteBlockOperation,
   UpdateBlockOperation,

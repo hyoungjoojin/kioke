@@ -1,11 +1,11 @@
 import { getPageImages } from '@/app/api/page';
-import type { PageImage } from '@/types/page';
+import type { ImageBlock } from '@/types/page';
 import type KiokeError from '@/util/error';
 import { unwrap } from '@/util/result';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
-type TData = PageImage[];
+type TData = ImageBlock[];
 type TError = KiokeError;
 
 type QueryParams = {

@@ -47,8 +47,8 @@ function Page({ id, title }: PageProps) {
           return (
             <NextImage
               key={index}
-              alt={image.imageId}
-              src={image.imageUrl}
+              alt={image.description || ''}
+              src={image.url}
               width={image.width}
               height={image.height}
             />

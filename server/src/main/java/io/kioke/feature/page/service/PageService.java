@@ -1,7 +1,9 @@
 package io.kioke.feature.page.service;
 
 import io.kioke.exception.page.PageNotFoundException;
+import io.kioke.feature.block.domain.BlockType;
 import io.kioke.feature.block.dto.BlockDto;
+import io.kioke.feature.block.dto.operation.UpdateBlockOperation;
 import io.kioke.feature.block.service.BlockService;
 import io.kioke.feature.journal.domain.Journal;
 import io.kioke.feature.page.domain.Page;
@@ -35,6 +37,13 @@ public class PageService {
     return pageMapper.map(page, blocks);
   }
 
+  @Transactional(readOnly = true)
+  public List<BlockDto> getPageImages(String pageId) throws PageNotFoundException {
+    Page page = pageRepository.getReferenceById(pageId);
+    List<BlockDto> blocks = blockService.getBlocksInPage(page, BlockType.IMAGE_BLOCK);
+    return blocks;
+  }
+
   @Transactional
   @PreAuthorize("hasPermission(#request.journalId, 'journal', 'update')")
   public PageDto createPage(CreatePageRequest request) {
@@ -46,8 +55,12 @@ public class PageService {
             .build();
     pageRepository.save(page);
 
-    // blockService.createBlock(
-    //     new CreateBlockOperation(page.getPageId(), "", null, BlockType.TEXT_BLOCK, ""));
+    blockService.updateBlock(
+        new UpdateBlockOperation(
+            "",
+            page.getPageId(),
+            BlockType.TEXT_BLOCK,
+            new UpdateBlockOperation.TextBlockContent("")));
 
     return pageMapper.map(page, Collections.emptyList());
   }

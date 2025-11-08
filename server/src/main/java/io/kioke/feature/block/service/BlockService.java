@@ -58,6 +58,13 @@ public class BlockService {
         .toList();
   }
 
+  @Transactional(readOnly = true)
+  public List<BlockDto> getBlocksInPage(Page page, BlockType type) {
+    return blockRepository.findAllByPageId(page.getPageId(), type).stream()
+        .map(block -> getBlockProcessor(block.getType()).map(block))
+        .toList();
+  }
+
   @Transactional
   public Block updateBlock(UpdateBlockOperation op) {
     BlockProcessor processor = getBlockProcessor(op.type());

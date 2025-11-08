@@ -1,6 +1,6 @@
 import kioke from '@/app/api';
 import { MimeType } from '@/constant/mime';
-import type { PageImage } from '@/types/page';
+import type { ImageBlock } from '@/types/page';
 import type KiokeError from '@/util/error';
 import type { Result } from 'neverthrow';
 
@@ -8,7 +8,7 @@ interface GetPageImagesPathParams {
   id: string;
 }
 
-type GetPageImagesResponseBody = PageImage[];
+type GetPageImagesResponseBody = ImageBlock[];
 
 function url({ id }: GetPageImagesPathParams) {
   return `/pages/${id}/images`;
@@ -16,7 +16,7 @@ function url({ id }: GetPageImagesPathParams) {
 
 export async function getPageImages(
   pathParams: GetPageImagesPathParams,
-): Promise<Result<PageImage[], KiokeError>> {
+): Promise<Result<ImageBlock[], KiokeError>> {
   return kioke<GetPageImagesResponseBody>(url(pathParams), {
     method: 'GET',
     headers: {

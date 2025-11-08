@@ -1,10 +1,12 @@
 package io.kioke.feature.page.controller;
 
 import io.kioke.exception.page.PageNotFoundException;
+import io.kioke.feature.block.dto.BlockDto;
 import io.kioke.feature.page.dto.PageDto;
 import io.kioke.feature.page.dto.request.CreatePageRequest;
 import io.kioke.feature.page.dto.request.UpdatePageRequest;
 import io.kioke.feature.page.service.PageService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -26,6 +28,11 @@ public class PageController {
   @ResponseStatus(HttpStatus.OK)
   public PageDto getPage(@PathVariable String pageId) throws PageNotFoundException {
     return pageService.getPageById(pageId);
+  }
+
+  @GetMapping("/pages/{pageId}/images")
+  public List<BlockDto> getPageImages(@PathVariable String pageId) throws PageNotFoundException {
+    return pageService.getPageImages(pageId);
   }
 
   @PostMapping("/pages")
