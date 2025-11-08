@@ -7,7 +7,9 @@ type IconName =
   | 'map'
   | 'menu'
   | 'image'
-  | 'plus';
+  | 'plus'
+  | 'setting'
+  | 'logout';
 
 type IconProps = React.ComponentProps<'svg'> & {
   name: IconName;

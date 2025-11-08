@@ -44,6 +44,7 @@ function EditDashboard() {
 
   return (
     <DropdownMenuItem
+      icon='edit'
       onClick={() => {
         setIsEditingDraft(true);
         setDraft(dashboard);
@@ -60,6 +61,7 @@ function Settings() {
 
   return (
     <DropdownMenuItem
+      icon='setting'
       onClick={() => {
         openModal(ModalType.SETTINGS);
       }}
@@ -78,7 +80,7 @@ function SignOut() {
   };
 
   return (
-    <DropdownMenuItem onClick={signOutButtonClickHandler}>
+    <DropdownMenuItem icon='logout' onClick={signOutButtonClickHandler}>
       {t('header.profile.sign-out')}
     </DropdownMenuItem>
   );
