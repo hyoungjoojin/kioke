@@ -1,4 +1,5 @@
-import { BlockType } from '@/constant/block';
+import type { BlockAttributes, BlockOptions } from '.';
+import { BlockOperationType, BlockType } from '@/types/page';
 import Bold from '@tiptap/extension-bold';
 import HardBreak from '@tiptap/extension-hard-break';
 import Text from '@tiptap/extension-text';
@@ -10,31 +11,40 @@ import {
   ReactNodeViewRenderer,
   mergeAttributes,
 } from '@tiptap/react';
+import { useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-interface TextBlockOptions {}
+type TextBlockAttributes = BlockAttributes;
 
-const TextBlock = Node.create({
+const TextBlock = Node.create<BlockOptions>({
   name: BlockType.TEXT_BLOCK,
   group: 'block',
   content: 'inline*',
+  addExtensions() {
+    return [Text, HardBreak, Bold];
+  },
   addOptions() {
-    return {} as TextBlockOptions;
+    return {
+      pageId: '',
+    };
   },
   addAttributes() {
     return {
       blockId: {
+        default: null,
+      },
+      pageId: {
         default: () => {
-          return uuidv4();
+          if (!this.options.pageId) {
+            throw new Error('Page ID must be configured for blocks');
+          }
+          return this.options.pageId;
         },
       },
-      isNew: {
-        default: true,
+      ops: {
+        default: [],
       },
     };
-  },
-  addExtensions() {
-    return [Text, HardBreak, Bold];
   },
   renderHTML({ HTMLAttributes }) {
     return [BlockType.TEXT_BLOCK, mergeAttributes(HTMLAttributes)];
@@ -54,7 +64,14 @@ const TextBlock = Node.create({
         return true;
       },
       Backspace: ({ editor }) => {
-        return editor.commands.joinBackward();
+        if (editor.getText().length > 0) {
+          return false;
+        }
+
+        return editor.commands.joinBackward() || true;
+      },
+      ArrowUp: ({ editor }) => {
+        return editor.commands.selectNodeBackward();
       },
     };
   },
@@ -63,7 +80,34 @@ const TextBlock = Node.create({
   },
 });
 
-function TextBlockComponent({}: NodeViewProps) {
+function TextBlockComponent({ node, updateAttributes }: NodeViewProps) {
+  const { pageId, blockId, ops } = node.attrs as TextBlockAttributes;
+
+  useEffect(() => {
+    if (blockId === null) {
+      setTimeout(() => {
+        const blockId = uuidv4();
+
+        updateAttributes({
+          blockId,
+          ops: [
+            ...ops,
+            {
+              timestamp: Date.now(),
+              op: BlockOperationType.UPDATE,
+              pageId,
+              blockId,
+              type: BlockType.TEXT_BLOCK,
+              content: {
+                text: '',
+              },
+            },
+          ],
+        } satisfies Partial<TextBlockAttributes>);
+      }, 0);
+    }
+  }, [blockId, pageId, ops, updateAttributes]);
+
   return (
     <NodeViewWrapper>
       <div>
@@ -73,4 +117,5 @@ function TextBlockComponent({}: NodeViewProps) {
   );
 }
 
+export type { TextBlockAttributes };
 export { TextBlock };

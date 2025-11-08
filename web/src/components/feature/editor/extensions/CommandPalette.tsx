@@ -1,6 +1,6 @@
 import { Separator } from '@/components/ui/separator';
-import { BlockType } from '@/constant/block';
 import { cn } from '@/lib/utils';
+import { BlockType } from '@/types/page';
 import { computePosition, flip, shift } from '@floating-ui/react';
 import { Extension, ReactRenderer, posToDOMRect } from '@tiptap/react';
 import type { Editor, Range } from '@tiptap/react';
@@ -68,7 +68,7 @@ export const CommandPaletteExtension =
                       .chain()
                       .deleteRange(range)
                       .insertContent([
-                        { type: BlockType.IMAGE_BLOCK },
+                        { type: BlockType.GALLERY_BLOCK },
                         { type: BlockType.TEXT_BLOCK },
                       ])
                       .joinForward()

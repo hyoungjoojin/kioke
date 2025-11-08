@@ -1,78 +1,65 @@
-import type { ImageBlockAttributes } from './ImageBlock';
-import type { MapBlockAttributes } from './MapBlock';
-import { BlockType } from '@/constant/block';
-import type { Block, BlockContent } from '@/types/page';
+import type { GalleryBlockAttributes } from './GalleryBlock';
+import type { TextBlockAttributes } from './TextBlock';
+import { type Block, type BlockOperation, BlockType } from '@/types/page';
 import type { JSONContent } from '@tiptap/react';
-import type { Node } from 'prosemirror-model';
+
+interface BlockOptions {
+  pageId: string;
+}
 
 interface BlockAttributes {
+  pageId: string;
   blockId: string;
-  isNew: boolean;
+  ops: BlockOperation[];
 }
 
-function getBlockContent(block: Node): BlockContent {
-  const type = BlockType[block.type.name as keyof typeof BlockType];
-  if (type === BlockType.TEXT_BLOCK) {
-    return {
-      type,
-      text: JSON.stringify(block.content.toJSON()),
-    };
-  } else if (type === BlockType.IMAGE_BLOCK) {
-    const { images } = block.attrs as ImageBlockAttributes;
+function deserializeBlocks(blocks: Block[]): JSONContent[] {
+  const result: JSONContent[] = [];
 
-    return {
-      type,
-      images,
-    };
-  } else if (type === BlockType.MAP_BLOCK) {
-    return {
-      type,
-      places: [],
-    };
-  } else {
-    throw new Error();
-  }
-}
+  for (const block of blocks) {
+    if (block.type === BlockType.TEXT_BLOCK) {
+      const { type, id, text } = block;
 
-function deserializeBlock(block: Block): JSONContent | null {
-  const blockContent = block.content;
+      result.push({
+        type,
+        content: text ? JSON.parse(text) : '',
+        attrs: {
+          pageId: '',
+          blockId: id,
+          ops: [],
+        } satisfies TextBlockAttributes,
+      });
+    } else if (block.type === BlockType.GALLERY_BLOCK) {
+      const { type, id } = block;
 
-  if (blockContent.type === BlockType.TEXT_BLOCK) {
-    return {
-      type: blockContent.type,
-      content: blockContent.text ? JSON.parse(blockContent.text) : '',
-      attrs: {
-        blockId: block.blockId,
-        isNew: false,
-      },
-    };
-  } else if (blockContent.type === BlockType.IMAGE_BLOCK) {
-    return {
-      type: blockContent.type,
-      content: undefined,
-      attrs: {
-        blockId: block.blockId,
-        isNew: false,
-        images: blockContent.images,
-      } as ImageBlockAttributes,
-    };
-  } else if (blockContent.type === BlockType.MAP_BLOCK) {
-    return {
-      type: blockContent.type,
-      attrs: {
-        blockId: block.blockId,
-        isNew: false,
-        places: [],
-      } as MapBlockAttributes,
-    };
+      result.push({
+        type,
+        attrs: {
+          pageId: '',
+          blockId: id,
+          ops: [],
+          images: blocks
+            .filter((block) => block.type === BlockType.IMAGE_BLOCK)
+            .filter((block) => block.parentId === id)
+            .map((block) => ({
+              status: 'success',
+              id: block.id,
+              url: block.url,
+              description: block.description || '',
+              width: block.width,
+              height: block.height,
+            })),
+        } satisfies GalleryBlockAttributes,
+      });
+    }
   }
 
-  return null;
+  return result;
 }
 
 export * from './Document';
 export * from './TextBlock';
-export * from './ImageBlock';
+export * from './GalleryBlock';
 export * from './MapBlock';
 export * from './CommandPalette';
-export { type BlockAttributes, getBlockContent, deserializeBlock };
+export { type BlockOptions, type BlockAttributes, deserializeBlocks };

@@ -1,7 +1,7 @@
 import I18nProvider from './I18nProvider';
 import QueryProvider from './QueryProvider';
 import { StoreProvider } from './StoreProvider';
-import { TransactionProvider } from './TransactionProvider';
+import EditorProvider from '@/components/feature/editor/EditorProvider';
 
 export default function RootProvider({
   children,
@@ -12,7 +12,7 @@ export default function RootProvider({
     <I18nProvider>
       <QueryProvider>
         <StoreProvider>
-          <TransactionProvider>{children}</TransactionProvider>
+          <EditorProvider>{children}</EditorProvider>
         </StoreProvider>
       </QueryProvider>
     </I18nProvider>

@@ -15,6 +15,11 @@ class Queue<T> {
     this.size_++;
   }
 
+  public pushAll(items: T[]) {
+    this.queue_.push(...items);
+    this.size_ += items.length;
+  }
+
   public pop() {
     if (this.size_ === 0) {
       return;
@@ -22,6 +27,16 @@ class Queue<T> {
 
     this.front_++;
     this.size_--;
+  }
+
+  public flush(): T[] {
+    const result = this.queue_.splice(0);
+
+    this.queue_ = [];
+    this.front_ = 0;
+    this.size_ = 0;
+
+    return result;
   }
 
   public front(): T | null {
