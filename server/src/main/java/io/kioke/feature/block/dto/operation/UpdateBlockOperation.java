@@ -18,7 +18,9 @@ public record UpdateBlockOperation(
         @JsonSubTypes({
           @Type(value = TextBlockContent.class, name = BlockType.Values.TEXT_BLOCK),
           @Type(value = ImageBlockContent.class, name = BlockType.Values.IMAGE_BLOCK),
-          @Type(value = GalleryBlockContent.class, name = BlockType.Values.GALLERY_BLOCK)
+          @Type(value = GalleryBlockContent.class, name = BlockType.Values.GALLERY_BLOCK),
+          @Type(value = MapBlockContent.class, name = BlockType.Values.MAP_BLOCK),
+          @Type(value = MarkerBlockContent.class, name = BlockType.Values.MARKER_BLOCK)
         })
         Content content)
     implements BlockOperation {
@@ -31,4 +33,14 @@ public record UpdateBlockOperation(
       implements Content {}
 
   public record GalleryBlockContent() implements Content {}
+
+  public record MapBlockContent() implements Content {}
+
+  public record MarkerBlockContent(
+      @NotNull String parentId,
+      @NotNull Double latitude,
+      @NotNull Double longitude,
+      String title,
+      String description)
+      implements Content {}
 }

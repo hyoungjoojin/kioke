@@ -1,5 +1,6 @@
 'use client';
 
+import logger from '@/lib/logger';
 import type { BlockOperation } from '@/types/page';
 import { createContext, useContext, useEffect, useRef } from 'react';
 
@@ -44,7 +45,7 @@ function EditorProvider({ children }: EditorProviderProps) {
 
   const handleEditorWorkerMessage = (event: MessageEvent<any>) => {
     const data = event.data;
-    console.log(data);
+    logger.error(data);
   };
 
   return (

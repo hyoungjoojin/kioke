@@ -6,6 +6,7 @@ import {
   CommandPaletteExtension,
   Document,
   GalleryBlock,
+  MapBlock,
   TextBlock,
   deserializeBlocks,
 } from '@/components/feature/editor/extensions';
@@ -37,6 +38,7 @@ export default function Editor({ pageId }: EditorProps) {
       Document,
       TextBlock.configure({ pageId }),
       GalleryBlock.configure({ pageId }),
+      MapBlock.configure({ pageId }),
       CommandPaletteExtension,
     ],
     content: '',
@@ -60,7 +62,7 @@ export default function Editor({ pageId }: EditorProps) {
     if (editor && page) {
       editor.commands.setContent({
         type: 'doc',
-        content: deserializeBlocks(page.blocks).filter(
+        content: deserializeBlocks(page.pageId, page.blocks).filter(
           (content) => content !== null,
         ),
       });

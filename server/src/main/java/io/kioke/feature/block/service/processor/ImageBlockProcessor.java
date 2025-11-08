@@ -53,16 +53,12 @@ public class ImageBlockProcessor implements BlockProcessor {
     ImageBlock imageBlock = new ImageBlock();
     var content = (UpdateBlockOperation.ImageBlockContent) operation.content();
 
-    if (operation.blockId() != null) {
-      GalleryBlock parentBlock =
-          (GalleryBlock) blockRepository.findById(content.parentId()).orElseThrow();
-      imageBlock.setParent(parentBlock);
-    }
+    GalleryBlock parentBlock =
+        (GalleryBlock) blockRepository.findById(content.parentId()).orElseThrow();
+    imageBlock.setParent(parentBlock);
 
-    if (content.imageId() != null) {
-      Image image = imageService.getImage(content.imageId());
-      imageBlock.setImage(image);
-    }
+    Image image = imageService.getImage(content.imageId());
+    imageBlock.setImage(image);
 
     return imageBlock;
   }

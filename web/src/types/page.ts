@@ -10,6 +10,8 @@ enum BlockType {
   TEXT_BLOCK = 'TEXT_BLOCK',
   GALLERY_BLOCK = 'GALLERY_BLOCK',
   IMAGE_BLOCK = 'IMAGE_BLOCK',
+  MAP_BLOCK = 'MAP_BLOCK',
+  MARKER_BLOCK = 'MARKER_BLOCK',
 }
 
 type Block = {
@@ -24,6 +26,10 @@ type Block = {
       type: BlockType.GALLERY_BLOCK;
     }
   | ImageBlock
+  | {
+      type: BlockType.MAP_BLOCK;
+    }
+  | MarkerBlock
 );
 
 type ImageBlock = {
@@ -34,6 +40,15 @@ type ImageBlock = {
   description: string;
   width: number;
   height: number;
+};
+
+type MarkerBlock = {
+  type: BlockType.MARKER_BLOCK;
+  parentId: string;
+  latitude: number;
+  longitude: number;
+  title: string;
+  description: string;
 };
 
 enum BlockOperationType {
@@ -68,6 +83,20 @@ type UpdateBlockOperation = {
   | {
       type: BlockType.GALLERY_BLOCK;
       content: {};
+    }
+  | {
+      type: BlockType.MAP_BLOCK;
+      content: {};
+    }
+  | {
+      type: BlockType.MARKER_BLOCK;
+      content: {
+        parentId: string;
+        latitude: number;
+        longitude: number;
+        title: string;
+        description: string;
+      };
     }
 );
 

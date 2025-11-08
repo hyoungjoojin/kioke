@@ -1,4 +1,5 @@
 import type { GalleryBlockAttributes } from './GalleryBlock';
+import type { MapBlockAttributes } from './MapBlock';
 import type { TextBlockAttributes } from './TextBlock';
 import { type Block, type BlockOperation, BlockType } from '@/types/page';
 import type { JSONContent } from '@tiptap/react';
@@ -13,7 +14,7 @@ interface BlockAttributes {
   ops: BlockOperation[];
 }
 
-function deserializeBlocks(blocks: Block[]): JSONContent[] {
+function deserializeBlocks(pageId: string, blocks: Block[]): JSONContent[] {
   const result: JSONContent[] = [];
 
   for (const block of blocks) {
@@ -24,7 +25,7 @@ function deserializeBlocks(blocks: Block[]): JSONContent[] {
         type,
         content: text ? JSON.parse(text) : '',
         attrs: {
-          pageId: '',
+          pageId,
           blockId: id,
           ops: [],
         } satisfies TextBlockAttributes,
@@ -35,7 +36,7 @@ function deserializeBlocks(blocks: Block[]): JSONContent[] {
       result.push({
         type,
         attrs: {
-          pageId: '',
+          pageId,
           blockId: id,
           ops: [],
           images: blocks
@@ -50,6 +51,27 @@ function deserializeBlocks(blocks: Block[]): JSONContent[] {
               height: block.height,
             })),
         } satisfies GalleryBlockAttributes,
+      });
+    } else if (block.type === BlockType.MAP_BLOCK) {
+      const { type, id } = block;
+
+      result.push({
+        type,
+        attrs: {
+          pageId,
+          blockId: id,
+          ops: [],
+          markers: blocks
+            .filter((block) => block.type === BlockType.MARKER_BLOCK)
+            .filter((block) => block.parentId === id)
+            .map((block) => ({
+              id: block.id,
+              latitude: block.latitude,
+              longitude: block.longitude,
+              title: block.title,
+              description: block.description,
+            })),
+        } satisfies MapBlockAttributes,
       });
     }
   }

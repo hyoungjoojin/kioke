@@ -1,7 +1,8 @@
 import type { BlockAttributes } from '.';
+import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
-import { BlockType } from '@/constant/block';
-import type { Place } from '@/types/page';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { BlockOperationType, BlockType } from '@/types/page';
 import env from '@/util/env';
 import {
   Node,
@@ -10,19 +11,27 @@ import {
   ReactNodeViewRenderer,
   mergeAttributes,
 } from '@tiptap/react';
+import { useClickAway } from '@uidotdev/usehooks';
 import { AnimatePresence, motion } from 'motion/react';
-import { useState } from 'react';
-import Map, { type MapMouseEvent, Marker } from 'react-map-gl/mapbox';
+import { useEffect, useState } from 'react';
+import Map, {
+  type MapMouseEvent,
+  Marker as MapboxMarker,
+} from 'react-map-gl/mapbox';
 import { v4 as uuidv4 } from 'uuid';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { useClickAway } from '@uidotdev/usehooks';
+type MarkerAttributes = {
+  id: string;
+  latitude: number;
+  longitude: number;
+  title: string;
+  description: string;
+};
 
-export type MapBlockAttributes = BlockAttributes & {
-  places: Place[];
+type MapBlockAttributes = BlockAttributes & {
+  markers: MarkerAttributes[];
 };
 
 const MapBlock = Node.create({
@@ -30,16 +39,23 @@ const MapBlock = Node.create({
   group: 'block',
   content: '',
   atom: true,
-  selectable: false,
   addAttributes() {
     return {
       blockId: {
-        default: () => uuidv4(),
+        default: null,
       },
-      isNew: {
-        default: true,
+      pageId: {
+        default: () => {
+          if (!this.options.pageId) {
+            throw new Error('Page ID must be configured for blocks');
+          }
+          return this.options.pageId;
+        },
       },
-      places: {
+      ops: {
+        default: [],
+      },
+      markers: {
         default: [],
       },
     };
@@ -60,39 +76,83 @@ const MapBlock = Node.create({
 });
 
 function KiokeMap({ node, updateAttributes }: NodeViewProps) {
-  const { places } = node.attrs as MapBlockAttributes;
+  const { pageId, blockId, ops, markers } = node.attrs as MapBlockAttributes;
 
-  const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
+  useEffect(() => {
+    if (blockId === null) {
+      setTimeout(() => {
+        const blockId = uuidv4();
+
+        updateAttributes({
+          pageId,
+          blockId,
+          ops: [
+            ...ops,
+            {
+              timestamp: Date.now(),
+              op: BlockOperationType.UPDATE,
+              pageId,
+              blockId,
+              type: BlockType.MAP_BLOCK,
+              content: {},
+            },
+          ],
+          markers,
+        } satisfies MapBlockAttributes);
+      }, 0);
+    }
+  }, [blockId, pageId, ops, updateAttributes, markers]);
+
+  const [selectedMarker, setSelectedMarker] = useState<MarkerAttributes | null>(
+    null,
+  );
 
   const sidebarRef = useClickAway<HTMLDivElement>(() => {
-    setSelectedPlace(null);
+    setSelectedMarker(null);
   });
 
   const mapClickHandler = (event: MapMouseEvent) => {
-    if (selectedPlace) {
+    if (selectedMarker) {
       return;
     }
 
+    const content = {
+      latitude: event.lngLat.lat,
+      longitude: event.lngLat.lng,
+      title: 'Untitled',
+      description: '',
+    };
+
     updateAttributes({
-      places: [
-        ...places,
+      ops: [
+        ...ops,
         {
-          id: null,
-          latitude: event.lngLat.lat,
-          longitude: event.lngLat.lng,
-          title: 'Lorem Ipsum',
-          description:
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+          timestamp: Date.now(),
+          op: BlockOperationType.UPDATE,
+          pageId,
+          blockId: uuidv4(),
+          type: BlockType.MARKER_BLOCK,
+          content: {
+            parentId: blockId,
+            ...content,
+          },
         },
       ],
-    });
+      markers: [
+        ...markers,
+        {
+          id: uuidv4(),
+          ...content,
+        },
+      ],
+    } satisfies Partial<MapBlockAttributes>);
   };
 
-  const PlaceMarker = ({ place }: { place: Place }) => {
+  const Marker = ({ marker }: { marker: MarkerAttributes }) => {
     const [isHovered, setIsHovered] = useState(false);
 
     return (
-      <Marker latitude={place.latitude} longitude={place.longitude}>
+      <MapboxMarker latitude={marker.latitude} longitude={marker.longitude}>
         <div
           className='relative'
           onMouseOver={() => {
@@ -102,7 +162,7 @@ function KiokeMap({ node, updateAttributes }: NodeViewProps) {
             setIsHovered(false);
           }}
           onClick={() => {
-            setSelectedPlace(place);
+            setSelectedMarker(marker);
           }}
         >
           <Icon
@@ -111,12 +171,12 @@ function KiokeMap({ node, updateAttributes }: NodeViewProps) {
             size={24}
           />
         </div>
-      </Marker>
+      </MapboxMarker>
     );
   };
 
   const Sidebar = () => {
-    if (!selectedPlace) {
+    if (!selectedMarker) {
       return null;
     }
 
@@ -126,11 +186,11 @@ function KiokeMap({ node, updateAttributes }: NodeViewProps) {
 
     const trashButtonClickHandler = () => {
       // TODO: Need to remove place from list
-      setSelectedPlace(null);
+      setSelectedMarker(null);
     };
 
     const closeButtonClickHandler = () => {
-      setSelectedPlace(null);
+      setSelectedMarker(null);
     };
 
     return (
@@ -153,8 +213,8 @@ function KiokeMap({ node, updateAttributes }: NodeViewProps) {
           </div>
 
           <ScrollArea className='h-full overflow-y-hidden'>
-            <div className='font-bold text-md mb-2'>{selectedPlace.title}</div>
-            <div className='text-xs'>{selectedPlace.description}</div>
+            <div className='font-bold text-md mb-2'>{selectedMarker.title}</div>
+            <div className='text-xs'>{selectedMarker.description}</div>
           </ScrollArea>
         </div>
       </div>
@@ -171,12 +231,12 @@ function KiokeMap({ node, updateAttributes }: NodeViewProps) {
             attributionControl={false}
             onClick={mapClickHandler}
           >
-            {places.map((place, index) => {
-              return <PlaceMarker key={index} place={place} />;
+            {markers.map((marker, index) => {
+              return <Marker key={index} marker={marker} />;
             })}
           </Map>
 
-          {selectedPlace && (
+          {selectedMarker && (
             <AnimatePresence>
               <motion.div
                 initial={{
@@ -198,4 +258,5 @@ function KiokeMap({ node, updateAttributes }: NodeViewProps) {
   );
 }
 
+export type { MapBlockAttributes };
 export { MapBlock };
