@@ -1,4 +1,5 @@
 type IconName =
+  | 'ellipsis-vertical'
   | 'location'
   | 'location-plus'
   | 'x'

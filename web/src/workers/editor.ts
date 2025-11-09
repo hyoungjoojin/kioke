@@ -1,5 +1,9 @@
 import { saveBlockOperations } from '@/app/api/block/saveBlockOperations';
-import type { BlockOperation } from '@/types/page';
+import {
+  type BlockOperation,
+  BlockOperationType,
+  BlockType,
+} from '@/types/page';
 import Queue from '@/util/queue';
 import { groupBy } from 'lodash';
 
@@ -28,7 +32,23 @@ setInterval(async () => {
     .map((op) => ({
       ...op,
       blockId: mapper.get(op.blockId) || op.blockId,
-    }));
+    }))
+    .map((op) => {
+      if (
+        op.op === BlockOperationType.DELETE ||
+        op.type !== BlockType.MARKER_BLOCK
+      ) {
+        return op;
+      }
+
+      return {
+        ...op,
+        content: {
+          ...op.content,
+          parentId: mapper.get(op.content.parentId) || op.content.parentId,
+        },
+      };
+    });
 
   const response = await saveBlockOperations(ops);
   if (response.conversions) {

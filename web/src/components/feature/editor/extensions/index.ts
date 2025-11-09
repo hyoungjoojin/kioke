@@ -1,6 +1,9 @@
-import type { GalleryBlockAttributes } from './GalleryBlock';
-import type { MapBlockAttributes } from './MapBlock';
-import type { TextBlockAttributes } from './TextBlock';
+import GalleryBlock, { type GalleryBlockAttributes } from './GalleryBlock';
+import MapBlock, {
+  type MapBlockAttributes,
+  type MarkerAttributes,
+} from './MapBlock';
+import TextBlock, { type TextBlockAttributes } from './TextBlock';
 import { type Block, type BlockOperation, BlockType } from '@/types/page';
 import type { JSONContent } from '@tiptap/react';
 
@@ -80,8 +83,14 @@ function deserializeBlocks(pageId: string, blocks: Block[]): JSONContent[] {
 }
 
 export * from './Document';
-export * from './TextBlock';
-export * from './GalleryBlock';
-export * from './MapBlock';
 export * from './CommandPalette';
-export { type BlockOptions, type BlockAttributes, deserializeBlocks };
+
+export { deserializeBlocks, TextBlock, GalleryBlock, MapBlock };
+export type {
+  BlockOptions,
+  BlockAttributes,
+  TextBlockAttributes,
+  MapBlockAttributes,
+  GalleryBlockAttributes,
+  MarkerAttributes,
+};

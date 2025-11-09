@@ -1,19 +1,21 @@
 'use client';
 
-import env from '@/util/env';
-import Map, { Marker } from 'react-map-gl/mapbox';
-
-import 'mapbox-gl/dist/mapbox-gl.css';
-
+import KiokeMap from '@/components/feature/map/KiokeMap';
 import { useJournalQuery } from '@/query/journal';
 import { pageMarkersQueryOptions } from '@/query/page';
 import { useQueries } from '@tanstack/react-query';
+import { useRef } from 'react';
+import { type MapRef, Marker } from 'react-map-gl/mapbox';
+
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 interface JournalMapViewProps {
   journalId: string;
 }
 
 function JournalMapView({ journalId }: JournalMapViewProps) {
+  const mapRef = useRef<MapRef | null>(null);
+
   const { data: journal } = useJournalQuery({ journalId });
   const pageIds = journal ? journal.pages.map((page) => page.id) : [];
   const { markers } = useQueries({
@@ -32,26 +34,30 @@ function JournalMapView({ journalId }: JournalMapViewProps) {
   }
 
   return (
-    <div className='h-full'>
-      <Map
-        mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
-        mapStyle='mapbox://styles/mapbox/standard'
-        attributionControl={false}
-        projection='globe'
-      >
-        {markers
-          .filter((marker) => marker !== undefined)
-          .map((marker, index) => {
-            return (
-              <Marker
-                key={index}
-                longitude={marker.longitude}
-                latitude={marker.longitude}
-              />
-            );
-          })}
-      </Map>
-    </div>
+    <KiokeMap
+      ref={mapRef}
+      markers={
+        <>
+          {markers
+            .filter((marker) => marker !== undefined)
+            .map((marker, index) => {
+              return (
+                <Marker
+                  key={index}
+                  latitude={marker.latitude}
+                  longitude={marker.longitude}
+                />
+              );
+            })}
+        </>
+      }
+      markerPositions={markers
+        .filter((marker) => marker !== undefined)
+        .map((marker) => ({
+          latitude: marker.latitude,
+          longitude: marker.longitude,
+        }))}
+    />
   );
 }
 

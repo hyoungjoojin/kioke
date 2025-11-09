@@ -26,7 +26,7 @@ export default async function RootLayout({
   const locale = await getLocale();
 
   return (
-    <html lang={locale} className={geist.className}>
+    <html lang={locale} className={geist.className} suppressHydrationWarning>
       <head></head>
       <body className='h-dvh'>
         <RootProvider>

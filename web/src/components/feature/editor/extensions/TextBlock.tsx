@@ -1,10 +1,13 @@
 import type { BlockAttributes, BlockOptions } from '.';
+import BlockWrapper from '../blocks/BlockWrapper';
+import TextBlockComponent from '../blocks/TextBlockComponent';
 import { BlockOperationType, BlockType } from '@/types/page';
 import Bold from '@tiptap/extension-bold';
 import HardBreak from '@tiptap/extension-hard-break';
 import Text from '@tiptap/extension-text';
 import {
   Node,
+  NodeConfig,
   NodeViewContent,
   type NodeViewProps,
   NodeViewWrapper,
@@ -16,17 +19,12 @@ import { v4 as uuidv4 } from 'uuid';
 
 type TextBlockAttributes = BlockAttributes;
 
-const TextBlock = Node.create<BlockOptions>({
+const TextBlockConfig: NodeConfig<TextBlockAttributes, {}> = {
   name: BlockType.TEXT_BLOCK,
   group: 'block',
   content: 'inline*',
   addExtensions() {
     return [Text, HardBreak, Bold];
-  },
-  addOptions() {
-    return {
-      pageId: '',
-    };
   },
   addAttributes() {
     return {
@@ -76,46 +74,25 @@ const TextBlock = Node.create<BlockOptions>({
     };
   },
   addNodeView() {
-    return ReactNodeViewRenderer(TextBlockComponent);
+    return ReactNodeViewRenderer(Block);
   },
-});
+};
 
-function TextBlockComponent({ node, updateAttributes }: NodeViewProps) {
-  const { pageId, blockId, ops } = node.attrs as TextBlockAttributes;
-
-  useEffect(() => {
-    if (blockId === null) {
-      setTimeout(() => {
-        const blockId = uuidv4();
-
-        updateAttributes({
-          blockId,
-          ops: [
-            ...ops,
-            {
-              timestamp: Date.now(),
-              op: BlockOperationType.UPDATE,
-              pageId,
-              blockId,
-              type: BlockType.TEXT_BLOCK,
-              content: {
-                text: '',
-              },
-            },
-          ],
-        } satisfies Partial<TextBlockAttributes>);
-      }, 0);
-    }
-  }, [blockId, pageId, ops, updateAttributes]);
-
+function Block(props: NodeViewProps) {
   return (
     <NodeViewWrapper>
-      <div>
-        <NodeViewContent />
-      </div>
+      <BlockWrapper
+        type={BlockType.TEXT_BLOCK}
+        initialContent={{
+          text: '',
+        }}
+        {...props}
+      >
+        <TextBlockComponent {...props} />
+      </BlockWrapper>
     </NodeViewWrapper>
   );
 }
 
+export default Node.create(TextBlockConfig);
 export type { TextBlockAttributes };
-export { TextBlock };

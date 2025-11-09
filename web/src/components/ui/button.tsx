@@ -21,7 +21,7 @@ const buttonVariants = cva(
           'bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80',
         ghost: '',
         link: 'text-primary underline-offset-4 hover:underline',
-        icon: 'px-2 py-2',
+        icon: 'p-2 rounded-full hover:bg-card-muted hover:cursor-pointer',
       },
       size: {
         default: 'h-9',

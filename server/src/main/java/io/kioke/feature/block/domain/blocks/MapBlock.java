@@ -13,5 +13,6 @@ import java.util.List;
 @DiscriminatorValue(value = BlockType.Values.MAP_BLOCK)
 public class MapBlock extends Block {
 
-  @OneToMany private List<MarkerBlock> markers;
+  @OneToMany(mappedBy = "parent")
+  private List<MarkerBlock> markers;
 }
