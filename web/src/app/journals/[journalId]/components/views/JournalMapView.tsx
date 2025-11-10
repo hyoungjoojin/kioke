@@ -5,9 +5,11 @@ import { useJournalQuery } from '@/query/journal';
 import { pageMarkersQueryOptions } from '@/query/page';
 import { useQueries } from '@tanstack/react-query';
 import { useRef } from 'react';
-import { type MapRef, Marker } from 'react-map-gl/mapbox';
+import { type MapRef } from 'react-map-gl/mapbox';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
+
+import MapMarker from '@/components/feature/map/MapMarker';
 
 interface JournalMapViewProps {
   journalId: string;
@@ -42,7 +44,7 @@ function JournalMapView({ journalId }: JournalMapViewProps) {
             .filter((marker) => marker !== undefined)
             .map((marker, index) => {
               return (
-                <Marker
+                <MapMarker
                   key={index}
                   latitude={marker.latitude}
                   longitude={marker.longitude}

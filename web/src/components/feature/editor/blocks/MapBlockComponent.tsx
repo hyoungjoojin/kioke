@@ -3,19 +3,15 @@ import type {
   MarkerAttributes,
 } from '@/components/feature/editor/extensions';
 import KiokeMap from '@/components/feature/map/KiokeMap';
+import MapMarker from '@/components/feature/map/MapMarker';
 import { Button } from '@/components/ui/button';
-import Icon from '@/components/ui/icon';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { BlockOperationType, BlockType } from '@/types/page';
 import { type NodeViewProps } from '@tiptap/react';
 import { useClickAway } from '@uidotdev/usehooks';
 import { AnimatePresence, motion } from 'motion/react';
 import { useRef, useState } from 'react';
-import {
-  type MapMouseEvent,
-  type MapRef,
-  Marker as MapboxMarker,
-} from 'react-map-gl/mapbox';
+import { type MapMouseEvent, type MapRef } from 'react-map-gl/mapbox';
 import { v4 as uuidv4 } from 'uuid';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -68,37 +64,6 @@ function MapBlockComponent({ node, updateAttributes }: NodeViewProps) {
         },
       ],
     } satisfies Partial<MapBlockAttributes>);
-  };
-
-  const Marker = ({ marker }: { marker: MarkerAttributes }) => {
-    const [isHovered, setIsHovered] = useState(false);
-
-    return (
-      <MapboxMarker latitude={marker.latitude} longitude={marker.longitude}>
-        <div
-          className='relative'
-          onMouseOver={() => {
-            setIsHovered(true);
-          }}
-          onMouseLeave={() => {
-            setIsHovered(false);
-          }}
-          onClick={() => {
-            mapRef.current?.flyTo({
-              center: [marker.longitude, marker.latitude],
-              zoom: 14,
-            });
-            setSelectedMarker(marker);
-          }}
-        >
-          <Icon
-            className='absolute -top-[24px] -left-[12px]'
-            name={isHovered ? 'location-plus' : 'location'}
-            size={24}
-          />
-        </div>
-      </MapboxMarker>
-    );
   };
 
   const Sidebar = () => {
@@ -155,7 +120,20 @@ function MapBlockComponent({ node, updateAttributes }: NodeViewProps) {
           markers={
             <>
               {markers.map((marker, index) => {
-                return <Marker key={index} marker={marker} />;
+                return (
+                  <MapMarker
+                    key={index}
+                    latitude={marker.latitude}
+                    longitude={marker.longitude}
+                    onClick={() => {
+                      mapRef.current?.flyTo({
+                        center: [marker.longitude, marker.latitude],
+                        zoom: 14,
+                      });
+                      setSelectedMarker(marker);
+                    }}
+                  />
+                );
               })}
 
               {selectedMarker && (
