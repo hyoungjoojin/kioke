@@ -52,7 +52,8 @@ public class CollectionController {
   @DeleteMapping("/collections/{collectionId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @PreAuthorize("isAuthenticated()")
-  public void deleteCollection(@PathVariable String collectionId) {
-    collectionService.deleteCollection(collectionId);
+  public void deleteCollection(
+      @AuthenticatedUser UserPrincipal user, @PathVariable String collectionId) {
+    collectionService.deleteCollection(user, collectionId);
   }
 }

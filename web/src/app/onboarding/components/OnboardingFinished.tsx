@@ -2,7 +2,6 @@ import type { OnboardingContentProps } from '../page';
 import { updateProfile } from '@/app/api/profile';
 import { Button } from '@/components/ui/button';
 import { Routes } from '@/constant/routes';
-import { useCreateCollectionMutationQuery } from '@/query/collection';
 import { unwrap } from '@/util/result';
 import { useTranslations } from 'next-intl';
 import { redirect } from 'next/navigation';
@@ -12,18 +11,11 @@ export default function OnboardingFinished({
 }: OnboardingContentProps) {
   const t = useTranslations();
 
-  const { mutate: createJournalCollection, isPending } =
-    useCreateCollectionMutationQuery();
-
   const previousButtonClickHandler = () => {
     onPreviousStep();
   };
 
   const continueButtonClickHandler = async () => {
-    createJournalCollection({
-      name: t('default-values.initial-journal-collection'),
-    });
-
     updateProfile({
       onboarded: true,
     }).then((result) => {
@@ -43,7 +35,6 @@ export default function OnboardingFinished({
       </Button>
 
       <Button
-        pending={isPending}
         className='grow'
         variant='default'
         onClick={continueButtonClickHandler}

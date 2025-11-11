@@ -1,29 +1,44 @@
-type IconName =
-  | 'ellipsis-vertical'
-  | 'location'
-  | 'location-plus'
-  | 'x'
-  | 'trash'
-  | 'edit'
-  | 'map'
-  | 'menu'
-  | 'image'
-  | 'plus'
-  | 'setting'
-  | 'logout';
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  ListFilter,
+  type LucideProps,
+  Plus,
+} from 'lucide-react';
+import type { ForwardRefExoticComponent, RefAttributes } from 'react';
 
-type IconProps = React.ComponentProps<'svg'> & {
+type IconName =
+  | 'plus'
+  | 'filter'
+  | 'chevron-left'
+  | 'chevron-right'
+  | 'chevron-up'
+  | 'chevron-down';
+
+type IconProps = LucideProps & {
   name: IconName;
-  size: number;
 };
 
-function Icon({ name, size, className, ...props }: IconProps) {
-  return (
-    <svg width={size} height={size} className={className} {...props}>
-      <use href={`/assets/icons/sprite.svg#${name}`} />
-    </svg>
-  );
+function Icon({ name, ...props }: IconProps) {
+  const Component = map[name];
+  return <Component {...props} />;
 }
+
+const map: Record<
+  IconName,
+  ForwardRefExoticComponent<
+    Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
+  >
+> = {
+  plus: Plus,
+  filter: ListFilter,
+  'chevron-left': ChevronLeft,
+  'chevron-right': ChevronRight,
+  'chevron-up': ChevronUp,
+  'chevron-down': ChevronDown,
+};
 
 export default Icon;
 export type { IconName };

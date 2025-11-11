@@ -1,138 +1,88 @@
 package io.kioke.feature.journal.service;
 
+import io.kioke.exception.collection.CollectionNotFoundException;
 import io.kioke.exception.journal.JournalNotFoundException;
-import io.kioke.feature.image.domain.Image;
-import io.kioke.feature.image.service.ImageService;
+import io.kioke.feature.collection.service.CollectionService;
 import io.kioke.feature.journal.domain.Journal;
-import io.kioke.feature.journal.domain.JournalCoverImage;
-import io.kioke.feature.journal.dto.request.CreateJournalRequest;
-import io.kioke.feature.journal.dto.request.ShareJournalRequest;
+import io.kioke.feature.journal.domain.JournalRole;
+import io.kioke.feature.journal.domain.JournalUser;
+import io.kioke.feature.journal.dto.CreateJournalRequest;
+import io.kioke.feature.journal.dto.JournalDto;
 import io.kioke.feature.journal.dto.request.UpdateJournalRequest;
-import io.kioke.feature.journal.dto.response.JournalResponse;
 import io.kioke.feature.journal.repository.JournalRepository;
-import io.kioke.feature.journal.repository.JournalShareRequestRepository;
 import io.kioke.feature.journal.util.JournalMapper;
 import io.kioke.feature.user.domain.User;
-import io.kioke.feature.user.service.UserService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import io.kioke.feature.user.dto.UserPrincipal;
+import java.util.ArrayList;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class JournalService {
 
+  private final CollectionService collectionService;
   private final JournalRepository journalRepository;
-  private final JournalShareRequestRepository journalShareRequestRepository;
-
-  private final UserService userService;
-  private final ImageService imageService;
-
   private final JournalMapper journalMapper;
 
-  public JournalService(
-      JournalRepository journalRepository,
-      JournalShareRequestRepository journalShareRequestRepository,
-      UserService userService,
-      ImageService imageService,
-      JournalMapper journalMapper) {
-    this.journalRepository = journalRepository;
-    this.journalShareRequestRepository = journalShareRequestRepository;
-    this.userService = userService;
-    this.imageService = imageService;
-    this.journalMapper = journalMapper;
-  }
-
-  @PreAuthorize("hasPermission(#journalId, 'journal', 'READ')")
+  @PreAuthorize("hasPermission(#journalId, 'journal', 'read')")
   @Transactional(readOnly = true)
-  public JournalResponse getJournal(String journalId) throws JournalNotFoundException {
+  public JournalDto getJournalById(String journalId) throws JournalNotFoundException {
     Journal journal =
-        journalRepository
-            .findWithUsersById(journalId)
-            .orElseThrow(() -> new JournalNotFoundException());
+        journalRepository.findById(journalId).orElseThrow(() -> new JournalNotFoundException());
 
-    journal =
-        journalRepository
-            .findWithPagesById(journalId)
-            .orElseThrow(() -> new JournalNotFoundException());
-
-    String coverUrl =
-        journal.getCoverImage() != null
-            ? imageService.getImageUrl(journal.getCoverImage().getImage().id())
-            : null;
-
-    return journalMapper.mapToJournalResponse(journal, coverUrl);
-  }
-
-  @Transactional(readOnly = true)
-  @PreAuthorize("#userId == authentication.principal")
-  public Page<JournalResponse> getJournalsByUser(String userId, int page, int size) {
-    Pageable pageable = PageRequest.of(page, size);
-
-    Page<Journal> journals = journalRepository.findAllWithUsersByUserId(userId, pageable);
-    journals = journalRepository.findAllWithPagesByUserId(userId, pageable);
-
-    return journals.map(
-        journal -> {
-          String coverUrl =
-              journal.getCoverImage() != null
-                  ? imageService.getImageUrl(journal.getCoverImage().getImage().id())
-                  : null;
-          return journalMapper.mapToJournalResponse(journal, coverUrl);
-        });
-  }
-
-  @Transactional(readOnly = true)
-  public Journal getJournalReference(String journalId) {
-    return journalRepository.getReferenceById(journalId);
+    return journalMapper.toDto(journal);
   }
 
   @Transactional(rollbackFor = Exception.class)
-  @PreAuthorize("hasPermission('journal', 'CREATE')")
-  public Journal createJournal(String userId, CreateJournalRequest request) {
-    User user = userService.getUserReference(userId);
-
-    Journal journal = Journal.builder().type(request.type()).title(request.title()).build();
-    journal.addAuthor(user);
-
+  @PreAuthorize("hasPermission('journal', 'create')")
+  public JournalDto createJournal(UserPrincipal requester, CreateJournalRequest request)
+      throws CollectionNotFoundException {
+    Journal journal =
+        Journal.builder()
+            .title(request.title())
+            .description("")
+            .users(new ArrayList<>())
+            .isPublic(false)
+            .build();
     journal = journalRepository.save(journal);
-    return journal;
+
+    journal
+        .getUsers()
+        .add(
+            JournalUser.builder()
+                .user(User.builder().userId(requester.userId()).build())
+                .journal(journal)
+                .role(JournalRole.AUTHOR)
+                .build());
+    journalRepository.save(journal);
+
+    collectionService.addJournalToCollection(requester, journal, request.collectionId());
+
+    return journalMapper.toDto(journal);
   }
 
   @Transactional
-  @PreAuthorize("hasPermission(#journalId, 'journal', 'EDIT')")
+  @PreAuthorize("hasPermission(#journalId, 'journal', 'update')")
   public void updateJournal(String journalId, UpdateJournalRequest request) {
     Journal journal = journalRepository.getReferenceById(journalId);
 
     if (request.title() != null) {
-      journal.updateTitle(request.title());
+      journal.setTitle(request.title());
     }
 
     if (request.description() != null) {
-      journal.updateDescription(request.description());
-    }
-
-    if (request.coverImage() != null) {
-      Image image = imageService.uploadImageSuccess(request.coverImage());
-      JournalCoverImage coverImage = JournalCoverImage.of(journal, image);
-      journal.updateCover(coverImage);
-    if (request.type() != null) {
-      journal.updateType(request.type());
+      journal.setDescription(request.description());
     }
 
     journalRepository.save(journal);
   }
 
   @Transactional
-  @PreAuthorize("hasPermission(#journalId, 'journal', 'DELETE')")
+  @PreAuthorize("hasPermission(#journalId, 'journal', 'delete')")
   public void deleteJournal(String journalId) {
-    Journal journal = journalRepository.getReferenceById(journalId);
-    journal.deleteJournal();
-    journalRepository.save(journal);
+    journalRepository.deleteById(journalId);
   }
-
-  @Transactional
-  public void shareJournal(String requesterId, String journalId, ShareJournalRequest request) {}
 }

@@ -28,7 +28,7 @@ public class JournalCoverImage {
 
   public static JournalCoverImage of(Journal journal, Image image) {
     JournalCoverImage coverImage = new JournalCoverImage();
-    coverImage.journalId = journal.getJournalId();
+    coverImage.journalId = journal.getId();
     coverImage.image = image;
     return coverImage;
   }

@@ -44,6 +44,9 @@ public class Collection {
   @Column(name = "NAME", nullable = false)
   private String name;
 
+  @Column(name = "IS_DEFAULT", nullable = false)
+  private Boolean isDefault;
+
   @OneToMany(
       fetch = FetchType.LAZY,
       mappedBy = "collection",

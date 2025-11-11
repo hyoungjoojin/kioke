@@ -8,54 +8,28 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.EntityGraph.EntityGraphType;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface JournalRepository extends JpaRepository<Journal, String> {
 
-  @Query("SELECT j FROM Journal j LEFT JOIN FETCH j.users u WHERE u.user.userId = :userId")
-  public Page<Journal> findAllWithUsersByUserId(String userId, Pageable pageable);
+  @EntityGraph(
+      attributePaths = {"users"},
+      type = EntityGraphType.FETCH)
+  @Query("SELECT j FROM Journal j WHERE j.id = :journalId")
+  public Optional<Journal> findById(String journalId);
 
-  @Query(
-      """
-      SELECT
-        j
-      FROM
-        Journal j
-          LEFT JOIN j.users u
-          LEFT JOIN FETCH j.pages
-      WHERE
-        u.user.userId = :userId
-      """)
-  public Page<Journal> findAllWithPagesByUserId(String userId, Pageable pageable);
+  @Query("SELECT j FROM Journal j LEFT JOIN FETCH j.users u WHERE u.user.userId = :userId")
+  public Page<Journal> findAllByUserId(String userId, Pageable pageable);
 
   @Query(
       """
         SELECT u.role, j.isPublic
           FROM Journal j
-            LEFT JOIN JournalUser u ON j.journalId = u.journal.journalId
+            LEFT JOIN JournalUser u ON j.id = u.journal.id
         WHERE
-          j.journalId = :journalId AND u.user.userId = :userId
+          j.id = :journalId AND u.user.userId = :userId
       """)
   public Optional<JournalPermissionProjection> findJournalUserRole(String journalId, String userId);
-
-  @EntityGraph(
-      attributePaths = {"users"},
-      type = EntityGraphType.FETCH)
-  @Query("SELECT j FROM Journal j WHERE j.journalId = :journalId")
-  public Optional<Journal> findWithUsersById(String journalId);
-
-  @EntityGraph(
-      attributePaths = {"pages", "coverImage"},
-      type = EntityGraphType.FETCH)
-  @Query("SELECT j FROM Journal j WHERE j.journalId = :journalId")
-  public Optional<Journal> findWithPagesById(String journalId);
-
-  @Modifying
-  @Transactional
-  @Query("DELETE FROM Journal j WHERE j.isDeleted = TRUE")
-  public void deleteJournalsOlderThen30Days();
 }

@@ -1,5 +1,6 @@
-import type { CreateCollectionParams } from '@/app/api/collection/createCollection';
-import createCollection from '@/app/api/collection/createCollection';
+import createCollection, {
+  type CreateCollectionParams,
+} from '@/app/api/collection/createCollection';
 import { getQueryClient } from '@/lib/query';
 import type { Collection } from '@/types/collection';
 import type KiokeError from '@/util/error';

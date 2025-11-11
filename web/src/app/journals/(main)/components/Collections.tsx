@@ -1,14 +1,18 @@
 'use client';
 
+import CreateJournalButton from './CreateJournalButton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Routes } from '@/constant/routes';
 import useCreateCollectionMutation from '@/hooks/query/useCreateCollectionMutation';
 import useGetCollectionsQuery from '@/hooks/query/useGetCollections';
+import { cn } from '@/lib/utils';
+import Link from 'next/link';
 import { useState } from 'react';
 
-export default function CollectionsTab() {
-  const { mutate: createCollection } = useCreateCollectionMutation();
+function CollectionsTab() {
   const { data: collections } = useGetCollectionsQuery();
+  const { mutate: createCollection } = useCreateCollectionMutation();
 
   const [selectedCollection, setSelectedCollection] = useState<string | null>(
     null,
@@ -22,6 +26,14 @@ export default function CollectionsTab() {
     }
   }
 
+  function createCollectionButtonClickHandler() {
+    createCollection({
+      body: {
+        name: 'New Collection',
+      },
+    });
+  }
+
   return (
     <div className='max-w-7xl mx-auto'>
       <div className='mb-6 flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between'>
@@ -30,18 +42,8 @@ export default function CollectionsTab() {
         </div>
 
         <div className='flex gap-3'>
-          <Button>Filter</Button>
-          <Button
-            onClick={() => {
-              createCollection({
-                body: {
-                  name: 'New Collection',
-                },
-              });
-            }}
-          >
-            Create Collection
-          </Button>
+          <Button variant='icon' icon='filter' />
+          <CreateJournalButton />
         </div>
       </div>
 
@@ -52,7 +54,11 @@ export default function CollectionsTab() {
               <div className='flex items-center'>
                 <Button
                   variant='icon'
-                  icon={selectedCollection === collection.id ? 'plus' : 'x'}
+                  icon={
+                    selectedCollection === collection.id
+                      ? 'chevron-down'
+                      : 'chevron-right'
+                  }
                   onClick={() => {
                     toggleSelectedCollection(collection.id);
                   }}
@@ -68,16 +74,23 @@ export default function CollectionsTab() {
                       </span>
                     </div>
 
-                    <Button variant='icon' icon='ellipsis-vertical' />
+                    <Button variant='icon' icon='plus' />
                   </div>
 
                   {selectedCollection === collection.id &&
                     (collection.journals.length === 0 ? (
-                      <div>no journals</div>
+                      <div>Add journal</div>
                     ) : (
                       <div>
                         {collection.journals.map((journal, index) => (
-                          <div key={index}>{journal.id}</div>
+                          <div key={index}>
+                            <Link
+                              href={Routes.JOURNAL(journal.id)}
+                              className='hover:underline'
+                            >
+                              {journal.title}
+                            </Link>
+                          </div>
                         ))}
                       </div>
                     ))}
@@ -86,6 +99,22 @@ export default function CollectionsTab() {
             </div>
           );
         })}
+
+      <div
+        className={cn(
+          'opacity-0 w-full flex items-center justify-center',
+          'hover:opacity-100 hover:cursor-pointer',
+        )}
+      >
+        <Button
+          variant='icon'
+          icon='plus'
+          onClick={createCollectionButtonClickHandler}
+        />
+        Add Collection
+      </div>
     </div>
   );
 }
+
+export default CollectionsTab;

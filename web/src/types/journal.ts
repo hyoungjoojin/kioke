@@ -1,10 +1,7 @@
-import type { JournalType } from '@/constant/journal';
 import type { Role } from '@/constant/role';
 
 export interface Journal {
   id: string;
-  coverUrl?: string;
-  type: JournalType;
   title: string;
   description: string;
   users: {
