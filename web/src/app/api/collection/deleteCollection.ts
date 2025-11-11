@@ -5,20 +5,23 @@ import type KiokeError from '@/util/error';
 import type { Result } from 'neverthrow';
 
 interface DeleteCollectionPathParams {
-  id: string;
+  collectionId: string;
 }
 
-function url({ id }: DeleteCollectionPathParams) {
-  return `/collections/${id}`;
+interface DeleteCollectionParams {
+  path: DeleteCollectionPathParams;
 }
 
-export async function deleteCollection(
-  pathParams: DeleteCollectionPathParams,
+async function deleteCollection(
+  params: DeleteCollectionParams,
 ): Promise<Result<void, KiokeError>> {
-  return kioke<void>(url(pathParams), {
+  return kioke<void>(`/collections/${params.path.collectionId}`, {
     method: HttpMethod.DELETE,
     headers: {
       'Content-Type': MimeType.APPLICATION_JSON,
     },
   });
 }
+
+export default deleteCollection;
+export type { DeleteCollectionParams };

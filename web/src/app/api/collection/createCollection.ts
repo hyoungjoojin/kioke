@@ -1,35 +1,31 @@
 import kioke from '@/app/api';
-import type { KiokeError } from '@/constant/error';
+import { HttpMethod } from '@/constant/http';
 import { MimeType } from '@/constant/mime';
 import type { Collection } from '@/types/collection';
+import type KiokeError from '@/util/error';
 import type { Result } from 'neverthrow';
 
-export interface CreateCollectionRequest {
+interface CreateCollectionRequestBody {
   name: string;
 }
 
-interface CreateCollectionResponse {
-  id: string;
+type CreateCollectionResponse = Collection;
+
+interface CreateCollectionParams {
+  body: CreateCollectionRequestBody;
 }
 
-function url() {
-  return '/collections';
-}
-
-export async function createCollection(
-  body: CreateCollectionRequest,
+async function createCollection(
+  params: CreateCollectionParams,
 ): Promise<Result<Collection, KiokeError>> {
-  return kioke<CreateCollectionResponse>(url(), {
-    method: 'POST',
-    body: JSON.stringify(body),
+  return kioke<CreateCollectionResponse>('/collections', {
+    method: HttpMethod.POST,
+    body: JSON.stringify(params.body),
     headers: {
       'Content-Type': MimeType.APPLICATION_JSON,
     },
-  }).then((response) =>
-    response.map((data) => ({
-      id: data.id,
-      name: body.name,
-      journals: [],
-    })),
-  );
+  });
 }
+
+export default createCollection;
+export type { CreateCollectionParams };

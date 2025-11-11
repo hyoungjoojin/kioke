@@ -3,75 +3,63 @@ package io.kioke.feature.collection.service;
 import io.kioke.exception.collection.CollectionNotFoundException;
 import io.kioke.feature.collection.domain.Collection;
 import io.kioke.feature.collection.dto.CollectionDto;
-import io.kioke.feature.collection.dto.request.CreateCollectionRequestDto;
+import io.kioke.feature.collection.dto.CreateCollectionRequest;
 import io.kioke.feature.collection.repository.CollectionRepository;
 import io.kioke.feature.collection.util.CollectionMapper;
-import io.kioke.feature.journal.domain.Journal;
 import io.kioke.feature.user.domain.User;
-import io.kioke.feature.user.dto.UserDto;
+import io.kioke.feature.user.dto.UserPrincipal;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class CollectionService {
 
   private final CollectionRepository collectionRepository;
   private final CollectionMapper collectionMapper;
 
-  public CollectionService(
-      CollectionRepository collectionRepository, CollectionMapper collectionMapper) {
-    this.collectionRepository = collectionRepository;
-    this.collectionMapper = collectionMapper;
+  @Transactional(readOnly = true)
+  public CollectionDto getCollectionById(String collectionId) throws CollectionNotFoundException {
+    return collectionRepository
+        .findById(collectionId)
+        .map(collectionMapper::toDto)
+        .orElseThrow(CollectionNotFoundException::new);
+  }
+
+  @Transactional(readOnly = true)
+  public List<CollectionDto> getCollections(UserPrincipal requester) {
+    return collectionRepository.findAllByUser(User.getUserReference(requester.userId())).stream()
+        .map(collectionMapper::toDto)
+        .toList();
   }
 
   @Transactional
-  public CollectionDto createCollection(UserDto userDto, CreateCollectionRequestDto request) {
-    User user = User.builder().userId(userDto.userId()).build();
-
-    Collection collection = Collection.builder().user(user).name(request.name()).build();
+  public CollectionDto createCollection(UserPrincipal requester, CreateCollectionRequest request) {
+    Collection collection =
+        Collection.builder()
+            .user(User.getUserReference(requester.userId()))
+            .name(request.name())
+            .build();
     collection = collectionRepository.save(collection);
-    return collectionMapper.toDto(collection);
-  }
-
-  @Transactional(readOnly = true)
-  public List<CollectionDto> getCollections(UserDto userDto) {
-    User user = User.builder().userId(userDto.userId()).build();
-    return collectionRepository.findByUser(user).stream().map(collectionMapper::toDto).toList();
-  }
-
-  @Transactional(readOnly = true)
-  public CollectionDto getCollection(UserDto userDto, String collectionId)
-      throws CollectionNotFoundException {
-    User user = User.builder().userId(userDto.userId()).build();
-
-    Collection collection =
-        collectionRepository
-            .findByUserAndId(user, collectionId)
-            .orElseThrow(() -> new CollectionNotFoundException());
 
     return collectionMapper.toDto(collection);
   }
 
   @Transactional
-  public void addEntryToCollection(User user, Journal journal, String collectionId)
-      throws CollectionNotFoundException {
-    Collection collection =
-        collectionRepository
-            .findByUserAndId(user, collectionId)
-            .orElseThrow(() -> new CollectionNotFoundException());
-    collection.addJournal(journal);
-    collectionRepository.save(collection);
+  public void deleteCollection(String collectionId) {
+    collectionRepository.deleteById(collectionId);
   }
 
-  @Transactional
-  public void deleteCollection(UserDto user, String collectionId)
-      throws CollectionNotFoundException {
-    Collection collection =
-        collectionRepository
-            .findByUserAndId(User.of(user.userId()), collectionId)
-            .orElseThrow(() -> new CollectionNotFoundException());
-
-    collectionRepository.delete(collection);
-  }
+  // @Transactional
+  // public void addEntryToCollection(String userId, String journalId, String collectionId)
+  //     throws CollectionNotFoundException {
+  //   Collection collection =
+  //       collectionRepository
+  //           .findByUserAndId(userId, collectionId)
+  //           .orElseThrow(() -> new CollectionNotFoundException());
+  //   collection.addJournal(journal);
+  //   collectionRepository.save(collection);
+  // }
 }

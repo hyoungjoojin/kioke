@@ -25,19 +25,4 @@ public class CollectionEntry {
   @JoinColumn(name = "JOURNAL_ID")
   @ManyToOne(fetch = FetchType.LAZY)
   private Journal journal;
-
-  protected CollectionEntry() {}
-
-  private CollectionEntry(Collection collection, Journal journal) {
-    this.collection = collection;
-    this.journal = journal;
-  }
-
-  public static CollectionEntry from(Collection collection, Journal journal) {
-    return new CollectionEntry(collection, journal);
-  }
-
-  public Journal getJournal() {
-    return journal;
-  }
 }
