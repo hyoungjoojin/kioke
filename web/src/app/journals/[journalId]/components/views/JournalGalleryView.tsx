@@ -2,7 +2,7 @@
 
 import { Spinner } from '@/components/ui/spinner';
 import { Routes } from '@/constant/routes';
-import { useJournalQuery } from '@/query/journal';
+import useGetJournalByIdQuery from '@/hooks/query/useGetJournalByIdQuery';
 import { usePageImagesQuery } from '@/query/page';
 import { default as NextImage } from 'next/image';
 import Link from 'next/link';
@@ -12,7 +12,7 @@ interface JournalGalleryViewParams {
 }
 
 function JournalGalleryView({ journalId }: JournalGalleryViewParams) {
-  const { data: journal } = useJournalQuery({ journalId });
+  const { data: journal } = useGetJournalByIdQuery({ path: { journalId } });
   if (!journal) {
     return null;
   }

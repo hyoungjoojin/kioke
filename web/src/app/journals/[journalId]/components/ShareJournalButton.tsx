@@ -7,7 +7,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Switch } from '@/components/ui/switch';
-import { useJournalQuery, useUpdateJournalMutation } from '@/query/journal';
+import useGetJournalByIdQuery from '@/hooks/query/useGetJournalByIdQuery';
 import { useTranslations } from 'next-intl';
 
 interface ShareJournalButtonProps {
@@ -19,16 +19,14 @@ export default function ShareJournalButton({
 }: ShareJournalButtonProps) {
   const t = useTranslations();
 
-  const { data: journal, isPending } = useJournalQuery({ journalId });
-  const { mutate: updateJournal, isPending: isUpdateJournalPending } =
-    useUpdateJournalMutation({
-      id: journalId,
-    });
+  const { data: journal, isPending } = useGetJournalByIdQuery({
+    path: { journalId },
+  });
 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant='outline'>Share</Button>
+        <Button variant='icon' icon='share' />
       </PopoverTrigger>
 
       <PopoverContent className='h-96 flex flex-col' align='end'>
@@ -42,16 +40,7 @@ export default function ShareJournalButton({
         </div>
 
         <div className='self-end flex m-2 gap-1'>
-          <Switch
-            id='journal-visibility-toggle'
-            checked={journal?.isPublic}
-            disabled={isPending || isUpdateJournalPending}
-            onCheckedChange={(checked) => {
-              updateJournal({
-                isPublic: checked,
-              });
-            }}
-          />
+          <Switch id='journal-visibility-toggle' checked={journal?.isPublic} />
           <Label htmlFor='journal-visibility-toggle'>Public</Label>
         </div>
       </PopoverContent>

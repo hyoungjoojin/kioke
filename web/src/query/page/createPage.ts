@@ -1,7 +1,6 @@
 import { type CreatePageRequest, createPage } from '@/app/api/page';
 import { type KiokeError } from '@/constant/error';
 import { getQueryClient } from '@/lib/query';
-import { journalQueryOptions } from '@/query/journal';
 import { type Page } from '@/types/page';
 import { unwrap } from '@/util/result';
 import { useMutation } from '@tanstack/react-query';

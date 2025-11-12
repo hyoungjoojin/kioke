@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Routes } from '@/constant/routes';
-import { useJournalQuery } from '@/query/journal';
+import useGetJournalByIdQuery from '@/hooks/query/useGetJournalByIdQuery';
 import Link from 'next/link';
 
 interface JournalPagesViewParams {
@@ -15,7 +15,9 @@ interface JournalPagesViewParams {
 }
 
 function JournalPagesView({ journalId }: JournalPagesViewParams) {
-  const { data: journal, isPending } = useJournalQuery({ journalId });
+  const { data: journal, isPending } = useGetJournalByIdQuery({
+    path: { journalId },
+  });
 
   if (isPending) {
     return null;

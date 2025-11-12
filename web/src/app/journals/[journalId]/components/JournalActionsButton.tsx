@@ -1,5 +1,4 @@
 import { uploadImage } from '@/app/api/image/uploadImage';
-import { updateJournal } from '@/app/api/journal';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -18,9 +17,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Spinner } from '@/components/ui/spinner';
-import { JournalType } from '@/constant/journal';
 import logger from '@/lib/logger';
-import { useJournalQuery, useUpdateJournalMutation } from '@/query/journal';
 import { unwrap } from '@/util/result';
 import { useClickAway } from '@uidotdev/usehooks';
 import { type ChangeEvent, useState } from 'react';
@@ -36,64 +33,14 @@ export default function JournalActionsButton({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant='ghost' />
+        <Button variant='icon' icon='ellipsis' />
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align='end' sideOffset={10}>
-        <ChangeTypeButton journalId={journalId} />
         <UpdateCoverButton journalId={journalId} />
         <DropdownMenuItem>Delete Journal</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
-}
-
-function ChangeTypeButton({ journalId }: { journalId: string }) {
-  const { data: journal } = useJournalQuery({ journalId });
-  const { mutate: updateJournal, isPending: isUpdateJournalPending } =
-    useUpdateJournalMutation({ id: journalId });
-
-  const [selected, setSelected] = useState(JournalType.BASIC);
-
-  const itemSelectHandler = (type: JournalType) => {
-    if (!journal || type === journal.type) {
-      return;
-    }
-
-    setSelected(type);
-    updateJournal({
-      type,
-    });
-  };
-
-  return (
-    <DropdownMenuSub>
-      <DropdownMenuSubTrigger>Change Type</DropdownMenuSubTrigger>
-      <DropdownMenuPortal>
-        <DropdownMenuSubContent>
-          {journal &&
-            Object.values(JournalType).map((type, index) => {
-              return (
-                <DropdownMenuItem
-                  key={index}
-                  onSelect={() => itemSelectHandler(type)}
-                  className='flex justify-between items-center'
-                >
-                  <span>{type}</span>
-
-                  {journal.type === type ? (
-                    <span></span>
-                  ) : isUpdateJournalPending && journal.type === selected ? (
-                    <span>
-                      <Spinner />
-                    </span>
-                  ) : null}
-                </DropdownMenuItem>
-              );
-            })}
-        </DropdownMenuSubContent>
-      </DropdownMenuPortal>
-    </DropdownMenuSub>
   );
 }
 
@@ -161,7 +108,7 @@ function UpdateCoverButton({ journalId }: { journalId: string }) {
   return (
     <>
       <DropdownMenuItem
-        icon={IconName.IMAGE}
+        icon='image'
         onSelect={(e) => {
           e.preventDefault();
           setIsPopoverOpen(true);

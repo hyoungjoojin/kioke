@@ -1,7 +1,7 @@
 import { EditableDiv } from '@/components/ui/editable';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Routes } from '@/constant/routes';
-import { useJournalQuery } from '@/query/journal';
+import useGetJournalByIdQuery from '@/hooks/query/useGetJournalByIdQuery';
 import { usePageQuery, useUpdatePageMutation } from '@/query/page';
 import Link from 'next/link';
 
@@ -11,9 +11,9 @@ interface PageTitleProps {
 
 export default function PageTitle({ pageId }: PageTitleProps) {
   const { data: page } = usePageQuery({ id: pageId });
-  const { data: journal } = useJournalQuery(
+  const { data: journal } = useGetJournalByIdQuery(
     {
-      journalId: page?.journalId || '',
+      path: { journalId: page?.journalId ?? '' },
     },
     {
       enabled: page !== undefined,

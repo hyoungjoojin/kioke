@@ -2,9 +2,9 @@ package io.kioke.feature.journal.repository;
 
 import io.kioke.feature.journal.domain.Journal;
 import io.kioke.feature.journal.dto.projection.JournalPermissionProjection;
+import io.kioke.feature.page.domain.Page;
+import java.util.List;
 import java.util.Optional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.EntityGraph.EntityGraphType;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,8 +20,8 @@ public interface JournalRepository extends JpaRepository<Journal, String> {
   @Query("SELECT j FROM Journal j WHERE j.id = :journalId")
   public Optional<Journal> findById(String journalId);
 
-  @Query("SELECT j FROM Journal j LEFT JOIN FETCH j.users u WHERE u.user.userId = :userId")
-  public Page<Journal> findAllByUserId(String userId, Pageable pageable);
+  @Query("SELECT p FROM Page p WHERE p.journal.id = :journalId")
+  public List<Page> findPagesById(String journalId);
 
   @Query(
       """

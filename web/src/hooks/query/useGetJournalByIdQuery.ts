@@ -8,19 +8,22 @@ import { type UseQueryOptions, useQuery } from '@tanstack/react-query';
 
 type UseGetJournalByIdQueryOptions = UseQueryOptions<Journal, KiokeError>;
 
+const UseGetJournalByIdQueryDefaultOptions = (
+  params: GetJournalByIdParams,
+) => ({
+  queryKey: ['journal', params],
+  queryFn: async () => getJournalById(params).then((res) => unwrap(res)),
+});
+
 function useGetJournalByIdQuery(
   params: GetJournalByIdParams,
-  options?: UseGetJournalByIdQueryOptions,
+  options?: Partial<UseGetJournalByIdQueryOptions>,
 ) {
-  const base: UseGetJournalByIdQueryOptions = {
-    queryKey: ['journal', params],
-    queryFn: async () => getJournalById(params).then((res) => unwrap(res)),
-  };
-
   return useQuery({
-    ...base,
+    ...UseGetJournalByIdQueryDefaultOptions(params),
     ...options,
   });
 }
 
 export default useGetJournalByIdQuery;
+export { UseGetJournalByIdQueryDefaultOptions };

@@ -73,12 +73,16 @@ function BlockWrapper({
           asChild
           className='absolute left-[-32px] top-4 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded'
         >
-          <Button icon='ellipsis-vertical' variant='icon' tabIndex={-1} />
+          <Button icon='ellipsis' variant='icon' tabIndex={-1} />
         </DropdownMenuTrigger>
 
         <DropdownMenuContent side='left' align='end'>
-          {[...config, ...BaseBlockConfig].map(({ label }, index) => {
-            return <DropdownMenuItem key={index}>{label}</DropdownMenuItem>;
+          {[...config, ...BaseBlockConfig].map(({ icon, label }, index) => {
+            return (
+              <DropdownMenuItem key={index} icon={icon}>
+                {label}
+              </DropdownMenuItem>
+            );
           })}
         </DropdownMenuContent>
       </DropdownMenu>

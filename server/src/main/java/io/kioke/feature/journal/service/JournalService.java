@@ -11,9 +11,11 @@ import io.kioke.feature.journal.dto.JournalDto;
 import io.kioke.feature.journal.dto.request.UpdateJournalRequest;
 import io.kioke.feature.journal.repository.JournalRepository;
 import io.kioke.feature.journal.util.JournalMapper;
+import io.kioke.feature.page.domain.Page;
 import io.kioke.feature.user.domain.User;
 import io.kioke.feature.user.dto.UserPrincipal;
 import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -33,7 +35,8 @@ public class JournalService {
     Journal journal =
         journalRepository.findById(journalId).orElseThrow(() -> new JournalNotFoundException());
 
-    return journalMapper.toDto(journal);
+    List<Page> pages = journalRepository.findPagesById(journalId);
+    return journalMapper.toDto(journal, pages);
   }
 
   @Transactional(rollbackFor = Exception.class)
@@ -61,7 +64,7 @@ public class JournalService {
 
     collectionService.addJournalToCollection(requester, journal, request.collectionId());
 
-    return journalMapper.toDto(journal);
+    return journalMapper.toDto(journal, new ArrayList<>());
   }
 
   @Transactional

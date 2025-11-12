@@ -5,28 +5,34 @@ import ShareJournalButton from './ShareJournalButton';
 import { EditableDiv } from '@/components/ui/editable';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useJournalQuery, useUpdateJournalMutation } from '@/query/journal';
+import useGetJournalByIdQuery from '@/hooks/query/useGetJournalByIdQuery';
+import useUpdateJournalMutation from '@/hooks/query/useUpdateJournalMutation';
 import { useTranslations } from 'next-intl';
 
 export default function JournalTitle({ journalId }: { journalId: string }) {
   const t = useTranslations();
 
-  const { data } = useJournalQuery({ journalId });
-  const { mutate: updateJournal } = useUpdateJournalMutation({ id: journalId });
+  const { data: journal } = useGetJournalByIdQuery({
+    path: {
+      journalId,
+    },
+  });
+  const { mutate: updateJournal } = useUpdateJournalMutation();
 
   return (
     <div>
       <div className='h-15 mb-2 flex justify-between items-center'>
-        {!data ? (
+        {!journal ? (
           <Skeleton className='h-full' />
         ) : (
           <EditableDiv
             onSubmit={(title) => {
               updateJournal({
-                title,
+                path: { journalId },
+                body: { title },
               });
             }}
-            initialContent={data.title}
+            initialContent={journal.title}
             defaultContentOnEmpty={t('journal.main.title.empty')}
             className='text-4xl'
           />

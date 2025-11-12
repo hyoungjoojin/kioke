@@ -6,14 +6,14 @@ import { type UseQueryOptions, useQuery } from '@tanstack/react-query';
 
 type UseGetCollectionsQueryOptions = UseQueryOptions<Collection[], KiokeError>;
 
-const useGetCollectionsQueryDefaultOptions: UseGetCollectionsQueryOptions = {
+const UseGetCollectionsQueryDefaultOptions: UseGetCollectionsQueryOptions = {
   queryKey: ['collection'],
   queryFn: async () => getCollections().then((res) => unwrap(res)),
 };
 
 function useGetCollectionsQuery(options?: UseGetCollectionsQueryOptions) {
-  return useQuery({ ...useGetCollectionsQueryDefaultOptions, ...options });
+  return useQuery({ ...UseGetCollectionsQueryDefaultOptions, ...options });
 }
 
 export default useGetCollectionsQuery;
-export { useGetCollectionsQueryDefaultOptions };
+export { UseGetCollectionsQueryDefaultOptions };

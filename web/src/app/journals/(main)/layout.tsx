@@ -1,6 +1,6 @@
 import BaseHeader from '@/components/header/BaseHeader';
 import BaseLayout from '@/components/layout/BaseLayout';
-import { useGetCollectionsQueryDefaultOptions } from '@/hooks/query/useGetCollections';
+import { UseGetCollectionsQueryDefaultOptions } from '@/hooks/query/useGetCollections';
 import { getQueryClient } from '@/lib/query';
 import { myProfileQueryOptions } from '@/query/profile';
 import { handleError } from '@/util/error';
@@ -24,7 +24,7 @@ export default async function JournalsLayout({
     .catch((error) => handleError(error));
 
   await queryClient
-    .fetchQuery(useGetCollectionsQueryDefaultOptions)
+    .fetchQuery(UseGetCollectionsQueryDefaultOptions)
     .catch((error) => handleError(error));
 
   return (

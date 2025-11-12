@@ -3,19 +3,35 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronUp,
+  Ellipsis,
+  Image,
   ListFilter,
   type LucideProps,
+  Map,
+  MapPin,
+  MapPinPlusInside,
+  Menu,
   Plus,
+  Share,
+  Trash,
 } from 'lucide-react';
 import type { ForwardRefExoticComponent, RefAttributes } from 'react';
 
 type IconName =
+  | 'menu'
   | 'plus'
   | 'filter'
   | 'chevron-left'
   | 'chevron-right'
   | 'chevron-up'
-  | 'chevron-down';
+  | 'chevron-down'
+  | 'image'
+  | 'map'
+  | 'ellipsis'
+  | 'share'
+  | 'location'
+  | 'location-plus'
+  | 'trash';
 
 type IconProps = LucideProps & {
   name: IconName;
@@ -32,12 +48,20 @@ const map: Record<
     Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
   >
 > = {
+  menu: Menu,
   plus: Plus,
   filter: ListFilter,
   'chevron-left': ChevronLeft,
   'chevron-right': ChevronRight,
   'chevron-up': ChevronUp,
   'chevron-down': ChevronDown,
+  image: Image,
+  map: Map,
+  ellipsis: Ellipsis,
+  share: Share,
+  location: MapPin,
+  'location-plus': MapPinPlusInside,
+  trash: Trash,
 };
 
 export default Icon;

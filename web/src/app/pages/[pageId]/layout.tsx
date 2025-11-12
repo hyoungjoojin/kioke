@@ -2,8 +2,8 @@ import Editor from './components/Editor';
 import BaseHeader from '@/components/header/BaseHeader';
 import BaseLayout from '@/components/layout/BaseLayout';
 import { ErrorCode } from '@/constant/error';
+import { UseGetJournalByIdQueryDefaultOptions } from '@/hooks/query/useGetJournalByIdQuery';
 import { getQueryClient } from '@/lib/query';
-import { journalQueryOptions } from '@/query/journal';
 import { pageQueryOptions } from '@/query/page';
 import { handleError } from '@/util/error';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
@@ -36,7 +36,11 @@ export default async function Layout({
   }
 
   const journal = await queryClient
-    .fetchQuery(journalQueryOptions({ journalId: page.journalId }))
+    .fetchQuery(
+      UseGetJournalByIdQueryDefaultOptions({
+        path: { journalId: page.journalId },
+      }),
+    )
     .catch((error) => handleError(error));
 
   if (!journal) {
