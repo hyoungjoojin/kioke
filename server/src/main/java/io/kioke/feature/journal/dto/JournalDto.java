@@ -10,6 +10,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record JournalDto(
     @NotNull String id,
+    String cover,
     @NotNull List<User> users,
     @NotNull List<Page> pages,
     @NotNull String title,

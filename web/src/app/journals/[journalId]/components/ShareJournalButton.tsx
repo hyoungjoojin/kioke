@@ -26,7 +26,7 @@ export default function ShareJournalButton({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant='icon' icon='share' />
+        <Button variant='icon' icon='share' className='text-white' />
       </PopoverTrigger>
 
       <PopoverContent className='h-96 flex flex-col' align='end'>

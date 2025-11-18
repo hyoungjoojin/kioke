@@ -1,4 +1,5 @@
 import {
+  ArrowUp,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -14,6 +15,7 @@ import {
   Plus,
   Share,
   Trash,
+  Upload,
 } from 'lucide-react';
 import type { ForwardRefExoticComponent, RefAttributes } from 'react';
 
@@ -25,9 +27,11 @@ type IconName =
   | 'chevron-right'
   | 'chevron-up'
   | 'chevron-down'
+  | 'arrow-up'
   | 'image'
   | 'map'
   | 'ellipsis'
+  | 'upload'
   | 'share'
   | 'location'
   | 'location-plus'
@@ -55,9 +59,11 @@ const map: Record<
   'chevron-right': ChevronRight,
   'chevron-up': ChevronUp,
   'chevron-down': ChevronDown,
+  'arrow-up': ArrowUp,
   image: Image,
   map: Map,
   ellipsis: Ellipsis,
+  upload: Upload,
   share: Share,
   location: MapPin,
   'location-plus': MapPinPlusInside,

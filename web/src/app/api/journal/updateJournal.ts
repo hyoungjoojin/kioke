@@ -5,6 +5,7 @@ import { MimeType } from '@/constant/mime';
 interface UpdateJournalRequestBody {
   title?: string;
   description?: string;
+  cover?: string;
 }
 
 interface UpdateJournalPathParams {

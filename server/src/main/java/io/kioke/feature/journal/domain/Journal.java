@@ -1,5 +1,6 @@
 package io.kioke.feature.journal.domain;
 
+import io.kioke.feature.image.domain.Image;
 import io.kioke.feature.page.domain.Page;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -9,7 +10,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.List;
@@ -50,6 +53,10 @@ public class Journal {
 
   @Column(name = "DESCRIPTION", nullable = false)
   private String description;
+
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "COVER_IMAGE_ID")
+  private Image coverImage;
 
   @OneToMany(
       fetch = FetchType.LAZY,

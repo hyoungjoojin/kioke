@@ -3,6 +3,8 @@ package io.kioke.feature.journal.service;
 import io.kioke.exception.collection.CollectionNotFoundException;
 import io.kioke.exception.journal.JournalNotFoundException;
 import io.kioke.feature.collection.service.CollectionService;
+import io.kioke.feature.image.domain.Image;
+import io.kioke.feature.image.service.ImageService;
 import io.kioke.feature.journal.domain.Journal;
 import io.kioke.feature.journal.domain.JournalRole;
 import io.kioke.feature.journal.domain.JournalUser;
@@ -11,6 +13,7 @@ import io.kioke.feature.journal.dto.JournalDto;
 import io.kioke.feature.journal.dto.request.UpdateJournalRequest;
 import io.kioke.feature.journal.repository.JournalRepository;
 import io.kioke.feature.journal.util.JournalMapper;
+import io.kioke.feature.media.service.MediaService;
 import io.kioke.feature.page.domain.Page;
 import io.kioke.feature.user.domain.User;
 import io.kioke.feature.user.dto.UserPrincipal;
@@ -26,6 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class JournalService {
 
   private final CollectionService collectionService;
+  private final ImageService imageService;
+  private final MediaService mediaService;
   private final JournalRepository journalRepository;
   private final JournalMapper journalMapper;
 
@@ -36,7 +41,10 @@ public class JournalService {
         journalRepository.findById(journalId).orElseThrow(() -> new JournalNotFoundException());
 
     List<Page> pages = journalRepository.findPagesById(journalId);
-    return journalMapper.toDto(journal, pages);
+
+    String coverUrl = mediaService.getPresignedUrl(journal.getCoverImage()).toExternalForm();
+
+    return journalMapper.toDto(journal, pages, coverUrl);
   }
 
   @Transactional(rollbackFor = Exception.class)
@@ -64,7 +72,7 @@ public class JournalService {
 
     collectionService.addJournalToCollection(requester, journal, request.collectionId());
 
-    return journalMapper.toDto(journal, new ArrayList<>());
+    return journalMapper.toDto(journal, new ArrayList<>(), null);
   }
 
   @Transactional
@@ -78,6 +86,11 @@ public class JournalService {
 
     if (request.description() != null) {
       journal.setDescription(request.description());
+    }
+
+    if (request.cover() != null) {
+      Image image = imageService.getImage(request.cover());
+      journal.setCoverImage(image);
     }
 
     journalRepository.save(journal);

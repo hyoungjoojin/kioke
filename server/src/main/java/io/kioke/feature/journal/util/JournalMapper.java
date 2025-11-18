@@ -10,7 +10,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface JournalMapper {
 
-  public JournalDto toDto(Journal journal, List<Page> pages);
+  public JournalDto toDto(Journal journal, List<Page> pages, String cover);
 
   @Mapping(source = "pageId", target = "id")
   JournalDto.Page toDto(Page page);

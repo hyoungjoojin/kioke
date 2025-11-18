@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 public interface JournalRepository extends JpaRepository<Journal, String> {
 
   @EntityGraph(
-      attributePaths = {"users"},
+      attributePaths = {"users", "coverImage"},
       type = EntityGraphType.FETCH)
   @Query("SELECT j FROM Journal j WHERE j.id = :journalId")
   public Optional<Journal> findById(String journalId);

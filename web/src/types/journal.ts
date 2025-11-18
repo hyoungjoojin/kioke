@@ -4,6 +4,7 @@ export interface Journal {
   id: string;
   title: string;
   description: string;
+  cover?: string;
   users: {
     userId: string;
     role: Role;
