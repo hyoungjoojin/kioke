@@ -1,5 +1,5 @@
 import type { OnboardingContentProps } from '../page';
-import { updateProfile } from '@/app/api/profile';
+import { useUpdateProfileMutation } from '@/app/api/profiles/query';
 import ImageSelector from '@/components/feature/image/ImageSelector';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -12,12 +12,10 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { MimeType } from '@/constant/mime';
-import { unwrap } from '@/util/result';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 import z from 'zod';
 
 const CreateProfileFormSchema = z.object({
@@ -37,6 +35,8 @@ export default function CreateProfile({ onNextStep }: OnboardingContentProps) {
     },
   });
 
+  const { mutate: updateProfile } = useUpdateProfileMutation();
+
   const [profileImagePreview, setProfileImagePreview] = useState<
     File | undefined
   >(undefined);
@@ -44,12 +44,16 @@ export default function CreateProfile({ onNextStep }: OnboardingContentProps) {
   const createProfileFormSubmitHandler = async (
     values: CreateProfileFormSchemaType,
   ) => {
-    updateProfile({
-      name: values.name,
-    }).then((result) => {
-      unwrap(result);
-      onNextStep();
-    });
+    updateProfile(
+      {
+        name: values.name,
+      },
+      {
+        onSuccess: () => {
+          onNextStep();
+        },
+      },
+    );
   };
 
   return (

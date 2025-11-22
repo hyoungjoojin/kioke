@@ -16,7 +16,7 @@ enum BlockType {
 
 type Block = {
   id: string;
-  after: string | null;
+  order: number;
 } & (
   | {
       type: BlockType.TEXT_BLOCK;

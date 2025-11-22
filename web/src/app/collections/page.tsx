@@ -1,8 +1,8 @@
 'use client';
 
-import CreateJournalButton from './CreateJournalButton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Routes } from '@/constant/routes';
 import useCreateCollectionMutation from '@/hooks/query/useCreateCollectionMutation';
 import useGetCollectionsQuery from '@/hooks/query/useGetCollections';
@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { useState } from 'react';
 
-function CollectionsTab() {
+function Collections() {
   const { data: collections } = useGetCollectionsQuery();
   const { mutate: createCollection } = useCreateCollectionMutation();
 
@@ -43,7 +43,7 @@ function CollectionsTab() {
 
         <div className='flex gap-3'>
           <Button variant='icon' icon='filter' />
-          <CreateJournalButton />
+          <Button variant='icon' icon='plus' />
         </div>
       </div>
 
@@ -81,18 +81,23 @@ function CollectionsTab() {
                     (collection.journals.length === 0 ? (
                       <div>Add journal</div>
                     ) : (
-                      <div>
-                        {collection.journals.map((journal, index) => (
-                          <div key={index}>
-                            <Link
-                              href={Routes.JOURNAL(journal.id)}
-                              className='hover:underline'
+                      <ScrollArea className='h-full overflow-hidden '>
+                        <div className='flex'>
+                          {collection.journals.map((journal, index) => (
+                            <div
+                              key={index}
+                              className='shadow-sm m-4 w-56 h-72'
                             >
-                              {journal.title}
-                            </Link>
-                          </div>
-                        ))}
-                      </div>
+                              <Link
+                                href={Routes.JOURNAL(journal.id)}
+                                className='hover:underline'
+                              >
+                                {journal.title}
+                              </Link>
+                            </div>
+                          ))}
+                        </div>
+                      </ScrollArea>
                     ))}
                 </div>
               </div>
@@ -117,4 +122,4 @@ function CollectionsTab() {
   );
 }
 
-export default CollectionsTab;
+export default Collections;

@@ -10,8 +10,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { destroySession } from '@/lib/session';
-import { useMyDashboardQuery } from '@/query/dashboard';
-import { useDashboardActions } from '@/store/dashboard';
 import { useModalActions } from '@/store/modal';
 import { useTranslations } from 'next-intl';
 
@@ -25,33 +23,11 @@ export default function ProfileAvatar() {
         </Avatar>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent side='bottom' align='end'>
-        <EditDashboard />
+      <DropdownMenuContent side='bottom' align='start'>
         <Settings />
         <SignOut />
       </DropdownMenuContent>
     </DropdownMenu>
-  );
-}
-
-function EditDashboard() {
-  const { setIsEditingDraft, setDraft } = useDashboardActions();
-  const { data: dashboard } = useMyDashboardQuery();
-
-  if (!dashboard) {
-    return null;
-  }
-
-  return (
-    <DropdownMenuItem
-      icon='edit'
-      onClick={() => {
-        setIsEditingDraft(true);
-        setDraft(dashboard);
-      }}
-    >
-      Edit Dashboard
-    </DropdownMenuItem>
   );
 }
 
@@ -61,7 +37,7 @@ function Settings() {
 
   return (
     <DropdownMenuItem
-      icon='setting'
+      icon='settings'
       onClick={() => {
         openModal(ModalType.SETTINGS);
       }}

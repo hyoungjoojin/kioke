@@ -16,9 +16,9 @@ export function SettingsEntry({ title, children }: SettingsEntryProps) {
 }
 
 export function SettingsSubmit() {
-  const { isUpdated, isPending, submit, cancel } = useSettings();
+  const { isDirty, submit, cancel } = useSettings();
 
-  if (!isUpdated) {
+  if (!isDirty) {
     return null;
   }
 
@@ -27,9 +27,7 @@ export function SettingsSubmit() {
       <Button variant='destructive' onClick={() => cancel()}>
         Cancel
       </Button>
-      <Button onClick={() => submit()} pending={isPending}>
-        Submit
-      </Button>
+      <Button onClick={() => submit()}>Submit</Button>
     </div>
   );
 }

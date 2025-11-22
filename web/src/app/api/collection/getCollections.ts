@@ -8,7 +8,7 @@ import type { Result } from 'neverthrow';
 type GetCollectionsResponse = Collection[];
 
 async function getCollections(): Promise<Result<Collection[], KiokeError>> {
-  return kioke<GetCollectionsResponse>('/collections', {
+  return kioke<GetCollectionsResponse>('/collections?size=50', {
     method: HttpMethod.GET,
     headers: {
       'Content-Type': MimeType.APPLICATION_JSON,

@@ -1,18 +1,11 @@
-import type { UpdateProfileRequest } from '@/app/api/profile';
-import { useUpdateMyProfileMutationQuery } from '@/query/profile';
 import { createContext, useContext, useState } from 'react';
 
-type SettingsStatus = 'UPDATED' | 'PENDING' | 'IDLE';
-
 type SettingsContextType = {
-  isUpdated: boolean;
-  isPending: boolean;
-  updatedSettings: UpdateProfileRequest | null;
-  updateSettings: (
-    callback: (settings: UpdateProfileRequest) => UpdateProfileRequest,
-  ) => void;
+  settings: Record<string, any>;
+  update: (settings: Record<string, any>) => void;
   cancel: () => void;
   submit: () => void;
+  isDirty: boolean;
 };
 
 export const SettingsContext = createContext<SettingsContextType | undefined>(
@@ -29,44 +22,35 @@ export const useSettings = () => {
 };
 
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
-  const [status, setStatus] = useState<SettingsStatus>('IDLE');
-  const [updatedSettings, setUpdatedSettings] =
-    useState<UpdateProfileRequest | null>({});
+  const [settings, setSettings] = useState({});
+  const [isDirty, setIsDirty] = useState(false);
 
-  const { mutate: updateProfile, isPending } =
-    useUpdateMyProfileMutationQuery();
-
-  const updateSettings = (
-    callback: (settings: UpdateProfileRequest) => UpdateProfileRequest,
-  ) => {
-    setStatus('UPDATED');
-    setUpdatedSettings((settings) => {
-      return settings ? callback(settings) : settings;
-    });
-  };
-
-  const submit = () => {
-    if (updatedSettings) {
-      updateProfile(updatedSettings);
-    }
-
-    setStatus('IDLE');
+  const update = (updatedSettings: Record<string, any>) => {
+    setSettings((prevSettings) => ({
+      ...prevSettings,
+      ...updatedSettings,
+    }));
+    setIsDirty(false);
   };
 
   const cancel = () => {
-    setUpdatedSettings(null);
-    setStatus('IDLE');
+    setSettings({});
+    setIsDirty(false);
+  };
+
+  const submit = () => {
+    console.log(settings);
+    setIsDirty(false);
   };
 
   return (
     <SettingsContext.Provider
       value={{
-        isUpdated: status === 'UPDATED',
-        isPending,
-        updateSettings,
-        updatedSettings,
+        settings,
+        update,
         submit,
         cancel,
+        isDirty,
       }}
     >
       {children}

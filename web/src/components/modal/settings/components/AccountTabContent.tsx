@@ -1,29 +1,31 @@
 import { SettingsEntry } from '.';
 import { useSettings } from './SettingsContext';
+import { useGetMyProfileQuery } from '@/app/api/profiles/query';
+import { Avatar } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
-import { useMyProfileQuery } from '@/query/profile';
 import { useState } from 'react';
 
 export default function AccountTabContent() {
-  const { updateSettings, updatedSettings } = useSettings();
-  const { data: profile } = useMyProfileQuery();
+  const { settings, update } = useSettings();
+  const { data: profile } = useGetMyProfileQuery();
 
-  const [name, setName] = useState(
-    updatedSettings?.name || profile?.name || '',
-  );
+  const [name, setName] = useState(settings?.name || profile?.name || '');
 
   return (
     <>
+      <SettingsEntry title='Profile Picture'>
+        <Avatar></Avatar>
+      </SettingsEntry>
+
       <SettingsEntry title='Name'>
         <Input
           type='text'
           value={name}
           onChange={(e) => {
             setName(e.target.value);
-            updateSettings((settings) => ({
-              ...settings,
+            update({
               name,
-            }));
+            });
           }}
         />
       </SettingsEntry>

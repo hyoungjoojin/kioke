@@ -1,13 +1,7 @@
-import type { Theme } from '@/constant/theme';
-
-export interface Profile {
-  userId: string;
+interface Profile {
   name: string;
   email: string;
+  onboarded?: boolean;
 }
 
-export interface MyProfile extends Profile {
-  onboarded: boolean;
-  createdAt: Date;
-  theme: Theme;
-}
+export type { Profile };

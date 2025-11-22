@@ -1,8 +1,7 @@
 import type { OnboardingContentProps } from '../page';
-import { updateProfile } from '@/app/api/profile';
+import { useUpdateProfileMutation } from '@/app/api/profiles/query';
 import { Button } from '@/components/ui/button';
 import { Routes } from '@/constant/routes';
-import { unwrap } from '@/util/result';
 import { useTranslations } from 'next-intl';
 import { redirect } from 'next/navigation';
 
@@ -11,17 +10,23 @@ export default function OnboardingFinished({
 }: OnboardingContentProps) {
   const t = useTranslations();
 
+  const { mutate: updateProfile } = useUpdateProfileMutation();
+
   const previousButtonClickHandler = () => {
     onPreviousStep();
   };
 
   const continueButtonClickHandler = async () => {
-    updateProfile({
-      onboarded: true,
-    }).then((result) => {
-      unwrap(result);
-      redirect(Routes.HOME);
-    });
+    updateProfile(
+      {
+        onboarded: true,
+      },
+      {
+        onSuccess: () => {
+          redirect(Routes.HOME);
+        },
+      },
+    );
   };
 
   return (

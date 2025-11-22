@@ -1,22 +1,20 @@
 import { SettingsSubmit } from './components';
+import AccountTabContent from './components/AccountTabContent';
 import { SettingsProvider } from './components/SettingsContext';
+import type { IconName } from '@/components/ui/icon';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTranslations } from 'next-intl';
-import dynamic from 'next/dynamic';
 
-const tabs = [
+const tabs: {
+  icon: IconName;
+  value: string;
+  content: React.ReactNode;
+}[] = [
   {
-    value: 'theme',
-    content: dynamic(() => import('./components/ThemeTabContent')),
-  },
-  {
+    icon: 'user',
     value: 'account',
-    content: dynamic(() => import('./components/AccountTabContent')),
-  },
-  {
-    value: 'notifications',
-    content: dynamic(() => import('./components/ThemeTabContent')),
+    content: <AccountTabContent />,
   },
 ];
 
@@ -48,9 +46,7 @@ export default function SettingsModal() {
               {
                 return (
                   <TabsContent key={index} value={tab.value}>
-                    <ScrollArea className='h-full'>
-                      <tab.content />
-                    </ScrollArea>
+                    <ScrollArea className='h-full'>{tab.content}</ScrollArea>
                   </TabsContent>
                 );
               }

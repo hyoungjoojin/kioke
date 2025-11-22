@@ -12,10 +12,12 @@ import { useTranslations } from 'next-intl';
 
 interface ShareJournalButtonProps {
   journalId: string;
+  className?: string;
 }
 
 export default function ShareJournalButton({
   journalId,
+  className,
 }: ShareJournalButtonProps) {
   const t = useTranslations();
 
@@ -26,7 +28,7 @@ export default function ShareJournalButton({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant='icon' icon='share' className='text-white' />
+        <Button variant='icon' icon='share' className={className} />
       </PopoverTrigger>
 
       <PopoverContent className='h-96 flex flex-col' align='end'>

@@ -62,9 +62,10 @@ export default function Editor({ pageId }: EditorProps) {
     if (editor && page) {
       editor.commands.setContent({
         type: 'doc',
-        content: deserializeBlocks(page.pageId, page.blocks).filter(
-          (content) => content !== null,
-        ),
+        content: deserializeBlocks(
+          page.pageId,
+          page.blocks.sort((b1, b2) => b1.order - b2.order),
+        ).filter((content) => content !== null),
       });
     }
   }, [editor, page]);

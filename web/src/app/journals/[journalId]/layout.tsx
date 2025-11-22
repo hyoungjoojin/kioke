@@ -1,5 +1,5 @@
-import BaseHeader from '@/components/header/BaseHeader';
 import BaseLayout from '@/components/layout/BaseLayout';
+import { JournalBreadcrumbs } from '@/components/ui/breadcrumbs';
 import { ErrorCode } from '@/constant/error';
 import { UseGetJournalByIdQueryDefaultOptions } from '@/hooks/query/useGetJournalByIdQuery';
 import { getQueryClient } from '@/lib/query';
@@ -31,13 +31,10 @@ export default async function JournalLayout({
     );
 
   return (
-    <BaseLayout
-      header={<BaseHeader selectedTab='none' />}
-      main={
-        <HydrationBoundary state={dehydrate(queryClient)}>
-          {children}
-        </HydrationBoundary>
-      }
-    />
+    <BaseLayout topLeft={<JournalBreadcrumbs journalId={journalId} />}>
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        {children}
+      </HydrationBoundary>
+    </BaseLayout>
   );
 }

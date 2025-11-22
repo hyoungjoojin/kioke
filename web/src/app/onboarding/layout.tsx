@@ -1,8 +1,8 @@
+import { getMyProfileQueryOptions } from '@/app/api/profiles/query';
 import { Card } from '@/components/ui/card';
 import { Routes } from '@/constant/routes';
 import { getQueryClient } from '@/lib/query';
 import { cn } from '@/lib/utils';
-import { myProfileQueryOptions } from '@/query/profile';
 import { handleError } from '@/util/error';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
@@ -20,7 +20,7 @@ export default async function OnboardingLayout({
   const queryClient = getQueryClient();
 
   await queryClient
-    .fetchQuery(myProfileQueryOptions())
+    .fetchQuery(getMyProfileQueryOptions)
     .then((profile) => {
       if (profile.onboarded) {
         redirect(Routes.HOME);
