@@ -3,10 +3,10 @@ package io.kioke.feature.dashboard.service;
 import io.kioke.feature.dashboard.constant.WidgetType;
 import io.kioke.feature.dashboard.domain.Dashboard;
 import io.kioke.feature.dashboard.domain.widget.Widget;
-import io.kioke.feature.dashboard.dto.DashboardDto;
-import io.kioke.feature.dashboard.dto.UpdateDashboardRequestDto;
-import io.kioke.feature.dashboard.dto.WidgetDto;
+import io.kioke.feature.dashboard.dto.request.UpdateDashboardRequest;
+import io.kioke.feature.dashboard.dto.response.GetDashboardResponse;
 import io.kioke.feature.dashboard.repository.DashboardRepository;
+import io.kioke.feature.dashboard.service.processor.WidgetProcessor;
 import io.kioke.feature.user.domain.User;
 import java.util.List;
 import java.util.Map;
@@ -31,22 +31,26 @@ public class DashboardService {
   }
 
   @Transactional(readOnly = true)
-  public DashboardDto getDashboard(String userId) {
+  public GetDashboardResponse getDashboard(String userId) {
     Dashboard dashboard =
         dashboardRepository
             .findByUser(User.of(userId))
             .orElseThrow(() -> new IllegalStateException("Dashboard does not exist"));
 
-    List<WidgetDto> widgets =
+    List<GetDashboardResponse.Widget> widgets =
         dashboard.getWidgets().stream()
-            .map(widget -> getWidgetProcessor(widget.getType()).map(widget))
-            .toList();
+            .collect(Collectors.groupingBy(Widget::getType))
+            .entrySet()
+            .stream()
+            .flatMap(
+                entry -> getWidgetProcessor(entry.getKey()).fetchData(entry.getValue()).stream())
+            .collect(Collectors.toList());
 
-    return new DashboardDto(dashboard.getId(), widgets);
+    return new GetDashboardResponse(widgets);
   }
 
   @Transactional(rollbackFor = Exception.class)
-  public void updateDashboard(String userId, UpdateDashboardRequestDto request) {
+  public void updateDashboard(String userId, UpdateDashboardRequest request) {
     Dashboard dashboard =
         dashboardRepository
             .findByUser(User.of(userId))
@@ -54,7 +58,12 @@ public class DashboardService {
 
     List<Widget> widgets =
         request.widgets().stream()
-            .map(widget -> getWidgetProcessor(widget.type()).map(widget))
+            .collect(Collectors.groupingBy(UpdateDashboardRequest.Widget::type))
+            .entrySet()
+            .stream()
+            .flatMap(
+                entry ->
+                    getWidgetProcessor(entry.getKey()).getUpdatedWidgets(entry.getValue()).stream())
             .toList();
 
     dashboard.getWidgets().clear();
