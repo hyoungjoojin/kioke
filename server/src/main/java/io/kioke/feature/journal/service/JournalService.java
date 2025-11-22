@@ -10,8 +10,11 @@ import io.kioke.feature.journal.domain.JournalRole;
 import io.kioke.feature.journal.domain.JournalUser;
 import io.kioke.feature.journal.dto.CreateJournalRequest;
 import io.kioke.feature.journal.dto.JournalDto;
+import io.kioke.feature.journal.dto.request.GetJournalsParams;
 import io.kioke.feature.journal.dto.request.UpdateJournalRequest;
+import io.kioke.feature.journal.dto.response.GetJournalsResponse;
 import io.kioke.feature.journal.repository.JournalRepository;
+import io.kioke.feature.journal.repository.JournalUserRepository;
 import io.kioke.feature.journal.util.JournalMapper;
 import io.kioke.feature.media.service.MediaService;
 import io.kioke.feature.page.domain.Page;
@@ -20,6 +23,7 @@ import io.kioke.feature.user.dto.UserPrincipal;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +36,7 @@ public class JournalService {
   private final ImageService imageService;
   private final MediaService mediaService;
   private final JournalRepository journalRepository;
+  private final JournalUserRepository journalUserRepository;
   private final JournalMapper journalMapper;
 
   @PreAuthorize("hasPermission(#journalId, 'journal', 'read')")
@@ -42,9 +47,42 @@ public class JournalService {
 
     List<Page> pages = journalRepository.findPagesById(journalId);
 
-    String coverUrl = mediaService.getPresignedUrl(journal.getCoverImage()).toExternalForm();
+    String coverUrl =
+        journal.getCover() == null
+            ? null
+            : mediaService.getPresignedUrl(journal.getCover()).toExternalForm();
 
     return journalMapper.toDto(journal, pages, coverUrl);
+  }
+
+  @Transactional(readOnly = true)
+  public GetJournalsResponse getJournals(String userId, GetJournalsParams params) {
+    Pageable pageable = Pageable.ofSize(params.size() == 0 ? 20 : params.size());
+
+    var journals =
+        journalRepository.findAllByQuery(
+            params.query() == null ? "" : params.query(), pageable, params.cursor());
+
+    String cursor =
+        journals.stream()
+            .max((a, b) -> a.getId().compareTo(b.getId()))
+            .map(Journal::getId)
+            .orElse("");
+
+    return new GetJournalsResponse(
+        journals.stream()
+            .map(journal -> new GetJournalsResponse.Journal(journal.getId(), journal.getTitle()))
+            .toList(),
+        cursor,
+        journals.hasNext());
+  }
+
+  @Transactional(readOnly = true)
+  public List<Journal> getJournalsByIds(List<String> journalIds) {
+    // TODO: Need to implement batch fetching
+    return journalIds.stream()
+        .map(journalId -> journalRepository.findById(journalId).orElseThrow())
+        .toList();
   }
 
   @Transactional(rollbackFor = Exception.class)
@@ -77,7 +115,8 @@ public class JournalService {
 
   @Transactional
   @PreAuthorize("hasPermission(#journalId, 'journal', 'update')")
-  public void updateJournal(String journalId, UpdateJournalRequest request) {
+  public void updateJournal(
+      UserPrincipal requester, String journalId, UpdateJournalRequest request) {
     Journal journal = journalRepository.getReferenceById(journalId);
 
     if (request.title() != null) {
@@ -90,7 +129,7 @@ public class JournalService {
 
     if (request.cover() != null) {
       Image image = imageService.getImage(request.cover());
-      journal.setCoverImage(image);
+      journal.setCover(image);
     }
 
     journalRepository.save(journal);

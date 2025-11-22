@@ -4,9 +4,20 @@ import logger from '@/lib/logger';
 import type { ProblemDetail } from '@/types/server';
 import { type Err, type Result, err, ok } from 'neverthrow';
 
-export async function parse<T>(
-  response: Response,
-): Promise<Result<T, KiokeError>> {
+function buildUrl(base: string, searchParams: object): string {
+  const url = base;
+
+  const search = new URLSearchParams();
+  Object.entries(searchParams)
+    .filter(([, value]) => value !== undefined)
+    .forEach(([key, value]) => {
+      search.append(key, String(value));
+    });
+
+  return url + (search.toString() ? `?${search.toString()}` : '');
+}
+
+async function parse<T>(response: Response): Promise<Result<T, KiokeError>> {
   return response.ok ? parseSuccess(response) : parseError(response);
 }
 
@@ -72,3 +83,5 @@ async function parseError(response: Response): Promise<Err<never, KiokeError>> {
     }),
   );
 }
+
+export { parse, buildUrl };

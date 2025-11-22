@@ -64,6 +64,11 @@ public class DashboardService {
             .flatMap(
                 entry ->
                     getWidgetProcessor(entry.getKey()).getUpdatedWidgets(entry.getValue()).stream())
+            .map(
+                widget -> {
+                  widget.setDashboard(dashboard);
+                  return widget;
+                })
             .toList();
 
     dashboard.getWidgets().clear();

@@ -33,6 +33,7 @@ export const createDashboardSlice: StateCreator<
   setIsEditingDashboard(isEditing) {
     set(
       produce((state: DashboardSlice) => {
+        state.draft = undefined;
         state.isEditing = isEditing;
       }),
     );

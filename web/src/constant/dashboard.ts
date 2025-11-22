@@ -1,7 +1,4 @@
-const enum WidgetType {
-  JOURNAL_COVER = 'JOURNAL_COVER',
-  WEATHER = 'WEATHER',
-}
+import { WidgetType } from '@/types/dashboard';
 
 const WidgetDimensions: Record<
   WidgetType,
@@ -10,8 +7,9 @@ const WidgetDimensions: Record<
     h: number;
   }
 > = {
+  [WidgetType.ADD_PAGE]: { w: 1, h: 1 },
   [WidgetType.JOURNAL_COVER]: { w: 2, h: 5 },
-  [WidgetType.WEATHER]: { w: 2, h: 3 },
+  [WidgetType.WEATHER]: { w: 1, h: 1 },
 };
 
 const DEFAULT_DASHBOARD_LAYOUT_CONFIGURATION = {
@@ -30,7 +28,6 @@ const DEFAULT_DASHBOARD_LAYOUT_CONFIGURATION = {
     xs: 0,
   },
   margin: [5, 5] as [number, number],
-  rowHeight: 50,
 };
 
 export { WidgetType, WidgetDimensions, DEFAULT_DASHBOARD_LAYOUT_CONFIGURATION };

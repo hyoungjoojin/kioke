@@ -37,6 +37,9 @@ public class Dashboard {
   @JoinColumn(name = "USER_ID", nullable = false)
   private User user;
 
-  @OneToMany(mappedBy = "dashboard", orphanRemoval = true, cascade = CascadeType.MERGE)
+  @OneToMany(
+      mappedBy = "dashboard",
+      orphanRemoval = true,
+      cascade = {CascadeType.PERSIST, CascadeType.MERGE})
   private List<Widget> widgets;
 }

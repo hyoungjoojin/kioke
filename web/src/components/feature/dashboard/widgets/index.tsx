@@ -1,36 +1,35 @@
+import AddPageWidget, {
+  AddPageWidgetConfigForm,
+  getAddPageWidgetDefaultContent,
+} from './AddPageWidget';
 import JournalCoverWidget from './JournalCover/JournalCoverWidget';
 import JournalCoverWidgetForm from './JournalCover/JournalCoverWidgetForm';
-import JournalCoverWidgetPreview from './JournalCover/JournalCoverWidgetPreview';
 import WeatherWidget from './Weather/WeatherWidget';
-import WeatherWidgetPreview from './Weather/WeatherWidgetPreview';
 import { WidgetType } from '@/constant/dashboard';
-import type { WidgetContent } from '@/types/dashboard';
+import type { Widget, WidgetContent } from '@/types/dashboard';
 import type {
   ComponentType,
   ForwardRefExoticComponent,
   PropsWithoutRef,
 } from 'react';
 
-interface WidgetProps {
-  id: string;
-  widget: WidgetContent;
-  isEditing: boolean;
-  disabled?: boolean;
-}
+type WidgetProps = {
+  widget: Widget;
+  isPreview: boolean;
+};
 
 interface WidgetFormRef {
   submit: () => void;
 }
 
 interface WidgetFormProps {
-  widget: WidgetContent;
-  onSubmit: (content: any) => void;
+  content: WidgetContent;
+  onSubmit: (content: WidgetContent) => void;
 }
 
 const Widgets: {
   [W in WidgetType]: {
     main: ComponentType<WidgetProps>;
-    preview: ComponentType<any>;
     defaultContent: () => Promise<WidgetContent>;
   } & (
     | {
@@ -44,9 +43,14 @@ const Widgets: {
       }
   );
 } = {
+  [WidgetType.ADD_PAGE]: {
+    main: AddPageWidget,
+    defaultContent: getAddPageWidgetDefaultContent,
+    configurable: true,
+    form: AddPageWidgetConfigForm,
+  },
   [WidgetType.JOURNAL_COVER]: {
     main: JournalCoverWidget,
-    preview: JournalCoverWidgetPreview,
     defaultContent: async () => {
       return {
         type: WidgetType.JOURNAL_COVER,
@@ -60,7 +64,6 @@ const Widgets: {
   },
   [WidgetType.WEATHER]: {
     main: WeatherWidget,
-    preview: WeatherWidgetPreview,
     defaultContent: async () => {
       return {
         type: WidgetType.WEATHER,

@@ -1,3 +1,5 @@
+'use client';
+
 import Widgets from '@/components/feature/dashboard/widgets';
 import { Button } from '@/components/ui/button';
 import {
@@ -7,8 +9,7 @@ import {
 } from '@/components/ui/popover';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { WidgetType } from '@/constant/dashboard';
-import { useUpdateDashboardMutation } from '@/query/dashboard/updateDashboard';
-import { useDashboard, useDashboardActions } from '@/store/dashboard';
+import { useDashboardActions } from '@/store/dashboard';
 import { v4 as uuidv4 } from 'uuid';
 
 interface WidgetGroup {
@@ -23,6 +24,10 @@ const widgetGroups: WidgetGroup[] = [
   {
     name: 'journal',
     widgets: [
+      {
+        name: 'Add Page',
+        type: WidgetType.ADD_PAGE,
+      },
       {
         name: 'Journal Cover',
         type: WidgetType.JOURNAL_COVER,
@@ -41,10 +46,7 @@ const widgetGroups: WidgetGroup[] = [
 ];
 
 export default function DashboardEditorToolbar() {
-  const { draft } = useDashboard();
   const { updateDraft } = useDashboardActions();
-  const { mutate: updateDashboard, isPending: isUpdateDashboardPending } =
-    useUpdateDashboardMutation();
 
   const handleInsertWidgetButtonClick = async (type: WidgetType) => {
     const content = await Widgets[type].defaultContent();
@@ -65,14 +67,6 @@ export default function DashboardEditorToolbar() {
     });
   };
 
-  const handleSaveButtonClick = () => {
-    if (draft) {
-      updateDashboard({
-        widgets: draft.widgets,
-      });
-    }
-  };
-
   return (
     <div className='flex justify-between'>
       <div className='flex gap-2'>
@@ -90,7 +84,7 @@ export default function DashboardEditorToolbar() {
                       ? 'center'
                       : 'start'
                 }
-                className='w-[32rem] h-96'
+                className='min-w-[32rem] min-h-96'
               >
                 <Tabs>
                   <TabsList>
@@ -110,8 +104,7 @@ export default function DashboardEditorToolbar() {
                   {group.widgets.map((widget, index) => {
                     return (
                       <TabsContent key={index} value={widget.name}>
-                        <div className='w-full h-64 flex justify-center items-center mb-4'>
-                          {/* TODO: the widget preview needs to match the dimensions of the actual widget */}
+                        <div className='w-full flex justify-center items-center mb-4'>
                           <WidgetPreview type={widget.type} />
                         </div>
 
@@ -133,25 +126,11 @@ export default function DashboardEditorToolbar() {
           );
         })}
       </div>
-
-      <div>
-        <Button
-          onClick={handleSaveButtonClick}
-          pending={isUpdateDashboardPending}
-        >
-          Save
-        </Button>
-      </div>
     </div>
   );
 }
 
 const WidgetPreview = ({ type }: { type: WidgetType }) => {
-  const widget = Widgets[type];
-
-  return (
-    <div>
-      <widget.preview />
-    </div>
-  );
+  const Widget = Widgets[type].main;
+  return <Widget id='' preview type={type} />;
 };

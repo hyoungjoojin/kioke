@@ -5,7 +5,9 @@ import io.kioke.exception.collection.CollectionNotFoundException;
 import io.kioke.exception.journal.JournalNotFoundException;
 import io.kioke.feature.journal.dto.CreateJournalRequest;
 import io.kioke.feature.journal.dto.JournalDto;
+import io.kioke.feature.journal.dto.request.GetJournalsParams;
 import io.kioke.feature.journal.dto.request.UpdateJournalRequest;
+import io.kioke.feature.journal.dto.response.GetJournalsResponse;
 import io.kioke.feature.journal.service.JournalService;
 import io.kioke.feature.user.dto.UserPrincipal;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +36,13 @@ public class JournalController {
     return journalService.getJournalById(journalId);
   }
 
+  @GetMapping("/journals")
+  @PreAuthorize("isAuthenticated()")
+  public GetJournalsResponse getJournals(
+      @AuthenticatedUser UserPrincipal user, @ModelAttribute GetJournalsParams params) {
+    return journalService.getJournals(user.userId(), params);
+  }
+
   @PostMapping("/journals")
   @ResponseStatus(HttpStatus.CREATED)
   @PreAuthorize("isAuthenticated()")
@@ -46,9 +56,11 @@ public class JournalController {
   @PatchMapping("/journals/{journalId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void updateJournal(
-      @PathVariable String journalId, @RequestBody @Validated UpdateJournalRequest requestBody)
+      @AuthenticatedUser UserPrincipal user,
+      @PathVariable String journalId,
+      @RequestBody @Validated UpdateJournalRequest requestBody)
       throws JournalNotFoundException {
-    journalService.updateJournal(journalId, requestBody);
+    journalService.updateJournal(user, journalId, requestBody);
   }
 
   @DeleteMapping("/journals/{journalId}")

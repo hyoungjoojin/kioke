@@ -1,6 +1,7 @@
 package io.kioke.feature.journal.domain;
 
 import io.kioke.feature.user.domain.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -39,7 +40,7 @@ public class JournalUser {
   @JoinColumn(name = "USER_ID", nullable = false)
   private User user;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.PERSIST)
   @JoinColumn(name = "JOURNAL_ID", nullable = false)
   private Journal journal;
 

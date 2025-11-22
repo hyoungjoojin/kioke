@@ -8,16 +8,24 @@ import { type UseQueryOptions, useQuery } from '@tanstack/react-query';
 
 type UseGetCollectionByIdQueryOptions = UseQueryOptions<Collection, KiokeError>;
 
+const UseGetCollectionByIdQueryDefaultOptions = (
+  params: GetCollectionByIdParams,
+) => {
+  return {
+    queryKey: ['collection', params],
+    queryFn: async () => getCollectionById(params).then((res) => unwrap(res)),
+  };
+};
+
 function useGetCollectionByIdQuery(
   params: GetCollectionByIdParams,
   options?: UseGetCollectionByIdQueryOptions,
 ) {
-  const base: UseGetCollectionByIdQueryOptions = {
-    queryKey: ['collection', params],
-    queryFn: async () => getCollectionById(params).then((res) => unwrap(res)),
-  };
-
-  return useQuery({ ...base, ...options });
+  return useQuery({
+    ...UseGetCollectionByIdQueryDefaultOptions(params),
+    ...options,
+  });
 }
 
 export default useGetCollectionByIdQuery;
+export { UseGetCollectionByIdQueryDefaultOptions };

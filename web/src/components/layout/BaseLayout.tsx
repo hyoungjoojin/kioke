@@ -1,21 +1,37 @@
-import { cn } from '@/lib/utils';
+import KiokeSidebar, { KiokeSidebarTrigger } from './KiokeSidebar';
+import { SIDEBAR_COOKIE_NAME, SidebarProvider } from '@/components/ui/sidebar';
+import { cookies } from 'next/headers';
 
 interface BaseLayoutProps {
-  header: React.ReactNode;
-  main: React.ReactNode;
+  children: React.ReactNode;
+  topLeft?: React.ReactNode;
+  topRight?: React.ReactNode;
 }
 
-export default function BaseLayout({ header, main }: BaseLayoutProps) {
+async function BaseLayout({ children, topLeft, topRight }: BaseLayoutProps) {
+  const cookieStore = await cookies();
+  const sidebarOpen = cookieStore.get(SIDEBAR_COOKIE_NAME)?.value === 'true';
+
   return (
-    <div
-      className={cn(
-        'flex flex-col h-full',
-        'px-5 md:px-15 lg:px-20 2xl:px-36',
-        'py-5 md:py-10 lg:py-15 2xl:py-18',
-      )}
-    >
-      <header className={'h-12 md:h-15 lg:h-20'}>{header}</header>
-      <main className='h-full pt-5'>{main}</main>
-    </div>
+    <SidebarProvider className='h-full' defaultOpen={sidebarOpen}>
+      <KiokeSidebar />
+      <main className='h-full w-full flex flex-col'>
+        <div className='p-5 h-20 flex justify-between items-center'>
+          <div className='flex items-center gap-4'>
+            <div>
+              <KiokeSidebarTrigger />
+            </div>
+
+            <div>{topLeft}</div>
+          </div>
+
+          <div>{topRight}</div>
+        </div>
+
+        <div className='py-7 px-15 grow overflow-hidden'>{children}</div>
+      </main>
+    </SidebarProvider>
   );
 }
+
+export default BaseLayout;

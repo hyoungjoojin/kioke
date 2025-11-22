@@ -1,6 +1,6 @@
 'use client';
 
-import Icon, { IconName } from './icon';
+import Icon, { type IconName } from './icon';
 import { cn } from '@/lib/utils';
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
 import * as React from 'react';

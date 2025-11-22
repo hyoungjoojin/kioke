@@ -1,5 +1,3 @@
-import type { WidgetType } from '@/constant/dashboard';
-
 interface Dashboard {
   widgets: Widget[];
 }
@@ -12,14 +10,33 @@ type Widget = {
 
 type WidgetContent =
   | {
+      type: WidgetType.ADD_PAGE;
+      content: AddPageWidgetContent;
+    }
+  | {
       type: WidgetType.JOURNAL_COVER;
-      content: {
-        journalId: string;
-      };
+      content: JournalCoverWidgetContent;
     }
   | {
       type: WidgetType.WEATHER;
-      content: {};
+      content: WeatherWidgetContent;
     };
 
+const enum WidgetType {
+  ADD_PAGE = 'ADD_PAGE',
+  JOURNAL_COVER = 'JOURNAL_COVER',
+  WEATHER = 'WEATHER',
+}
+
+type AddPageWidgetContent = {
+  journalId: string;
+};
+
+type JournalCoverWidgetContent = {
+  journalId: string;
+};
+
+type WeatherWidgetContent = {};
+
+export { WidgetType };
 export type { Dashboard, Widget, WidgetContent };

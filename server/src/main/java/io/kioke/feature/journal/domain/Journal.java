@@ -19,6 +19,7 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -26,7 +27,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
-@Table(name = "JOURNAL_TABLE")
+@Table(name = "journals")
 @EntityListeners(AuditingEntityListener.class)
 @Data
 @Builder
@@ -36,27 +37,30 @@ public class Journal {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  @Column(name = "JOURNAL_ID")
+  @Column(name = "id")
   private String id;
 
-  @OneToMany(
-      cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
-      orphanRemoval = true,
-      mappedBy = "journal")
-  private List<JournalUser> users;
-
-  @Column(name = "IS_PUBLIC", nullable = false)
-  private Boolean isPublic;
-
-  @Column(name = "TITLE", nullable = false)
+  @Column(name = "title", nullable = false)
   private String title;
 
-  @Column(name = "DESCRIPTION", nullable = false)
+  @Column(name = "description", nullable = false)
   private String description;
 
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "COVER_IMAGE_ID")
-  private Image coverImage;
+  @JoinColumn(name = "cover_image")
+  private Image cover;
+
+  @Column(name = "is_public", nullable = false)
+  @Default
+  private Boolean isPublic = false;
+
+  @CreatedDate
+  @Column(name = "created_at", nullable = false)
+  private Instant createdAt;
+
+  @LastModifiedDate
+  @Column(name = "last_modified_at", nullable = false)
+  private Instant lastModifiedAt;
 
   @OneToMany(
       fetch = FetchType.LAZY,
@@ -64,11 +68,9 @@ public class Journal {
       cascade = {CascadeType.REMOVE})
   private List<Page> pages;
 
-  @CreatedDate
-  @Column(name = "CREATED_AT")
-  private Instant createdAt;
-
-  @LastModifiedDate
-  @Column(name = "LAST_MODIFIED_AT")
-  private Instant lastModifiedAt;
+  @OneToMany(
+      cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
+      orphanRemoval = true,
+      mappedBy = "journal")
+  private List<JournalUser> users;
 }
